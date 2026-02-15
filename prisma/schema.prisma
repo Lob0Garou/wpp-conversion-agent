@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── MULTI-TENANT: todas as entidades possuem store_id ───
+
+model Store {
+  id              String   @id @default(uuid())
+  name            String
+  phoneNumber     String   @unique @map("phone_number")
+  phoneNumberId   String   @unique @map("phone_number_id") // Meta phone_number_id → resolve store
+  config          Json     @default("{}")
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  customers     Customer[]
+  conversations Conversation[]
+  messages      Message[]
+  tickets       Ticket[]
+  auditLogs     AuditLog[]
+
+  @@map("stores")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  storeId   String   @map("store_id")
+  phone     String
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  store         Store          @relation(fields: [storeId], references: [id])
+  conversations Conversation[]
+  tickets       Ticket[]
+
+  @@unique([storeId, phone])
+  @@index([storeId])
+  @@map("customers")
+}
+
+model Conversation {
+  id         String   @id @default(uuid())
+  storeId    String   @map("store_id")
+  customerId String   @map("customer_id")
+  status     String   @default("open") // open | closed | escalated
+  startedAt  DateTime @default(now()) @map("started_at")
+  closedAt   DateTime? @map("closed_at")
+
+  store    Store    @relation(fields: [storeId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+  messages Message[]
+
+  @@index([storeId])
+  @@index([storeId, status])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  storeId        String   @map("store_id")
+  conversationId String   @map("conversation_id")
+  direction      String   // inbound | outbound
+  content        String
+  waMessageId    String   @map("wa_message_id") // idempotência: único por store
+  timestamp      DateTime @default(now())
+  metadata       Json?    @default("{}") // Store intent, risk, debug info
+
+  store        Store        @relation(fields: [storeId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  @@unique([storeId, waMessageId]) // idempotência contra reenvio Meta
+  @@index([storeId])
+  @@index([conversationId])
+  @@map("messages")
+}
+
+model Ticket {
+  id         String   @id @default(uuid())
+  storeId    String   @map("store_id")
+  customerId String   @map("customer_id")
+  type       String   // sac | troca | garantia | reclamacao
+  status     String   @default("open") // open | in_progress | closed
+  notes      String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  closedAt   DateTime? @map("closed_at")
+
+  store    Store    @relation(fields: [storeId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([storeId])
+  @@index([storeId, status])
+  @@map("tickets")
+}
+
+// ─── LOGGING DE AUDITORIA: cada decisão da Engine ───
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  storeId   String   @map("store_id")
+  event     String   // ex: INTENT_CLASSIFIED, RISK_HIGH, HANDOFF, TICKET_CREATED
+  intent    String?  // sales | stock | sac | human
+  risk      String?  // low | medium | high
+  action    String?  // ex: RESPOND, HANDOFF, CREATE_TICKET
+  metadata  Json     @default("{}")
+  timestamp DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@index([storeId])
+  @@index([storeId, event])
+  @@index([timestamp])
+  @@map("audit_logs")
+}
