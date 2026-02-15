@@ -48,7 +48,8 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    console.log("[WEBHOOK] 📩 Payload recebido:", JSON.stringify(body, null, 2));
+    console.log("[WEBHOOK] 📩 Payload recebido (reduzido):");
+    console.log(`[WEBHOOK] JSON: ${JSON.stringify(body).substring(0, 200)}...`);
 
     // 4. Extrair dados da mensagem
     const msg = extractMessage(body);
@@ -137,7 +138,14 @@ export async function POST(request: NextRequest) {
         // 10. Engine de Decisão
         const analysis = analyzeMessage(msg.text);
 
-        console.log(`[ENGINE] Análise: intent=${analysis.intent} risk=${analysis.risk} action=${analysis.action}`);
+        console.log(`[ENGINE] 🧠 Análise completa:`);
+        console.log(`[ENGINE]   - Intent: ${analysis.intent}`);
+        console.log(`[ENGINE]   - Risk: ${analysis.risk}`);
+        console.log(`[ENGINE]   - Action: ${analysis.action}`);
+        console.log(`[ENGINE]   - Reply: "${analysis.replyText}"`);
+        if (analysis.matched?.length) {
+            console.log(`[ENGINE]   - Matched keywords: ${analysis.matched.join(", ")}`);
+        }
 
         // 11. Verificar Estado da Conversa (Handoff)
         if (conversation.status === "PENDING_HUMAN") {
@@ -184,6 +192,7 @@ export async function POST(request: NextRequest) {
         }
 
         // 13. Enviar Resposta (se não foi ignorada)
+        console.log(`[WEBHOOK] 📤 Enviando auto-reply...`);
         const sendResult = await sendTextMessage(msg.from, analysis.replyText);
 
         if (sendResult.success) {
@@ -206,9 +215,11 @@ export async function POST(request: NextRequest) {
                 },
             });
 
-            console.log(
-                `[WEBHOOK] ✅ Resposta enviada | intent=${analysis.intent} | to=${msg.from}`
-            );
+            console.log(`[WEBHOOK] ✅ Ciclo completo:`);
+            console.log(`[WEBHOOK]   - RECEBIDO: "${msg.text}"`);
+            console.log(`[WEBHOOK]   - RESPONDIDO: "${analysis.replyText}"`);
+            console.log(`[WEBHOOK]   - SALVO: intent=${analysis.intent} | risk=${analysis.risk}`);
+            console.log(`[WEBHOOK]   - Message ID: ${outWaMessageId}`);
         } else {
             console.error(
                 "[WEBHOOK] ❌ Erro ao enviar resposta:",
