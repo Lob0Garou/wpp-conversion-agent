@@ -4,8 +4,12 @@ import { verifyWebhookSignature, extractMessage } from "@/lib/webhook";
 import { sendTextMessage } from "@/lib/whatsapp";
 import { analyzeMessage } from "@/lib/engine";
 
-// ─── GET: Verificação do Webhook (Meta) ───
+// Validar ambiente ao iniciar
+if (!process.env.WHATSAPP_VERIFY_TOKEN) {
+    console.warn("[WEBHOOK] ⚠️ WHATSAPP_VERIFY_TOKEN não definido no .env");
+}
 
+// ─── GET: Verificação do Webhook (Meta) ───
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
 
@@ -13,65 +17,102 @@ export async function GET(request: NextRequest) {
     const token = searchParams.get("hub.verify_token");
     const challenge = searchParams.get("hub.challenge");
 
+    console.log("[WEBHOOK] 🌐 GET Verification Request:", { mode, token, challenge });
+
     const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN;
 
     if (mode === "subscribe" && token === verifyToken) {
-        console.log("[WEBHOOK] ✅ Verificação bem-sucedida");
+        console.log("[WEBHOOK] ✅ Verificação bem-sucedida! Retornando challenge.");
         return new NextResponse(challenge, { status: 200 });
     }
 
-    console.warn("[WEBHOOK] ❌ Verificação falhou", { mode, token });
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    console.warn("[WEBHOOK] ❌ Verificação falhou. Token inválido ou mode incorreto.");
+    console.warn(`[WEBHOOK]   - Esperado: ${verifyToken}`);
+    console.warn(`[WEBHOOK]   - Recebido: ${token}`);
+
+    return NextResponse.json(
+        { error: "Forbidden", detail: "Verify Token mismatch" },
+        { status: 403 }
+    );
 }
 
 // ─── POST: Receber mensagens do WhatsApp ───
-
 export async function POST(request: NextRequest) {
-    // 1. Ler body como texto (necessário para validar assinatura)
+    // 1. Ler e validar assinatura
     const rawBody = await request.text();
-
-    // 2. Validar assinatura Meta (X-Hub-Signature-256)
     const appSecret = process.env.WHATSAPP_APP_SECRET;
+
+    // Log detalhado para debug
+    console.log("[WEBHOOK] 📥 POST recebido (Raw Body size):", rawBody.length);
+
     if (appSecret) {
         const signature = request.headers.get("x-hub-signature-256");
         if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
-            console.warn("[WEBHOOK] ❌ Assinatura inválida");
+            console.warn("[WEBHOOK] ❌ Assinatura inválida (X-Hub-Signature-256)");
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
     }
 
-    // 3. Parsear payload
-    let body: unknown;
+    // 2. Parsear e LOGAR
+    let body: any;
     try {
         body = JSON.parse(rawBody);
-    } catch {
+        console.log("[WEBHOOK] 📦 Payload JSON:", JSON.stringify(body, null, 2));
+    } catch (e) {
+        console.error("[WEBHOOK] ❌ JSON inválido");
         return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
-    console.log("[WEBHOOK] 📩 Payload recebido (reduzido):");
-    console.log(`[WEBHOOK] JSON: ${JSON.stringify(body).substring(0, 200)}...`);
+    // 3. Retornar 200 IMEDIATAMENTE (requisito Meta)
+    // Processamento acontece em background (fire-and-forget para Node.js local)
+    processPayload(body).catch(err => {
+        console.error("[WEBHOOK] ❌ Erro no processamento assíncrono:", err);
+    });
 
-    // 4. Extrair dados da mensagem
-    const msg = extractMessage(body);
-    if (!msg) {
-        // Não é uma mensagem (pode ser status update, etc.) — retorna 200
-        return NextResponse.json({ status: "ignored" }, { status: 200 });
+    return NextResponse.json({ status: "received" }, { status: 200 });
+}
+
+// ─── Processamento Assíncrono ───
+async function processPayload(body: any) {
+    const value = body.entry?.[0]?.changes?.[0]?.value;
+
+    // Log de Status (Entregue, Lido, Falhou)
+    if (value?.statuses) {
+        const statuses = value.statuses;
+        console.log(`[WEBHOOK] 📶 Status Update: ${JSON.stringify(statuses)}`);
+        console.log("[WEBHOOK] 📶 Status Update:", JSON.stringify(statuses, null, 2));
+
+        // Se falhou, logar erro
+        if (statuses[0]?.status === 'failed') {
+            console.log(`[WEBHOOK] ❌ Mensagem falhou! Erro: ${JSON.stringify(statuses[0].errors)}`);
+        }
+        return;
     }
 
+    const msg = extractMessage(body);
+    if (!msg) {
+        console.log("[WEBHOOK] ℹ️ Evento ignorado (não é mensagem de texto ou status relevando)");
+        console.log("[WEBHOOK] ℹ️ Evento ignorado (não é mensagem de texto)");
+        return;
+    }
+
+    console.log(`[WEBHOOK] 📥 Mensagem recebida de ${msg.from}: ${msg.text}`);
+    /* 
+    Isolamento de Erros: 
+    Todo o bloco lógico original agora roda aqui dentro.
+    */
     try {
-        // 5. Resolver store pelo phone_number_id (Isolamento Absoluto)
+        // Resolver store
         const store = await prisma.store.findUnique({
             where: { phoneNumberId: msg.phoneNumberId },
         });
 
         if (!store) {
-            console.warn(
-                `[WEBHOOK] ❌ Store não encontrada para phone_number_id: ${msg.phoneNumberId}`
-            );
-            return NextResponse.json({ status: "received" }, { status: 200 });
+            console.warn(`[WEBHOOK] ❌ Store não encontrada para ID: ${msg.phoneNumberId}`);
+            return;
         }
 
-        // 6. Idempotência: verificar se mensagem já existe
+        // Idempotência
         const existing = await prisma.message.findUnique({
             where: {
                 storeId_waMessageId: {
@@ -82,26 +123,20 @@ export async function POST(request: NextRequest) {
         });
 
         if (existing) {
-            console.log(`[WEBHOOK] ⏭️ Mensagem duplicada ignorada: ${msg.waMessageId}`);
-            return NextResponse.json({ status: "duplicate" }, { status: 200 });
+            console.log(`[WEBHOOK] ⏭️ Mensagem duplicada: ${msg.waMessageId}`);
+            return;
         }
 
-        // 7. Criar/encontrar customer
+        // Criar/Atualizar Customer
         const customer = await prisma.customer.upsert({
             where: {
-                storeId_phone: {
-                    storeId: store.id,
-                    phone: msg.from,
-                },
+                storeId_phone: { storeId: store.id, phone: msg.from },
             },
+            create: { storeId: store.id, phone: msg.from },
             update: {},
-            create: {
-                storeId: store.id,
-                phone: msg.from,
-            },
         });
 
-        // 8. Encontrar conversa aberta ou criar nova
+        // Conversa
         let conversation = await prisma.conversation.findFirst({
             where: {
                 storeId: store.id,
@@ -120,7 +155,7 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        // 9. Salvar mensagem inbound
+        // Salvar Inbound
         await prisma.message.create({
             data: {
                 storeId: store.id,
@@ -131,117 +166,56 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        console.log(
-            `[WEBHOOK] ✅ Mensagem salva | store=${store.name} | from=${msg.from} | text="${msg.text}"`
-        );
+        console.log(`[WEBHOOK] ✅ Mensagem salva: "${msg.text}" de ${msg.from}`);
 
-        // 10. Engine de Decisão
+        // Engine
         const analysis = analyzeMessage(msg.text);
 
-        console.log(`[ENGINE] 🧠 Análise completa:`);
-        console.log(`[ENGINE]   - Intent: ${analysis.intent}`);
-        console.log(`[ENGINE]   - Risk: ${analysis.risk}`);
-        console.log(`[ENGINE]   - Action: ${analysis.action}`);
-        console.log(`[ENGINE]   - Reply: "${analysis.replyText}"`);
-        if (analysis.matched?.length) {
-            console.log(`[ENGINE]   - Matched keywords: ${analysis.matched.join(", ")}`);
-        }
-
-        // 11. Verificar Estado da Conversa (Handoff)
         if (conversation.status === "PENDING_HUMAN") {
-            // Se já está aguardando humano, NÃO responder automaticamente
-            console.log(`[ENGINE] 🔇 Auto-reply ignorado (Status: PENDING_HUMAN)`);
-
-            await prisma.auditLog.create({
-                data: {
-                    storeId: store.id,
-                    event: "IGNORED_AUTOREPLY_PENDING_HUMAN",
-                    action: "IGNORE",
-                    metadata: {
-                        conversationId: conversation.id,
-                        inboundText: msg.text
-                    }
-                }
-            });
-            // Apenas retorna 200, pois a msg inbound já foi salva
-            return NextResponse.json({ status: "received" }, { status: 200 });
+            console.log(`[WEBHOOK] 🔇 Ignorando auto-reply (Humano pendente)`);
+            return;
         }
 
-        // 12. Executar Ação da Engine
         if (analysis.action === "handoff") {
-            // Atualizar status para PENDING_HUMAN
             await prisma.conversation.update({
                 where: { id: conversation.id },
-                data: { status: "PENDING_HUMAN" }
+                data: { status: "PENDING_HUMAN" },
             });
-
-            // Log de Handoff
             await prisma.auditLog.create({
                 data: {
                     storeId: store.id,
-                    event: "HANDOFF_TRIGGERED",
-                    intent: analysis.intent,
-                    risk: analysis.risk,
+                    event: "HANDOFF",
                     action: "HANDOFF",
-                    metadata: {
-                        conversationId: conversation.id,
-                        reason: analysis.matched || "rule_matched"
-                    }
+                    metadata: { reason: analysis.matched },
                 }
             });
         }
 
-        // 13. Enviar Resposta (se não foi ignorada)
-        console.log(`[WEBHOOK] 📤 Enviando auto-reply...`);
+        // Enviar Auto-Reply
+        console.log(`[WEBHOOK] 📤 Enviando resposta: "${analysis.replyText}"`);
         const sendResult = await sendTextMessage(msg.from, analysis.replyText);
 
         if (sendResult.success) {
-            const outWaMessageId =
-                sendResult.data?.messages?.[0]?.id ?? `out_${crypto.randomUUID()}`;
-
-            // 14. Persistir mensagem outbound com Metadata da Engine
+            const outId = sendResult.data?.messages?.[0]?.id ?? `out_${Date.now()}`;
             await prisma.message.create({
                 data: {
                     storeId: store.id,
                     conversationId: conversation.id,
                     direction: "outbound",
                     content: analysis.replyText,
-                    waMessageId: outWaMessageId,
+                    waMessageId: outId,
                     metadata: {
-                        engineIntent: analysis.intent,
-                        engineRisk: analysis.risk,
-                        engineAction: analysis.action
+                        intent: analysis.intent,
+                        risk: analysis.risk
                     }
-                },
+                }
             });
-
-            console.log(`[WEBHOOK] ✅ Ciclo completo:`);
-            console.log(`[WEBHOOK]   - RECEBIDO: "${msg.text}"`);
-            console.log(`[WEBHOOK]   - RESPONDIDO: "${analysis.replyText}"`);
-            console.log(`[WEBHOOK]   - SALVO: intent=${analysis.intent} | risk=${analysis.risk}`);
-            console.log(`[WEBHOOK]   - Message ID: ${outWaMessageId}`);
+            console.log(`[WEBHOOK] ✅ Resposta enviada e salva (ID: ${outId})`);
         } else {
-            console.error(
-                "[WEBHOOK] ❌ Erro ao enviar resposta:",
-                sendResult.error
-            );
-            await prisma.auditLog.create({
-                data: {
-                    storeId: store.id,
-                    event: "SEND_ERROR",
-                    action: "REPLY_FAILED",
-                    metadata: {
-                        to: msg.from,
-                        error: sendResult.error,
-                        conversationId: conversation.id,
-                    },
-                },
-            });
+            console.error(`[WEBHOOK] ❌ Falha no envio: ${sendResult.error}`);
         }
 
-        return NextResponse.json({ status: "received" }, { status: 200 });
     } catch (error) {
-        console.error("[WEBHOOK] Erro ao processar mensagem:", error);
-        return NextResponse.json({ status: "error" }, { status: 200 });
+        console.error("[WEBHOOK] ❌ Erro Crítico no processamento:", error);
     }
 }

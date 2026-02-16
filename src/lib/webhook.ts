@@ -41,6 +41,7 @@ interface WhatsAppPayload {
         changes?: Array<{
             value?: {
                 metadata?: { phone_number_id?: string };
+                contacts?: Array<{ wa_id?: string; wa_id_type?: string }>; // Capture contacts for wa_id
                 messages?: Array<{
                     id?: string;
                     from?: string;
@@ -62,9 +63,13 @@ export function extractMessage(body: unknown): IncomingMessage | null {
         const message = value.messages[0];
         const metadata = value.metadata;
 
+        // 9-digit fix: prefer wa_id from contacts if available, otherwise fallback to message.from
+        const contact = value.contacts?.[0];
+        const waId = contact?.wa_id ?? message.from ?? "";
+
         return {
             phoneNumberId: metadata?.phone_number_id ?? "",
-            from: message.from ?? "",
+            from: waId, // Use the canonical wa_id as the phone number
             waMessageId: message.id ?? "",
             text: message.text?.body ?? "",
             timestamp: message.timestamp ?? "",

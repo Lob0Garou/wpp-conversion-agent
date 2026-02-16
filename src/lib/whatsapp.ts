@@ -35,15 +35,15 @@ export function validateWhatsAppCredentials() {
 
 export async function sendTextMessage(
     to: string,
-    text: string
+    text: string,
+    isRetry: boolean = false
 ): Promise<SendMessageResult> {
     const token = process.env.WHATSAPP_API_TOKEN;
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
     if (!token || !phoneNumberId) {
-        console.error(
-            "[WHATSAPP] ❌ Erro: Credenciais não configuradas (WHATSAPP_API_TOKEN ou WHATSAPP_PHONE_NUMBER_ID)"
-        );
+        const errorMsg = "[WHATSAPP] ❌ Erro: Credenciais não configuradas";
+        console.error(errorMsg);
         return {
             success: false,
             error: "Missing WhatsApp credentials",
@@ -53,8 +53,12 @@ export async function sendTextMessage(
 
     const url = `https://graph.facebook.com/${WHATSAPP_API_VERSION}/${phoneNumberId}/messages`;
 
-    // Normalizar número para E.164 (sem espaços)
-    const normalizedTo = to.replace(/\s+/g, "");
+    // Normalizar número para E.164 (apenas dígitos)
+    const normalizedTo = to.replace(/\D/g, "");
+
+    /* 
+       Lógica de Retry será mantida.
+    */
 
     const body = {
         messaging_product: "whatsapp",
@@ -64,7 +68,7 @@ export async function sendTextMessage(
         text: { preview_url: false, body: text },
     };
 
-    console.log("[WHATSAPP] 📤 Enviando mensagem...");
+    console.log(`[WHATSAPP] 📤 Enviando mensagem... ${isRetry ? "(RETRY)" : ""}`);
     console.log(`[WHATSAPP]   - Para: ${normalizedTo}`);
     console.log(`[WHATSAPP]   - Texto: "${text.substring(0, 80)}${text.length > 80 ? "..." : ""}"`);
     console.log(`[WHATSAPP]   - URL: ${url}`);
@@ -82,9 +86,31 @@ export async function sendTextMessage(
         const data = await response.json();
 
         console.log(`[WHATSAPP] HTTP ${response.status} ${response.statusText}`);
-        console.log(`[WHATSAPP] Resposta:`, JSON.stringify(data, null, 2));
-
         if (!response.ok) {
+            console.log(`[WHATSAPP] Resposta Erro:`, JSON.stringify(data, null, 2));
+
+            // Lógica de Retry para números do Brasil (Erro 131030 ou 400 geral)
+            // Tenta adicionar ou remover o 9º dígito
+            if (!isRetry && (data.error?.code === 131030 || response.status === 400 || response.status === 404)) {
+                if (normalizedTo.startsWith('55')) {
+                    let newTo = normalizedTo;
+                    // Se tem 13 dígitos (55 + 2 DDD + 9 + 8), tenta remover o 9
+                    if (normalizedTo.length === 13) {
+                        newTo = normalizedTo.slice(0, 4) + normalizedTo.slice(5);
+                        console.warn(`[WHATSAPP] ⚠️ Falha ao enviar para ${normalizedTo}. Tentando ${newTo} (sem 9º dígito)...`);
+                    }
+                    // Se tem 12 dígitos (55 + 2 DDD + 8), tenta adicionar o 9
+                    else if (normalizedTo.length === 12) {
+                        newTo = normalizedTo.slice(0, 4) + '9' + normalizedTo.slice(4);
+                        console.warn(`[WHATSAPP] ⚠️ Falha ao enviar para ${normalizedTo}. Tentando ${newTo} (com 9º dígito)...`);
+                    }
+
+                    if (newTo !== normalizedTo) {
+                        return sendTextMessage(newTo, text, true);
+                    }
+                }
+            }
+
             console.error(
                 "[WHATSAPP] ❌ Erro na Graph API:",
                 data.error?.message || "Unknown error"
