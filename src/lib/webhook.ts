@@ -46,6 +46,7 @@ interface WhatsAppPayload {
                     id?: string;
                     from?: string;
                     timestamp?: string;
+                    type?: string;
                     text?: { body?: string };
                 }>;
             };
@@ -62,16 +63,32 @@ export function extractMessage(body: unknown): IncomingMessage | null {
 
         const message = value.messages[0];
         const metadata = value.metadata;
+        const msgType = message.type ?? "unknown";
 
-        // 9-digit fix: prefer wa_id from contacts if available, otherwise fallback to message.from
+        // 9-digit fix: prefer wa_id from contacts if available,
         const contact = value.contacts?.[0];
         const waId = contact?.wa_id ?? message.from ?? "";
 
+        // Log ALL incoming messages for visibility (even non-text)
+        console.log(`[WEBHOOK] 📨 Message received — type: ${msgType}, from: ${waId}, wamid: ${message.id}`);
+
+        // Only process text messages — ignore image, audio, video, sticker, document, etc.
+        if (msgType !== "text") {
+            console.log(`[WEBHOOK] ⏭️ Ignored non-text message type: ${msgType}`);
+            return null;
+        }
+
+        const textBody = message.text?.body;
+        if (!textBody) {
+            console.log(`[WEBHOOK] ⏭️ Ignored text message with empty body`);
+            return null;
+        }
+
         return {
             phoneNumberId: metadata?.phone_number_id ?? "",
-            from: waId, // Use the canonical wa_id as the phone number
+            from: waId,
             waMessageId: message.id ?? "",
-            text: message.text?.body ?? "",
+            text: textBody,
             timestamp: message.timestamp ?? "",
         };
     } catch {

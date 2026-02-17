@@ -74,14 +74,23 @@ export async function sendTextMessage(
     console.log(`[WHATSAPP]   - URL: ${url}`);
 
     try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-        });
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
+        let response: Response;
+        try {
+            response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+                signal: controller.signal,
+            });
+        } finally {
+            clearTimeout(timeout);
+        }
 
         const data = await response.json();
 
@@ -130,6 +139,14 @@ export async function sendTextMessage(
 
         return { success: true, data, httpStatus: response.status };
     } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+            console.error("[WHATSAPP] ❌ Request timeout (10s) sending message to:", normalizedTo);
+            return {
+                success: false,
+                error: "Request timeout (10s)",
+                httpStatus: 0,
+            };
+        }
         console.error("[WHATSAPP] ❌ Erro na requisição:", error);
         return {
             success: false,
