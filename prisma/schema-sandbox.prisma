@@ -1,0 +1,342 @@
+// ============================================================
+// SCHEMA SANDBOX - SQLite para testes isolados
+// ============================================================
+// Este schema é usado pelo ambiente de teste (sandbox).
+// Possui os mesmos mapeamentos (@@map) que a produção para
+// não quebrar as Raw Queries do NextJS Admin UI.
+// Rode: npx prisma generate --schema=prisma/schema-sandbox.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client-sandbox"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("SANDBOX_DATABASE_URL")
+}
+
+// ─── TELEMETRIA: tipos de evento para BI ───
+// SQLite não tem enums. Usaremos String.
+
+// ─── MULTI-TENANT: todas as entidades possuem store_id ───
+
+model Store {
+  id              String   @id @default(uuid())
+  name            String
+  phoneNumber     String   @unique @map("phone_number")
+  phoneNumberId   String   @unique @map("phone_number_id") // Meta phone_number_id → resolve store
+  addressText     String?  @map("address_text")
+  mapsUrl         String?  @map("maps_url")
+  config          Json     @map("config")
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  customers        Customer[]
+  conversations    Conversation[]
+  messages         Message[]
+  tickets          Ticket[]
+  auditLogs        AuditLog[]
+  products         Product[]
+  telemetryEvents  TelemetryEvent[]
+  reservations     Reservation[]
+  saleEvents       SaleEvent[]
+  inventoryImports InventoryImport[]
+  memoryBank       MemoryBank[]
+
+  @@map("stores")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  storeId     String   @map("store_id")
+  sku         String?  @map("sku")          // Código do produto (ex: NK-PEG-42-M)
+  description String
+  price       Float?   @map("price") // SQLite usa Float em vez de Decimal
+  quantity    Int
+
+  // ─── CRM: campos de estoque estruturado ───
+  brand      String?  @map("brand")
+  groupName  String?  @map("group_name")
+  size       String?  @map("size")
+  importId   String?  @map("import_id")    // FK sem constraint (performance)
+
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  store        Store         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  reservations Reservation[]
+
+  @@index([storeId])
+  @@index([storeId, groupName])
+  @@index([storeId, brand])
+  @@map("products")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  storeId   String   @map("store_id")
+  phone     String
+  name      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  store         Store          @relation(fields: [storeId], references: [id])
+  conversations Conversation[]
+  tickets       Ticket[]
+  reservations  Reservation[]
+
+  @@unique([storeId, phone])
+  @@index([storeId])
+  @@map("customers")
+}
+
+model Conversation {
+  id         String   @id @default(uuid())
+  storeId    String   @map("store_id")
+  customerId String   @map("customer_id")
+  status     String   @default("open") // open | closed | escalated | PENDING_HUMAN
+  startedAt  DateTime @default(now()) @map("started_at")
+  closedAt   DateTime? @map("closed_at")
+  botStatus    String    @default("BOT") @map("bot_status") // BOT | HUMAN
+  handoffUntil DateTime? @map("handoff_until")
+  alertSent    Json?     @map("alert_sent")
+
+  // ─── SOURCE: tracking origin of conversation ───
+  source     String   @default("manual") @map("source")
+
+  // ─── CRM ROUTING ───
+  conversationType String @default("sales") @map("conversation_type") // sales | sac
+  currentQueue     String? @map("current_queue") // SALES_RESERVE | SAC_SUPPORT | null
+
+  // ─── STATE MACHINE ───
+  currentState     String   @default("greeting") @map("current_state")
+  slots            Json     @map("slots")
+  messageCount     Int      @default(0) @map("message_count")
+  stallCount       Int      @default(0) @map("stall_count")
+  lastQuestionType String?  @map("last_question_type")
+  frustrationLevel Int      @default(0) @map("frustration_level")
+
+  // ─── CONCURRENCY LOCK ───
+  processingUntil DateTime? @map("processing_until")
+
+  store        Store         @relation(fields: [storeId], references: [id])
+  customer     Customer      @relation(fields: [customerId], references: [id])
+  messages     Message[]
+  reservations Reservation[]
+
+  @@index([storeId])
+  @@index([storeId, status])
+  @@index([storeId, currentState])
+  @@index([storeId, conversationType])
+  @@index([storeId, currentQueue])
+  @@index([processingUntil])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  storeId        String   @map("store_id")
+  conversationId String   @map("conversation_id")
+  direction      String   // inbound | outbound
+  content        String
+  waMessageId    String   @map("wa_message_id") // idempotência: único por store
+  timestamp      DateTime @default(now())
+  metadata       Json?    // Store intent, risk, debug info
+
+  store        Store        @relation(fields: [storeId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  @@unique([storeId, waMessageId]) // idempotência contra reenvio Meta
+  @@index([storeId])
+  @@index([conversationId])
+  @@map("messages")
+}
+
+model Ticket {
+  id             String   @id @default(uuid())
+  storeId        String   @map("store_id")
+  customerId     String   @map("customer_id")
+  conversationId String?  @map("conversation_id") // link opcional à conversa de origem
+  type           String   // sac | troca | garantia | duvida | reclamacao
+  status         String   @default("open") // open | in_progress | closed
+  notes          String?
+  queueType          String?   @map("queue_type")
+  priority           String    @default("NORMAL") @map("priority")
+  warmHandoffSummary String?   @map("warm_handoff_summary")
+  escalatedAt        DateTime? @map("escalated_at")
+  slaDeadline        DateTime? @map("sla_deadline")
+  slaBreached        Boolean   @default(false) @map("sla_breached")
+
+  email        String?
+  cpf          String?
+  orderId      String?  @map("order_id")
+  ticketNumber String?  @unique @map("ticket_number")  // ex: SAC-0001
+  category     String?  // troca | devolucao | garantia | duvida
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  closedAt  DateTime? @map("closed_at")
+
+  store    Store    @relation(fields: [storeId], references: [id])
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([storeId])
+  @@index([storeId, status])
+  @@index([storeId, queueType])
+  @@index([storeId, priority])
+  @@index([storeId, conversationId])
+  @@index([slaDeadline])
+  @@map("tickets")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  storeId   String   @map("store_id")
+  event     String   // ex: INTENT_CLASSIFIED, RISK_HIGH, HANDOFF, TICKET_CREATED
+  intent    String?  // sales | stock | sac | human
+  risk      String?  // low | medium | high
+  action    String?  // ex: RESPOND, HANDOFF, CREATE_TICKET
+  metadata  Json
+  timestamp DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@index([storeId])
+  @@index([storeId, event])
+  @@index([timestamp])
+  @@map("audit_logs")
+}
+
+model TelemetryEvent {
+  id             String             @id @default(uuid())
+  storeId        String             @map("store_id")
+  conversationId String             @map("conversation_id")
+  customerId     String             @map("customer_id")      // SHA-256 do telefone (LGPD)
+  requestId      String             @map("request_id")       // 1 UUID por ciclo de mensagem
+  channel        String             @default("whatsapp")
+  eventType      String             @map("event_type")       // Enum substituido por String para SQLite
+  payload        Json                                        // JSONB — estrutura varia por tipo
+  eventKey       String             @unique @map("event_key") // hash(convId+reqId+eventType) — dedupe
+  createdAt      DateTime           @default(now())          @map("created_at")
+
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@index([eventType, createdAt])
+  @@index([createdAt])
+  @@index([storeId, eventType])
+  @@index([requestId])
+  @@map("telemetry_events")
+}
+
+model Reservation {
+  id             String    @id @default(uuid())
+  storeId        String    @map("store_id")
+  customerId     String    @map("customer_id")
+  conversationId String    @map("conversation_id")
+  productId      String    @map("product_id")
+  quantity       Int       @default(1)
+  status         String    @default("active") // active | converted | expired | cancelled
+  reservedAt     DateTime  @default(now()) @map("reserved_at")
+  expiresAt      DateTime  @map("expires_at")     // mesmo dia 23:59 BRT
+  convertedAt    DateTime? @map("converted_at")
+
+  store        Store        @relation(fields: [storeId], references: [id])
+  customer     Customer     @relation(fields: [customerId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  product      Product      @relation(fields: [productId], references: [id])
+
+  @@index([storeId, status])
+  @@index([expiresAt])
+  @@index([conversationId])
+  @@map("reservations")
+}
+
+model SaleEvent {
+  id                 String   @id @default(uuid())
+  storeId            String   @map("store_id")
+  customerId         String   @map("customer_id")
+  conversationId     String   @map("conversation_id")
+  reservationId      String?  @map("reservation_id")  // optional link
+  productDescription String   @map("product_description")
+  productSku         String?  @map("product_sku")
+  quantity           Int      @default(1)
+  unitPrice          Float    @map("unit_price") // SQLite Float
+  totalPrice         Float    @map("total_price") // SQLite Float
+  soldAt             DateTime @default(now()) @map("sold_at")
+
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@index([storeId, soldAt])
+  @@index([customerId])
+  @@map("sale_events")
+}
+
+model InventoryImport {
+  id          String   @id @default(uuid())
+  storeId     String   @map("store_id")
+  fileName    String   @map("file_name")
+  totalRows   Int      @map("total_rows")
+  validRows   Int      @map("valid_rows")
+  invalidRows Int      @map("invalid_rows")
+  errors      Json?    // Lista de erros por linha
+  importedAt  DateTime @default(now()) @map("imported_at")
+
+  store Store @relation(fields: [storeId], references: [id])
+
+  @@index([storeId])
+  @@index([storeId, importedAt])
+  @@map("inventory_imports")
+}
+
+model MemoryBank {
+  id        String   @id @default(uuid())
+  storeId   String?  @map("store_id")      // null = exemplo global (cross-store)
+  intent    String                          // ex: SAC_ATRASO, SALES, OBJECTION
+  userMsg   String   @map("user_msg")      // mensagem original do cliente
+  agentMsg  String   @map("agent_msg")     // resposta exemplar do Cadu
+  score     Float                          // nota LLM Judge (0-100)
+  metadata  Json?                          // breakdown, feedback, state
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  store Store? @relation(fields: [storeId], references: [id])
+
+  @@index([intent, score(sort: Desc)])
+  @@index([storeId, intent])
+  @@map("memory_bank")
+}
+
+// ─── FEEDBACK CYCLE: Lições aprendidas do ciclo de feedback ───
+// Alimentado pelo PatternAnalyzer quando padrões de erro são identificados.
+// Usado pelo PromptPatcher para gerar correções automáticas nos prompts.
+
+model LearnedLesson {
+  id              String   @id @default(uuid())
+  
+  // Origem da lição
+  patternType     String   @map("pattern_type")    // repetition, escalation, etc.
+  sourceTestIds   Json?    @map("source_test_ids") // IDs dos testes que geraram
+  
+  // Conteúdo da lição
+  problem         String                          // Descrição do problema
+  fixInstruction  String   @map("fix_instruction") // Instrução de correção
+  
+  // Aplicação
+  targetIntent    String?  @map("target_intent")   // Intent afetada
+  targetState     String?  @map("target_state")    // Estado afetado
+  targetFile      String?  @map("target_file")     // Arquivo de prompt modificado
+  
+  // Métricas
+  occurrences     Int      @default(1)             // Quantas vezes ocorreu
+  severity        String   @default("medium")      // low, medium, high, critical
+  status          String   @default("pending")     // pending, applied, validated, rejected
+  
+  // Auditoria
+  createdAt       DateTime @default(now()) @map("created_at")
+  appliedAt       DateTime? @map("applied_at")
+  validatedAt     DateTime? @map("validated_at")
+  
+  @@index([patternType, status])
+  @@index([status, createdAt])
+  @@map("learned_lessons")
+}
