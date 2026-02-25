@@ -64,6 +64,7 @@ Para integração completa com WhatsApp, incluindo recebimento de mensagens e au
    - Troubleshooting de erros comuns
 
 2. **Variáveis obrigatórias** (ver `.env.example`):
+
    ```env
    WHATSAPP_API_TOKEN="seu_token_graph_api"
    WHATSAPP_PHONE_NUMBER_ID="seu_phone_number_id"
@@ -71,6 +72,7 @@ Para integração completa com WhatsApp, incluindo recebimento de mensagens e au
    ```
 
 3. **Teste outbound rápido:**
+
    ```bash
    # Testar envio via GET /api/test-send
    curl "http://localhost:3000/api/test-send?to=5585985963329&text=Olá%20teste"
@@ -105,47 +107,45 @@ curl "http://localhost:3000/api/test-send?to=5585985963329&text=teste"
 ## Troubleshooting
 
 ### Webhook não valida na Meta
+
 - Verificar se `WHATSAPP_VERIFY_TOKEN` em `.env` é idêntico ao registrado no dashboard Meta
 - Verificar se a URL do ngrok está correta (ex: `https://xxx.ngrok-free.app/api/webhook`)
 - Testar localmente: `curl "http://localhost:3000/api/webhook?hub.mode=subscribe&hub.verify_token=TEST_TOKEN&hub.challenge=abc123"`
 
 ### Mensagem não chega ao celular (GET /api/test-send retorna erro 400/401)
+
 - **401**: Token `WHATSAPP_API_TOKEN` inválido. Gerar novo no dashboard Meta.
 - **400**: Número de telefone inválido. Usar formato E.164: `5585985963329` (sem símbolos)
 - Verificar se o número está na lista de contatos de teste do Meta
 
 ### Mensagem recebida mas não responde
+
 - Verificar logs: `[WEBHOOK] ❌ Store não encontrada`. Criar Store no banco com `phoneNumberId` correto.
 - Verificar se PostgreSQL está rodando: `curl http://localhost:3000/api/health`
 
 ### Logs não aparecem
+
 - Executar com `npm run dev` (não `npm start`)
 - Verificar porta: app deve estar em `http://localhost:3000`
 
 Mais detalhes em [`WEBHOOK_SETUP.md`](./WEBHOOK_SETUP.md).
 
-## Princípios
+## Padrão Ouro (Golden Dataset)
 
-1. **Isolamento Absoluto** — Nenhuma query sem filtro de `store_id`
-2. **Stateless Engine** — Código decide fluxo; IA só escreve mensagem final
-3. **Logging de Auditoria** — Cada decisão da Engine é logada
+O sistema utiliza um **dataset padronizado** para garantir a qualidade das interações.
 
-## Estrutura
+- **Arquivo:** `data/golden_training_dataset.json`
+- **Injeção:** Exemplos são injetados via Few-Shot no `src/lib/prompt-system.ts`.
+- **Testes:** Cenários de regressão baseados neste dataset estão em `tests_harness/scenarios/golden_scenarios.ts`.
 
+Para rodar os testes de regressão:
+
+```bash
+npx tsx tests_harness/runner.ts
 ```
-wpp-conversion-agent/
-├── prisma/
-│   └── schema.prisma        # Schema do banco (multitenancy)
-├── src/
-│   ├── app/
-│   │   └── api/
-│   │       ├── health/
-│   │       │   └── route.ts  # Health check
-│   │       └── webhook/
-│   │           └── route.ts  # Webhook (GET/POST)
-│   └── lib/
-│       └── prisma.ts         # Prisma singleton
-├── docker-compose.yml
-├── Dockerfile
-└── .env.example
-```
+
+### Princípios do Padrão Ouro
+
+1. **Condução Ativa:** Sempre induzir à reserva após confirmar estoque.
+2. **Coleta Eficiente:** Pedir todos os dados de SAC (Nome, CPF, Pedido) em uma única mensagem.
+3. **Alternativas Pró-ativas:** Oferecer similares ou "Prateleira Infinita" se não houver estoque local.

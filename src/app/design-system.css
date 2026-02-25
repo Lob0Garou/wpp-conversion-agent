@@ -1,0 +1,668 @@
+/* ================================================================
+   CENTAURO CRM — Design System v3.0
+   Identidade visual Centauro · Energia · Alta Performance
+   ================================================================ */
+
+:root {
+
+  /* ── Brand Primary (Verde Centauro) ──────────────────────────── */
+  /* Cor principal para CTAs, sucesso e ações positivas            */
+  --color-brand-green: #00A651;
+  --color-brand-green-light: #E8F7EE;
+  --color-brand-green-dark: #007A3D;
+
+  /* ── Brand Secondary (Vermelho Centauro) ────────────────────── */
+  /* Usar APENAS em alertas críticos e PENDING_HUMAN               */
+  --color-brand: #E3000F;
+  --color-brand-hover: #C8000D;
+  --color-brand-subtle: rgba(227, 0, 15, 0.08);
+  --color-brand-border: rgba(227, 0, 15, 0.20);
+
+  /* ── Semantic Colors ─────────────────────────────────────────── */
+  --color-warning: #F5A623;
+  --color-warning-light: #FFF4E0;
+  --color-danger: #E53935;
+  --color-danger-light: #FDECEA;
+
+  /* ── Semantic Role Colors ───────────────────────────────────── */
+
+  /* IA Vendas — verde sucesso/conversão */
+  --color-ai-sales: #16A34A;
+  --color-ai-sales-bg: rgba(22, 163, 74, 0.08);
+  --color-ai-sales-border: rgba(22, 163, 74, 0.20);
+
+  /* IA SAC — violeta suporte */
+  --color-ai-sac: #7C3AED;
+  --color-ai-sac-bg: rgba(124, 58, 237, 0.08);
+  --color-ai-sac-border: rgba(124, 58, 237, 0.20);
+
+  /* Atendente Humano — azul */
+  --color-human: #2563EB;
+  --color-human-bg: rgba(37, 99, 235, 0.08);
+  --color-human-border: rgba(37, 99, 235, 0.20);
+
+  /* Transferência/Escalamento — vermelho marca (urgência) */
+  --color-transfer: #E3000F;
+  --color-transfer-bg: rgba(227, 0, 15, 0.08);
+  --color-transfer-border: rgba(227, 0, 15, 0.20);
+
+  /* Alias legado SAC */
+  --color-sac: var(--color-ai-sac);
+  --color-sac-bg: var(--color-ai-sac-bg);
+  --color-sac-border: var(--color-ai-sac-border);
+
+  /* ── Status Colors ──────────────────────────────────────────── */
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
+  --color-info: #2563EB;
+  --color-stock: #D97706;
+  --color-stock-bg: rgba(217, 119, 6, 0.08);
+
+  /* ── Light Theme Surfaces ───────────────────────────────────── */
+  --bg-base: #F8FAFC;
+  /* Fundo global */
+  --bg-surface: #FFFFFF;
+  /* Cards, painéis, colunas */
+  --bg-elevated: #F1F5F9;
+  /* Hover states, inputs */
+  --bg-overlay: #E2E8F0;
+  /* Separadores */
+  --bg-input: #F8FAFC;
+  /* Inputs */
+
+  /* ── Borders ────────────────────────────────────────────────── */
+  --border-subtle: #F1F5F9;
+  --border-default: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --border-focus: #E3000F;
+
+  /* ── Typography ─────────────────────────────────────────────── */
+  --text-primary: #1F2937;
+  --text-secondary: #4B5563;
+  --text-muted: #9CA3AF;
+  --text-disabled: #D1D5DB;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Type scale */
+  --text-xs: 0.6875rem;
+  /* 11px — metadados, timestamps */
+  --text-sm: 0.8125rem;
+  /* 13px — labels, corpo */
+  --text-base: 0.875rem;
+  /* 14px — padrão */
+  --text-lg: 1rem;
+  /* 16px — subtítulos */
+  --text-xl: 1.25rem;
+  /* 20px — títulos */
+  --text-2xl: 1.5rem;
+  /* 24px — KPI grandes */
+
+  /* ── Spacing Scale (base 4px) ───────────────────────────────── */
+  --space-1: 0.25rem;
+  /* 4px  */
+  --space-2: 0.5rem;
+  /* 8px  */
+  --space-3: 0.75rem;
+  /* 12px */
+  --space-4: 1rem;
+  /* 16px */
+  --space-5: 1.25rem;
+  /* 20px */
+  --space-6: 1.5rem;
+  /* 24px */
+  --space-8: 2rem;
+  /* 32px */
+
+  /* ── Radius ─────────────────────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ── Backgrounds for Rings/Dots ─────────────────────────────── */
+  --bg-ring: #FFFFFF;
+
+  /* ── Shadows (light theme — muito subtis) ───────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.05);
+
+  /* Legado: accent-black para componentes que ainda o usam */
+  --accent-black: #1F2937;
+  --accent-red: #E3000F;
+}
+
+/* ================================================================
+   DARK THEME OVERRIDES
+   Activated by adding class="dark" to <html>
+   ================================================================ */
+
+.dark {
+
+  /* ── Dark Surfaces (Figma: bg-main / bg-card) ───────────────── */
+  --bg-base: #0f1117;
+  /* Deep dark — page background         */
+  --bg-surface: #1a1d23;
+  /* Cards, panels, columns              */
+  --bg-elevated: #15171c;
+  /* Hover states, inputs, slightly diff */
+  --bg-overlay: #2e3440;
+  /* Dividers, separators, overlays      */
+  --bg-input: #0f1117;
+  /* Input backgrounds                   */
+
+  /* ── Borders (dark) ─────────────────────────────────────────── */
+  --border-subtle: #1f2430;
+  --border-default: #2e3440;
+  --border-strong: #3d4a5c;
+  --border-focus: #E3000F;
+
+  /* ── Typography (dark) ──────────────────────────────────────── */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-disabled: #475569;
+
+  /* ── Semantic Role Colors (dark — lighter/brighter) ─────────── */
+
+  --color-ai-sales: #10b981;
+  --color-ai-sales-bg: rgba(16, 185, 129, 0.15);
+  --color-ai-sales-border: rgba(16, 185, 129, 0.25);
+
+  --color-ai-sac: #a78bfa;
+  --color-ai-sac-bg: rgba(167, 139, 250, 0.15);
+  --color-ai-sac-border: rgba(167, 139, 250, 0.25);
+
+  --color-human: #60a5fa;
+  --color-human-bg: rgba(96, 165, 250, 0.15);
+  --color-human-border: rgba(96, 165, 250, 0.25);
+
+  --color-transfer: #E3000F;
+  --color-transfer-bg: rgba(227, 0, 15, 0.15);
+  --color-transfer-border: rgba(227, 0, 15, 0.30);
+
+  /* SAC alias */
+  --color-sac: var(--color-ai-sac);
+  --color-sac-bg: var(--color-ai-sac-bg);
+  --color-sac-border: var(--color-ai-sac-border);
+
+  /* ── Brand (vermelho Centauro — equal in dark/light) ─────────── */
+  --color-brand: #E3000F;
+  --color-brand-hover: #C8000D;
+  --color-brand-subtle: rgba(227, 0, 15, 0.12);
+  --color-brand-border: rgba(227, 0, 15, 0.28);
+
+  /* ── Status Colors (dark variants) ──────────────────────────── */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #f87171;
+  --color-info: #60a5fa;
+  --color-stock: #f59e0b;
+  --color-stock-bg: rgba(245, 158, 11, 0.12);
+
+  /* ── Backgrounds for Rings/Dots (dark) ──────────────────────── */
+  --bg-ring: #1a1d23;
+
+  /* ── Shadows (more pronounced on dark bg) ───────────────────── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.40), 0 1px 2px rgba(0, 0, 0, 0.30);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.30), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.40), 0 4px 6px rgba(0, 0, 0, 0.30);
+
+  /* Legado */
+  --accent-black: #f8fafc;
+  --accent-red: #E3000F;
+}
+
+/* ── Custom Scrollbar (light) ────────────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* Dark variant scrollbar */
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* ── Elite Card Base ─────────────────────────────────────────── */
+.elite-card {
+  background-color: #1a1d23;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+}
+
+.elite-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  z-index: 20;
+}
+
+/* ── Urgent / Critical Card ───────────────────────────────────── */
+.anim-urgent-card {
+  animation: urgent-shake 0.8s cubic-bezier(.36, .07, .19, .97) infinite both,
+    urgent-border-pulse 1.2s infinite;
+  position: relative;
+  overflow: hidden;
+  border-width: 2px !important;
+  z-index: 60;
+  border-color: #ef4444 !important;
+}
+
+.urgent-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: #E31D1A;
+  animation: overlay-pulse 1.2s infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── Chat Scroll ──────────────────────────────────────────────── */
+.chat-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-scroll::-webkit-scrollbar-thumb {
+  background-color: #e2e8f0;
+  border-radius: 20px;
+}
+
+.dark .chat-scroll::-webkit-scrollbar-thumb {
+  background-color: #334155;
+}
+
+/* ── Keyframe Animations ─────────────────────────────────────── */
+@keyframes typing-dot {
+
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes slide-in-top {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(16px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes urgent-shake {
+  0% {
+    transform: translate(1px, 1px) rotate(0deg);
+  }
+
+  10% {
+    transform: translate(-1px, -2px) rotate(-1deg);
+  }
+
+  20% {
+    transform: translate(-3px, 0px) rotate(1deg);
+  }
+
+  30% {
+    transform: translate(3px, 2px) rotate(0deg);
+  }
+
+  40% {
+    transform: translate(1px, -1px) rotate(1deg);
+  }
+
+  50% {
+    transform: translate(-1px, 2px) rotate(-1deg);
+  }
+
+  60% {
+    transform: translate(-3px, 1px) rotate(0deg);
+  }
+
+  70% {
+    transform: translate(3px, 1px) rotate(-1deg);
+  }
+
+  80% {
+    transform: translate(-1px, -1px) rotate(1deg);
+  }
+
+  90% {
+    transform: translate(1px, 2px) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(1px, -2px) rotate(-1deg);
+  }
+}
+
+@keyframes urgent-border-pulse {
+  0% {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2);
+  }
+
+  50% {
+    border-color: #ff0000;
+    box-shadow: 0 0 25px 8px rgba(255, 0, 0, 0.5);
+  }
+
+  100% {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2);
+  }
+}
+
+@keyframes overlay-pulse {
+  0% {
+    opacity: 0.05;
+  }
+
+  50% {
+    opacity: 0.15;
+  }
+
+  100% {
+    opacity: 0.05;
+  }
+}
+
+@keyframes badge-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0px currentColor;
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+
+  100% {
+    box-shadow: 0 0 0 0px transparent;
+  }
+}
+
+/* ── Animation Utility Classes ───────────────────────────────── */
+.animate-typing-1 {
+  animation: typing-dot 1s ease-in-out infinite 0ms;
+}
+
+.animate-typing-2 {
+  animation: typing-dot 1s ease-in-out infinite 160ms;
+}
+
+.animate-typing-3 {
+  animation: typing-dot 1s ease-in-out infinite 320ms;
+}
+
+.animate-slide-top {
+  animation: slide-in-top 0.22s ease-out both;
+}
+
+.animate-slide-right {
+  animation: slide-in-right 0.22s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.15s ease-out both;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.20s ease-out both;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+/* ── Chat Bubble Styles ──────────────────────────────────────── */
+
+/* Client bubble - white bg, left-aligned */
+.bubble-client {
+  background: var(--bg-surface);
+  border: 1px solid #E0E0E0;
+  border-radius: 4px 16px 16px 16px;
+  align-self: flex-start;
+  color: var(--text-primary);
+}
+
+/* Cadu AI bubble - brand light bg, right-aligned */
+.bubble-agent {
+  background: var(--color-brand-green-light);
+  border-radius: 16px 4px 16px 16px;
+  align-self: flex-end;
+  color: var(--text-primary);
+}
+
+/* Human override bubble - info light bg with left border */
+.bubble-human {
+  background: #E3F0FF;
+  border-left: 3px solid #1565C0;
+  border-radius: 4px 16px 16px 16px;
+  align-self: flex-end;
+  color: var(--text-primary);
+}
+
+/* Timestamp below bubbles */
+.bubble-timestamp {
+  font-size: 11px;
+  color: #9E9E9E;
+  font-weight: 400;
+}
+
+/* ── Reply Textarea Styles ───────────────────────────────────── */
+.reply-textarea {
+  min-height: 80px;
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.reply-textarea:focus {
+  border-color: var(--color-brand-green);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-brand-green-light);
+}
+
+/* ── Quick Action Chips ───────────────────────────────────────── */
+.quick-action-chip {
+  border: 1.5px solid var(--color-brand-green);
+  color: var(--color-brand-green);
+  background: var(--bg-surface);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quick-action-chip:hover {
+  background: var(--color-brand-green-light);
+}
+
+.quick-action-chip:active {
+  background: var(--color-brand-green);
+  color: var(--bg-surface);
+}
+
+/* Quick actions grid - 2x2 */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-2);
+}
+
+/* ── Fechar Venda Button ─────────────────────────────────────── */
+.btn-close-sale {
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: 12px;
+  background: var(--color-brand-green);
+  color: var(--bg-surface);
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.btn-close-sale:hover {
+  background: var(--color-brand-green-dark);
+}
+
+/* ── Potential Banner ─────────────────────────────────────────── */
+.potential-banner {
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: var(--space-4);
+}
+
+.potential-high {
+  background: var(--color-brand-green-light);
+  color: var(--color-brand-green-dark);
+  border-left: 4px solid var(--color-brand-green);
+}
+
+.potential-medium {
+  background: var(--color-warning-light);
+  color: #7A5000;
+  border-left: 4px solid var(--color-warning);
+}
+
+.potential-low {
+  background: #F5F5F5;
+  color: var(--text-muted);
+  border-left: 4px solid #9E9E9E;
+}
+
+/* ── Novo Cliente Tag ─────────────────────────────────────────── */
+.tag-new-client {
+  background: var(--color-warning-light);
+  color: #7A5000;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* ── Sidebar Section Styles ───────────────────────────────────── */
+.sidebar-section {
+  padding: var(--space-4);
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.sidebar-section:last-child {
+  border-bottom: none;
+}
+
+/* ── Typography Classes ───────────────────────────────────────── */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.data-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.critical-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.dark .critical-value {
+  color: var(--text-primary);
+}

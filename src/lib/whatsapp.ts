@@ -38,6 +38,11 @@ export async function sendTextMessage(
     text: string,
     isRetry: boolean = false
 ): Promise<SendMessageResult> {
+    if (process.env.BLOCK_WHATSAPP_SEND === 'true' || process.env.ENV === 'TEST') {
+        console.log(`[WHATSAPP-SANDBOX] 🛡️ Envio de texto bloqueado para ${to} (Texto: "${text.substring(0, 30)}...")`);
+        return { success: true, data: { messages: [{ id: `sandbox-msg-${Date.now()}` }] }, httpStatus: 200 };
+    }
+
     const token = process.env.WHATSAPP_API_TOKEN;
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
@@ -156,3 +161,91 @@ export async function sendTextMessage(
     }
 }
 
+
+
+/**
+ * Marks a message as read in WhatsApp (Blue Ticks)
+ */
+export async function markMessageAsRead(messageId: string) {
+    if (process.env.BLOCK_WHATSAPP_SEND === 'true' || process.env.ENV === 'TEST') {
+        console.log(`[WHATSAPP-SANDBOX] 🛡️ Marcação de leitura bloqueada para msg ${messageId}`);
+        return;
+    }
+
+    const { token, phoneNumberId } = validateWhatsAppCredentials();
+    const url = `https://graph.facebook.com/${WHATSAPP_API_VERSION}/${phoneNumberId}/messages`;
+
+    const body = {
+        messaging_product: "whatsapp",
+        status: "read",
+        message_id: messageId,
+    };
+
+    try {
+        await fetch(url, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        });
+        // Console log removed to keep logs clean, or use debug level
+    } catch (error) {
+        console.error("[WHATSAPP] ❌ Failed to mark message as read:", error);
+    }
+}
+
+/**
+ * Sends a "typing..." or "recording..." state to the user.
+ * Helps with perceived latency.
+ * @param to Phone number
+ * @param state 'composing' (typing) or 'recording' (recording audio)
+ */
+/**
+ * Sends a "typing..." or "recording..." sender action to the user.
+ * Helps with perceived latency — the indicator lasts up to 25s or until next message.
+ * Fire-and-forget: caller should NOT await this to avoid blocking the pipeline.
+ *
+ * Correct payload per Meta docs: { messaging_product, recipient_type, to, sender_action }
+ * Note: NO "type" field — that was a bug that caused 400 errors from Graph API.
+ */
+export async function sendSenderAction(to: string, state: "typing_on" | "typing_off" | "read" = "typing_on") {
+    if (process.env.BLOCK_WHATSAPP_SEND === 'true' || process.env.ENV === 'TEST') {
+        console.log(`[WHATSAPP-SANDBOX] 🛡️ Sender action "${state}" bloqueada para ${to}`);
+        return;
+    }
+
+    const token = process.env.WHATSAPP_API_TOKEN;
+    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+    if (!token || !phoneNumberId) {
+        console.warn("[WHATSAPP] ⚠️ sendSenderAction: credenciais não configuradas");
+        return;
+    }
+
+    const url = `https://graph.facebook.com/${WHATSAPP_API_VERSION}/${phoneNumberId}/messages`;
+    const normalizedTo = to.replace(/\D/g, "");
+
+    // Correct body per Meta API docs — no "type" field for sender_action
+    const body = {
+        messaging_product: "whatsapp",
+        recipient_type: "individual",
+        to: normalizedTo,
+        sender_action: state,
+    };
+
+    try {
+        await fetch(url, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        });
+        console.log(`[WHATSAPP] ✍️ Sender action "${state}" sent to ${normalizedTo.slice(-4).padStart(normalizedTo.length, '*')}`);
+    } catch (error) {
+        console.error(`[WHATSAPP] ❌ Failed to send sender action "${state}":`, error);
+    }
+}

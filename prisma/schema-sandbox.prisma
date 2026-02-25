@@ -101,6 +101,9 @@ model Conversation {
   botStatus    String    @default("BOT") @map("bot_status") // BOT | HUMAN
   handoffUntil DateTime? @map("handoff_until")
   alertSent    Json?     @map("alert_sent")
+  
+  // ─── LANGGRAPH STATE (Persistência Fase 5) ───
+  langgraphState Json?   @map("langgraph_state")
 
   // ─── SOURCE: tracking origin of conversation ───
   source     String   @default("manual") @map("source")

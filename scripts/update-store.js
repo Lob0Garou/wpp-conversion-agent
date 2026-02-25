@@ -24,7 +24,11 @@ async function main() {
 
     const updated = await prisma.store.update({
         where: { id: store.id },
-        data: { phoneNumberId: realPhoneId },
+        data: {
+            phoneNumberId: realPhoneId,
+            addressText: process.env.STORE_ADDRESS_TEXT || undefined,
+            mapsUrl: process.env.STORE_MAPS_URL || undefined,
+        },
     });
 
     console.log("✅ Store updated:", updated);

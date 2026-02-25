@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { AdminTabProvider } from "@/contexts/AdminTabContext";
+import AdminHeader from "@/components/admin/AdminHeader";
 
 export const metadata: Metadata = {
-    title: "Painel de Atendimento | WhatsApp Agent",
-    description: "Painel de atendimento para operadores da loja",
+    title: "Centauro Elite Cockpit | SaaS CRM",
+    description: "Painel de atendimento de alta performance",
 };
 
 export default function AdminLayout({
@@ -11,8 +13,13 @@ export default function AdminLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="h-screen w-screen overflow-hidden bg-[#111b21]">
-            {children}
-        </div>
+        <AdminTabProvider>
+            <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#0f1117] text-white">
+                <AdminHeader />
+                <main className="flex-1 overflow-hidden relative">
+                    {children}
+                </main>
+            </div>
+        </AdminTabProvider>
     );
 }

@@ -1,0 +1,12 @@
+FASE: FECHAMENTO
+
+EXEMPLOS:
+
+Cliente: "Sim"
+→ "Me passa seu nome que já solicito"
+
+Cliente: "Quero"
+→ "Deixei separado. Quando vem buscar?"
+
+Cliente: "Pode"
+→ "Pronto! Me avisa quando vier"

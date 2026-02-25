@@ -1,0 +1,35 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "next-dev",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/next/dist/bin/next", "dev", "--port", "3001"],
+      "port": 3001
+    },
+    {
+      "name": "next-cloudflare",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/dev-cf.js"],
+      "port": 8080
+    },
+    {
+      "name": "sandbox",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/dev-sandbox.js"],
+      "port": 8081
+    },
+    {
+      "name": "sandbox-chat",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["scripts/dev-sandbox-chat.js"],
+      "port": 8081
+    },
+    {
+      "name": "prisma-studio",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["prisma", "studio", "--schema=prisma/schema-sandbox.prisma"],
+      "port": 5555
+    }
+  ]
+}

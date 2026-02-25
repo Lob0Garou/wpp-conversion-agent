@@ -1,4 +1,3 @@
-const ngrok = require('ngrok');
 const { spawn, execSync } = require('child_process');
 const dotenv = require('dotenv');
 const path = require('path');
@@ -8,75 +7,90 @@ const http = require('http');
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const PORT = 8080;
-
-async function getRunningTunnels() {
-    return new Promise((resolve, reject) => {
-        const req = http.request({
-            hostname: '127.0.0.1',
-            port: 4040,
-            path: '/api/tunnels',
-            method: 'GET',
-        }, (res) => {
-            let data = '';
-            res.on('data', chunk => data += chunk);
-            res.on('end', () => {
-                try {
-                    const tunnels = JSON.parse(data).tunnels;
-                    resolve(tunnels);
-                } catch (e) {
-                    resolve([]);
-                }
-            });
-        });
-        req.on('error', () => resolve([]));
-        req.end();
-    });
-}
-
-function killPort(port) {
-    try {
-        // Try cross-platform kill via npx kill-port
-        // Using execSync to block until done
-        console.log(`🧹 Limpando porta ${port}...`);
-        execSync(`npx kill-port ${port}`, { stdio: 'ignore' });
-    } catch (e) {
-        // Ignore error if port not in use or npx fails
-    }
-}
+const NGROK_API_URL = 'http://127.0.0.1:4040/api/tunnels';
 
 /**
  * Aggressive Ngrok cleanup: kills all ngrok processes and reclaims ports 4040 & 8080
  * Ensures a clean slate before starting new tunnel
  */
 function cleanNgrokCompletely() {
-    console.log('\x1b[36m%s\x1b[0m', '🔪 Limpeza agressiva de processos Ngrok...');
+    console.log('\x1b[36m%s\x1b[0m', '🔪 Limpeza agressiva de processos Ngrok via Sistema Operacional...');
 
-    // 1. Kill port 4040 (ngrok API endpoint)
     try {
-        execSync('npx kill-port 4040', { stdio: 'ignore' });
-        console.log('\x1b[90m%s\x1b[0m', '   ✓ Porta 4040 limpa');
+        // Force kill port 8080 using system commands (more reliable on WSL than npx kill-port)
+        execSync('fuser -k 8080/tcp', { stdio: 'ignore' });
+        console.log('\x1b[90m%s\x1b[0m', '   ✓ Porta 8080 liberada (fuser)');
+    } catch (e) {
+        // fuser returns non-zero if no process was found, which is fine
+    }
+
+    try {
+        execSync('fuser -k 4040/tcp', { stdio: 'ignore' });
+        console.log('\x1b[90m%s\x1b[0m', '   ✓ Porta 4040 liberada (fuser)');
     } catch (e) { }
 
-    // 2. Kill port 8080 (our Next.js dev server)
+    // Fallback to npx kill-port just in case fuser isn't there
+    try { execSync('npx kill-port 8080', { stdio: 'ignore' }); } catch (e) { }
+    try { execSync('npx kill-port 4040', { stdio: 'ignore' }); } catch (e) { }
+
+    // Kill ngrok binary
     try {
-        execSync('npx kill-port 8080', { stdio: 'ignore' });
-        console.log('\x1b[90m%s\x1b[0m', '   ✓ Porta 8080 limpa');
+        execSync('killall -9 ngrok', { stdio: 'ignore' });
+        console.log('\x1b[90m%s\x1b[0m', '   ✓ Processos Ngrok terminados');
     } catch (e) { }
 
-    // 3. Kill ngrok processes by name (Linux/WSL2)
-    try {
-        execSync('pkill -f "ngrok|tunnel"', { stdio: 'ignore' });
-        console.log('\x1b[90m%s\x1b[0m', '   ✓ Processos Ngrok/Tunnel terminados');
-    } catch (e) { }
-
-    // 4. Small delay to let OS reclaim ports (critical for WSL2 timing)
+    // Wait loop to ensure port 8080 is actually free
     const start = Date.now();
-    while (Date.now() - start < 2000) { } // 2s blocking wait
+    while (Date.now() - start < 3000) {
+        // Blocking wait to let OS reclaim sockets
+    }
 
-    console.log('\x1b[32m%s\x1b[0m', '✅ Limpeza completa concluída\n');
+    console.log('\x1b[32m%s\x1b[0m', '✅ Portas liberadas e prontas.\n');
 }
 
-async function startDevTunnel() {
+/**
+ * Polls the Ngrok local API to retrieve the public URL
+ */
+async function getNgrokUrl() {
+    return new Promise((resolve, reject) => {
+        const req = http.get(NGROK_API_URL, (res) => {
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                try {
+                    const response = JSON.parse(data);
+                    if (response.tunnels && response.tunnels.length > 0) {
+                        resolve(response.tunnels[0].public_url);
+                    } else {
+                        reject('Nenhum túnel ativo encontrado ainda...');
+                    }
+                } catch (e) {
+                    reject(e);
+                }
+            });
+        });
+
+        req.on('error', (e) => reject(e));
+    });
+}
+
+async function waitForTunnel() {
+    let retries = 20; // Try for 20 seconds
+    while (retries > 0) {
+        try {
+            const url = await getNgrokUrl();
+            if (url) return url;
+        } catch (e) {
+            // Wait 1s and retry
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        process.stdout.write('.');
+        retries--;
+    }
+    throw new Error('Timeout aguardando URL do Ngrok (verifique sua conexão ou token)');
+}
+
+function startDevTunnel() {
     const authToken = process.env.NGROK_AUTHTOKEN;
 
     if (!authToken) {
@@ -85,26 +99,20 @@ async function startDevTunnel() {
         process.exit(1);
     }
 
-    // CRITICAL: Aggressive cleanup before starting anything
+    // 1. Aggressive cleanup
     cleanNgrokCompletely();
 
-    // Start the Next.js dev server immediately
+    // 2. Start Next.js dev server
     console.log('\x1b[36m%s\x1b[0m', `🚀 Iniciando servidor de desenvolvimento na porta ${PORT}...`);
-
-    // NOTE: Switched to 'npx next dev' without 'exec' to see if it handles signals better
-    // Removed --no-turbopack as it is not a valid option
     const devServer = spawn('npx', ['next', 'dev', '-H', '0.0.0.0', '-p', PORT.toString()], {
         stdio: 'inherit',
         shell: true,
-        cwd: process.cwd(),  // ← EXPLICIT: force cwd context
         env: {
             ...process.env,
             PORT: PORT.toString(),
             TURBOPACK: '0',
             NEXT_SKIP_BUILD: '0',
-            // Bypass Next.js workspace detection (WSL2 issue fix)
             NEXT_PRIVATE_ROOT: process.cwd(),
-            // Tell Turbopack to use only current dir
             TURBOPACK_ROOT: process.cwd(),
         }
     });
@@ -114,29 +122,29 @@ async function startDevTunnel() {
         process.exit(1);
     });
 
-    try {
-        // After aggressive cleanup, attempt new tunnel connection
-        // If this fails, it's a real error (auth, network, etc.), not a zombie process
-        let url;
-        try {
-            url = await ngrok.connect({
-                addr: PORT,
-                authtoken: authToken,
-            });
-        } catch (error) {
-            console.error('\x1b[31m%s\x1b[0m', '❌ Ngrok connection failed even after cleanup');
-            console.error('\x1b[31m%s\x1b[0m', `   Erro: ${error.message}`);
-            console.log('\x1b[33m%s\x1b[0m', '\n💡 Verifique:');
-            console.log('\x1b[33m%s\x1b[0m', '   1. NGROK_AUTHTOKEN válido no .env');
-            console.log('\x1b[33m%s\x1b[0m', '   2. Conexão de internet');
-            console.log('\x1b[33m%s\x1b[0m', '   3. Portas 4040 e 8080 livres (use: lsof -i :4040)');
-            process.exit(1);
+    // 3. Start Ngrok manually via npx
+    console.log('\x1b[36m%s\x1b[0m', '🚀 Iniciando túnel Ngrok (via npx)...');
+
+    // NOTE: Using 'inherit' for stdio would mess up our console box, so we ignore it or pipe it logs are needed
+    // We add the authtoken explicitly or rely on config, but environment variable NGROK_AUTHTOKEN should work for npx ngrok too
+    const ngrokProcess = spawn('npx', ['ngrok', 'http', PORT.toString()], {
+        stdio: 'ignore', // We don't want ngrok's TUI taking over
+        shell: true,
+        env: {
+            ...process.env,
+            NGROK_AUTHTOKEN: authToken
         }
+    });
 
-        // Clear console and print header
+    ngrokProcess.on('error', (err) => {
+        console.error('\x1b[31m%s\x1b[0m', '❌ Falha ao iniciar Ngrok:', err);
+    });
+
+    // 4. Poll for the URL
+    console.log('\x1b[90m%s\x1b[0m', '⏳ Aguardando URL do túnel...');
+
+    waitForTunnel().then(url => {
         console.clear();
-
-        // Nice formatted box
         console.log('\x1b[32m%s\x1b[0m', '┌──────────────────────────────────────────────────────────────┐');
         console.log('\x1b[32m%s\x1b[0m', '│                                                              │');
         console.log('\x1b[32m%s\x1b[0m', '│   ✅ NGROK TUNNEL ATIVO!                                     │');
@@ -151,19 +159,32 @@ async function startDevTunnel() {
         console.log('\n');
         console.log('\x1b[90m%s\x1b[0m', '⬇️ LOGS DO SERVIDOR E WEBHOOK ABAIXO ⬇️');
         console.log('\x1b[90m%s\x1b[0m', '────────────────────────────────────────');
+    }).catch(err => {
+        console.error('\n\x1b[31m%s\x1b[0m', err.message);
+        cleanupAndExit();
+    });
 
-        // Handle clean exit
-        process.on('SIGINT', async () => {
-            console.log('\n\x1b[33m%s\x1b[0m', '🛑 Encerrando túnel e servidor...');
-            await ngrok.kill(); // Kill the one we manage
+    // Valid Clean Exit
+    const cleanupAndExit = () => {
+        console.log('\n\x1b[33m%s\x1b[0m', '🛑 Encerrando túnel e servidor...');
+        try {
+            if (devServer) process.kill(-devServer.pid); // Kill process group if possible
+        } catch (e) {
             devServer.kill();
-            process.exit(0);
-        });
+        }
 
-    } catch (error) {
-        console.error('\x1b[31m%s\x1b[0m', '❌ Erro ao iniciar o túnel:', error);
-        // process.exit(1); 
-    }
+        try {
+            // Specific kill for the ngrok process we started
+            // Since we use shell:true, the pid might be the shell. 
+            // Just aggressive cleanup again is safest.
+            execSync('killall -9 ngrok', { stdio: 'ignore' });
+        } catch (e) { }
+
+        process.exit(0);
+    };
+
+    process.on('SIGINT', cleanupAndExit);
+    process.on('SIGTERM', cleanupAndExit);
 }
 
 startDevTunnel();

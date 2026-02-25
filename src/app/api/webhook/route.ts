@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifyWebhookSignature, extractMessage } from "@/lib/webhook";
-import { sendTextMessage } from "@/lib/whatsapp";
-import { generateAIResponse } from "@/lib/ai";
+import { sendTextMessage, markMessageAsRead, sendSenderAction } from "@/lib/whatsapp";
 import { buildContext } from "@/lib/context-builder";
-import { composeSystemPrompt } from "@/lib/prompt-system";
-import { validateResponse } from "@/lib/guardrails";
+
 import { determineNextState } from "@/lib/state-transitions";
 import { detectFrustration } from "@/lib/intent-classifier";
+import { hasClosingSignal as hasLexicalClosingSignal } from "@/lib/slot-extractor";
+import { acquireLock, releaseLock } from "@/lib/concurrency";
+import { emitTelemetry, hashPhone, logShadowAudit, logWebhookEvent } from "@/lib/telemetry";
+import { randomUUID } from "crypto";
 import {
     updateSlots,
     transitionTo,
@@ -15,7 +17,23 @@ import {
     resetStall,
     incrementFrustration,
     incrementMessageCount,
+    isHumanLocked,
 } from "@/lib/state-manager";
+import { isAffirmativeResponse } from "@/lib/stock-agent";
+import { orchestrate, type OrchestratorResult } from "@/lib/orchestrator";
+import {
+    generateWarmHandoffSummary,
+    calculateSLADeadline,
+    type HandoffContext
+} from "@/lib/handoff-router";
+import { humanLoopConfig } from "@/config/humanLoop.config";
+import { evaluateHandoff, type HandoffReason } from "@/services/humanLoopEngine";
+import { buildSaleAlertMessage, buildHandoffMessage, buildSACAlertMessage } from "@/services/humanLoopMessages";
+import { lockToHuman } from "@/lib/state-manager";
+import { getMissingSacData, buildSacQuestion, hasAnyMissingSacData } from "@/services/sacMinimum";
+import { isChatOnlyMode, shouldSkipTelemetry, chatLog } from "@/lib/chat-mode";
+import { saveToOutbox } from "@/lib/chat-outbox";
+import { getAgentRuntimeForConversation } from "@/lib/agent/config";
 
 // ─── Module-level debug logging ───
 import * as fs from "fs";
@@ -26,6 +44,44 @@ function debugLog(msg: string) {
     } catch {
         // Silently ignore file write errors in production
     }
+}
+
+function shouldBypassSacMinimumForPolicyInfo(intent: string, currentState: string, userMessage: string): boolean {
+    if (intent === "INFO" || intent.startsWith("INFO_")) return true;
+    if (currentState !== "support_sac") return false;
+
+    const normalized = userMessage
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+
+    const explicitInfoSignals = [
+        "so uma informacao",
+        "apenas uma informacao",
+        "era so uma informacao",
+        "e so uma informacao",
+        "so uma duvida",
+        "apenas uma duvida",
+        "nao foi pedido",
+        "nao e defeito",
+        "nao e pedido",
+    ];
+
+    const policySignals = [
+        "troca",
+        "presente",
+        "retirar",
+        "retirada",
+        "marido",
+        "esposa",
+        "terceiro",
+        "outra pessoa",
+        "token",
+        "liberacao",
+    ];
+
+    return explicitInfoSignals.some((s) => normalized.includes(s)) &&
+        policySignals.some((s) => normalized.includes(s));
 }
 
 // Validar ambiente ao iniciar
@@ -60,127 +116,266 @@ export async function GET(request: NextRequest) {
 
 // ─── POST: Receber mensagens do WhatsApp ───
 export async function POST(request: NextRequest) {
-    // 1. Ler e validar assinatura
-    const rawBody = await request.text();
-    const appSecret = process.env.WHATSAPP_APP_SECRET;
+    const requestStartTime = Date.now();
+    let rawBody = "";
+    let conversationId = "unknown";
+    let storeId = "unknown";
 
-    console.log("[WEBHOOK] 📥 POST recebido (Raw Body size):", rawBody.length);
+    // Verificar modo CHAT_ONLY para logs simplificados
+    const chatOnlyAtEntry = isChatOnlyMode();
 
-    if (appSecret) {
-        const signature = request.headers.get("x-hub-signature-256");
-        if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
-            console.warn("[WEBHOOK] ❌ Assinatura inválida (X-Hub-Signature-256)");
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    try {
+        rawBody = await request.text();
+
+        // Log simplificado com tags em CHAT_ONLY
+        if (chatOnlyAtEntry) {
+            // Extract basic message info for logging
+            let inboundMsg = "";
+            try {
+                const body = JSON.parse(rawBody);
+                const msg = body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+                if (msg?.text?.body) {
+                    inboundMsg = msg.text.body.substring(0, 30);
+                    conversationId = `pending_${msg.from?.slice(-8) || "unknown"}`;
+                }
+            } catch { /* ignore */ }
+            console.log(`[INBOUND] msg="${inboundMsg}..." phone=${conversationId.split('_')[1] || 'unknown'}`);
+        } else {
+            console.log("[WEBHOOK] 📥 POST Payload RAW:", rawBody);
         }
+
+        // Extract conversation and store info for logging if available
+        try {
+            const body = JSON.parse(rawBody);
+            const value = body.entry?.[0]?.changes?.[0]?.value;
+            if (value?.messages?.[0]) {
+                const msg = value.messages[0];
+                // Try to find conversation - this is a best effort since we don't have DB access yet
+                conversationId = `pending_${msg.from.slice(-8)}`;
+            }
+        } catch {
+            // Ignore parsing errors at this stage
+        }
+    } catch (readError) {
+        console.error("[WEBHOOK] ❌ Falha ao ler corpo da requisição:", readError);
+
+        // Log webhook error
+        logWebhookEvent({
+            conversationId,
+            storeId,
+            event: "ERROR",
+            message: "Failed to read request body",
+            processingTimeMs: Date.now() - requestStartTime,
+            result: "error",
+        });
+
+        return NextResponse.json({ error: "Read Error" }, { status: 400 });
     }
 
-    // 2. Parsear JSON
+    // Log webhook entry
+    logWebhookEvent({
+        conversationId,
+        storeId,
+        event: "ENTRY",
+        message: "Webhook received",
+        processingTimeMs: Date.now() - requestStartTime,
+        result: "success",
+    });
+
+    // 1. Validar Assinatura
+    const appSecret = process.env.WHATSAPP_APP_SECRET;
+    const isTestMode = process.env.TEST_MODE === "true" || isChatOnlyMode();
+
+    if (appSecret && !isTestMode) {
+        // Em modo normal, exige assinatura válida
+        const signature = request.headers.get("x-hub-signature-256");
+        if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
+            console.warn("[WEBHOOK] ❌ Assinatura inválida");
+
+            // Log webhook error
+            logWebhookEvent({
+                conversationId,
+                storeId,
+                event: "ERROR",
+                message: "Invalid webhook signature",
+                processingTimeMs: Date.now() - requestStartTime,
+                result: "error",
+            });
+
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+    } else if (appSecret && isTestMode && chatOnlyAtEntry) {
+        // Em CHAT_ONLY, permite webhook sem assinatura (para teste via terminal)
+        console.log("[INBOUND] [SKIP] assinatura ignorada em modo CHAT_ONLY");
+    }
+
+    // 2. Parsear JSON com Try/Catch Isolado
     let body: any;
     try {
         body = JSON.parse(rawBody);
     } catch (e) {
-        console.error("[WEBHOOK] ❌ JSON inválido");
-        return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+        console.error("[WEBHOOK] ❌ JSON inválido:", rawBody);
+
+        // Log webhook error
+        logWebhookEvent({
+            conversationId,
+            storeId,
+            event: "ERROR",
+            message: "Invalid JSON payload",
+            processingTimeMs: Date.now() - requestStartTime,
+            result: "error",
+        });
+
+        return NextResponse.json({ status: "ignored_invalid_json" }, { status: 200 });
     }
 
-    // 3. Retornar 200 IMEDIATAMENTE (requisito Meta)
-    processPayload(body).catch(err => {
-        console.error("[WEBHOOK] ❌ Erro no processamento assíncrono:", err);
+    // 3. Ingestion Phase (Sync Persistence)
+    let ingestionContext: any = null;
+    try {
+        const result = await ingestMessage(body);
+
+        // Se retornar null (bloqueado, ignorado, etc), retornamos 200 e paramos.
+        // O `ingestMessage` já logou o motivo.
+        if (!result) {
+            return NextResponse.json({ status: "ignored_or_handled" }, { status: 200 });
+        }
+        ingestionContext = result;
+
+    } catch (e: any) {
+        console.error("[WEBHOOK] ❌ Erro de Ingestão:", e);
+        return NextResponse.json({ status: "error_handled" }, { status: 200 });
+    }
+
+    // 4. Async Processing Phase (Fire-and-Forget)
+    // Node.js keeps the process alive — the IIFE resolves after the response is sent.
+    (async () => {
+        try {
+            console.time("llm_process");
+            await processAI(ingestionContext);
+        } catch (err) {
+            console.error(`[WEBHOOK] ❌ Async Worker Error (Conv: ${ingestionContext.conversation.id}):`, err);
+            debugLog(`[CRITICAL] Async Worker Error: ${err}`);
+        } finally {
+            console.timeEnd("llm_process");
+        }
+    })();
+
+    // 5. Return 200 OK Immediately
+    console.log(`[WEBHOOK] ⚡ Returning 200 OK to Meta immediately.`);
+
+    // Log webhook exit
+    logWebhookEvent({
+        conversationId,
+        storeId,
+        event: "EXIT",
+        message: "Webhook processed, response sent",
+        processingTimeMs: Date.now() - requestStartTime,
+        result: "success",
     });
 
     return NextResponse.json({ status: "received" }, { status: 200 });
 }
 
-// ─── Processamento Assíncrono com State Machine ───
-async function processPayload(body: any) {
+// ─── INGESTION (Sync) ───
+// Retorna contexto se deve processar, ou null se ignorar/bloquear
+async function ingestMessage(body: any) {
     const value = body.entry?.[0]?.changes?.[0]?.value;
 
-    // Log de Status Updates (Entregue, Lido, Falhou)
+    // A. Filtrar Status Updates (Lido, Entregue)
     if (value?.statuses) {
         const statuses = value.statuses;
-        console.log(`[WEBHOOK] 📶 Status Update: ${JSON.stringify(statuses)}`);
-        if (statuses[0]?.status === "failed") {
-            console.log(`[WEBHOOK] ❌ Mensagem falhou! Erro: ${JSON.stringify(statuses[0].errors)}`);
-        }
-        return;
+        const status = statuses[0];
+        console.log(`[WEBHOOK] 📶 Status Update: ${status?.status} (ID: ${status?.id})`);
+        return null;
     }
 
+    // B. Extrair Mensagem
     const msg = extractMessage(body);
     if (!msg) {
-        console.log("[WEBHOOK] ℹ️ Evento ignorado (não é mensagem de texto)");
-        return;
+        console.log("[WEBHOOK] ℹ️ Ignorado: Não é mensagem de texto/áudio suportada");
+        return null;
     }
 
-    debugLog(`WEBHOOK MSG RCVD: ${JSON.stringify(msg)}`);
-    console.log(`[WEBHOOK] 📥 Mensagem recebida de ${msg.from}: "${msg.text}"`);
+    // C. Immediate Feedback
+    markMessageAsRead(msg.waMessageId).catch(() => { });
 
+    // D. Resolver Store com fallback defensivo para schema drift
+    let store;
     try {
-        // ─── STEP 1: Resolve Store (Multi-tenant) ───
-        const store = await prisma.store.findUnique({
+        store = await prisma.store.findUnique({
             where: { phoneNumberId: msg.phoneNumberId },
         });
+    } catch (schemaErr: any) {
+        // Erro de schema (ex: column does not exist)
+        const errMsg = String(schemaErr?.message || schemaErr || "");
+        if (errMsg.includes("does not exist") || errMsg.includes("P2022")) {
+            console.error(`[WEBHOOK] ❌ Schema drift detectado: ${errMsg}`);
 
-        debugLog(`Store lookup for ${msg.phoneNumberId}: ${store ? "FOUND" : "NOT FOUND"}`);
+            // Em CHAT_ONLY, gravar erro na outbox para o terminal mostrar
+            const chatOnly = isChatOnlyMode();
+            if (chatOnly) {
+                try {
+                    const { saveToOutbox } = await import("@/lib/chat-outbox");
+                    saveToOutbox(msg.from, {
+                        conversationId: `error_${Date.now()}`,
+                        content: `[ERRO CHAT_ONLY] Schema desatualizado. Rode: npm run prisma:sandbox:push`,
+                        timestamp: Date.now(),
+                        id: `err_${Date.now()}`,
+                        status: "BOT",
+                        state: "error",
+                    });
+                    console.log("[OUTBOX] erro de schema gravado para diagnóstico");
+                } catch { /* outbox pode não estar disponível */ }
+            }
 
-        if (!store) {
-            console.warn(`[WEBHOOK] ❌ Store não encontrada para ID: ${msg.phoneNumberId}`);
-            debugLog("Store not found. Aborting.");
-            return;
+            return null;
         }
+        throw schemaErr; // Re-lança outros erros
+    }
 
-        // ─── STEP 2: Idempotency Check ───
-        const existing = await prisma.message.findUnique({
-            where: {
-                storeId_waMessageId: {
-                    storeId: store.id,
-                    waMessageId: msg.waMessageId,
-                },
-            },
-        });
+    if (!store) {
+        console.warn(`[WEBHOOK] ❌ Store não encontrada: ${msg.phoneNumberId}`);
+        return null;
+    }
 
-        if (existing) {
-            console.log(`[WEBHOOK] ⏭️ Mensagem duplicada: ${msg.waMessageId}`);
-            return;
-        }
+    // E. (REMOVED) Pre-Flight Check: CAUSAVA RACE CONDITION.
+    // Vamos confiar APENAS no UNIQUE CONSTRAINT do banco no passo G.
 
-        // ─── STEP 3: Upsert Customer ───
-        const customer = await prisma.customer.upsert({
-            where: {
-                storeId_phone: { storeId: store.id, phone: msg.from },
-            },
-            create: { storeId: store.id, phone: msg.from },
-            update: {},
-        });
+    // F. Upsert Dados Relacionados (Customer -> Conversation)
+    const customer = await prisma.customer.upsert({
+        where: { storeId_phone: { storeId: store.id, phone: msg.from } },
+        create: { storeId: store.id, phone: msg.from },
+        update: {},
+    });
 
-        // ─── STEP 4: Find/Create Conversation ───
-        console.log(`[WEBHOOK] 🔍 Buscando conversa para Customer ID: ${customer.id}`);
-        let conversation = await prisma.conversation.findFirst({
-            where: {
+    // Race Conditions na criação de conversa
+    let conversation = await prisma.conversation.findFirst({
+        where: {
+            storeId: store.id,
+            customerId: customer.id,
+            status: { in: ["open", "PENDING_HUMAN"] },
+        },
+        orderBy: { startedAt: "desc" },
+    });
+
+    let newConversationCreated = false;
+
+    if (!conversation) {
+        conversation = await prisma.conversation.create({
+            data: {
                 storeId: store.id,
                 customerId: customer.id,
-                status: { in: ["open", "PENDING_HUMAN"] },
+                status: "open",
+                currentState: "greeting",
+                slots: {},
             },
         });
-        console.log(`[WEBHOOK] 🔍 Resultado busca conversa: ${conversation ? conversation.id : "Nova conversa"}`);
-        debugLog(`Conversation: ${conversation ? "FOUND" : "CREATING NEW"}`);
+        newConversationCreated = true;
+        debugLog(`New conversation created: ${conversation.id}`);
+    }
 
-        if (!conversation) {
-            conversation = await prisma.conversation.create({
-                data: {
-                    storeId: store.id,
-                    customerId: customer.id,
-                    status: "open",
-                    currentState: "greeting",
-                    slots: {},
-                    messageCount: 0,
-                    stallCount: 0,
-                    frustrationLevel: 0,
-                },
-            });
-            debugLog(`New conversation created: ${conversation.id}`);
-        }
-
-        // ─── STEP 5: Save Inbound Message ───
+    // G. Persistência da Mensagem (Inbound) - FAIL FAST (Physical DB Check)
+    try {
         await prisma.message.create({
             data: {
                 storeId: store.id,
@@ -190,157 +385,883 @@ async function processPayload(body: any) {
                 waMessageId: msg.waMessageId,
             },
         });
+        console.log(`[WEBHOOK] ✅ Mensagem persistida: "${msg.text}"`);
+    } catch (e: any) {
+        // IDEMPOTÊNCIA RIGOROSA (NÍVEL FÍSICO)
+        if (e.code === 'P2002') {
+            console.log(`[WEBHOOK] 🛑 GHOST MESSAGE BLOCKED (ID: ${msg.waMessageId})`);
+            debugLog(`[GHOST BLOCKED] Duplicate WAMID: ${msg.waMessageId}`);
 
-        console.log(`[WEBHOOK] ✅ Mensagem salva: "${msg.text}" de ${msg.from}`);
-        debugLog(`Message saved: ${msg.text}`);
-        debugLog(`Current Status: ${conversation.status}`);
+            // CLEANUP: Se criamos conversa nova para este duplicado, deletamos
+            if (newConversationCreated) {
+                await prisma.conversation.delete({ where: { id: conversation.id } }).catch(() => { });
+                console.log(`[WEBHOOK] 🧹 Orphan conversation cleaned up.`);
+            }
 
-        // ─── STEP 6: Skip if pending human ───
-        if (conversation.status === "PENDING_HUMAN") {
-            console.log(`[WEBHOOK] 🔇 Ignorando auto-reply (Humano pendente)`);
+            return null; // Bloqueia processamento
+        }
+        throw e;
+    }
+
+    // Reset Command Hook
+    if (msg.text.toLowerCase().trim() === "reset") {
+        await prisma.conversation.update({
+            where: { id: conversation.id },
+            data: {
+                status: "open",
+                currentState: "greeting",
+                slots: {},
+                stallCount: 0,
+                frustrationLevel: 0,
+                messageCount: 0,
+                processingUntil: null
+            }
+        });
+        await sendTextMessage(msg.from, "🔄 Conversa resetada.");
+        return null;
+    }
+
+    return { store, customer, conversation, msg };
+}
+
+// ─── WORKER (Async Background) ───
+async function processAI(ctx: any) {
+    const { store, conversation, msg } = ctx;
+
+    // 1. Acquire Lock
+    const lockAcquired = await acquireLock(conversation.id);
+    if (!lockAcquired) {
+        console.log(`[WORKER] 🔒 Lock ocupado. Mensagem salva mas não processada (Debounce): ${msg.waMessageId}`);
+        return;
+    }
+
+    const startTime = Date.now();
+
+    // ─── Telemetry identifiers (1 per processing cycle) ───
+    const requestId = randomUUID();
+    const customerIdHash = hashPhone(msg.from); // LGPD — never log msg.from directly
+    const telemetryBase = {
+        storeId: store.id,
+        conversationId: conversation.id,
+        customerId: customerIdHash,
+        requestId,
+    };
+
+    // CHAT_ONLY mode: desativa telemetria para reduzir latência
+    const chatOnly = isChatOnlyMode();
+
+    try {
+        // ─── HUMAN LOOP GATE: Verifica se conversa está travada em modo HUMAN ───
+        const isLocked = await isHumanLocked(conversation.id);
+        if (isLocked) {
+            console.log(`[HANDOFF] conversation locked (HUMAN), ignoring bot reply for ${conversation.id}`);
             return;
         }
-        debugLog("Step 6 passed (Not pending human)");
 
-        // ─── STEP 7: Increment message count ───
+        if (conversation.status === "PENDING_HUMAN") {
+            console.log(`[WORKER] 🔇 Ignorando (Humano pendente)`);
+            return;
+        }
+
+        // ─── UX: Typing indicator (fire-and-forget, nunca bloqueia pipeline) ───
+        // Dura 25s ou até a próxima mensagem ser enviada — mais que suficiente para o LLM
+        sendSenderAction(msg.from, "typing_on").catch(() => { });
+
         await incrementMessageCount(conversation.id);
-        debugLog("Step 7 passed (Msg count inc)");
 
-        // ─── STEP 8: Build full context (includes conversation history) ───
         const context = await buildContext({
             conversationId: conversation.id,
             userMessage: msg.text,
             storeId: store.id,
-            storeName: store.name || "Nossa Loja",
+            storeName: store.name || "Loja",
+            customerName: ctx.customer.name || undefined,
+            currentWaMessageId: msg.waMessageId,
         });
-        debugLog("Step 8 passed (Context built)");
 
-        // ─── STEP 9: Detect frustration (uses context history) ───
-        if (detectFrustration(msg.text, context.conversationHistory)) {
-            const frustLevel = await incrementFrustration(conversation.id);
-            console.log(`[WEBHOOK] 😤 Frustração detectada (nível ${frustLevel})`);
+        // Persistir nome do cliente quando vier claro na mensagem (ajuda SAC a nao repetir coleta)
+        if (!ctx.customer.name && typeof context.slots.customerName === "string" && context.slots.customerName.trim().length >= 3) {
+            prisma.customer.update({
+                where: { id: ctx.customer.id },
+                data: { name: context.slots.customerName.trim() },
+            }).catch(() => { });
+            ctx.customer.name = context.slots.customerName.trim();
         }
-        debugLog("Step 9 passed (Frustration check)");
 
-        // ─── STEP 10: Check state transition ───
+        // Log de classify em CHAT_ONLY
+        if (chatOnly) {
+            console.log(`[CLASSIFY] intent=${context.detectedIntent} state=${context.currentState} slots=${JSON.stringify(context.slots).substring(0, 50)}`);
+        }
+
+        if (detectFrustration(msg.text, context.conversationHistory)) {
+            await incrementFrustration(conversation.id);
+        }
+
         const transition = determineNextState(
-            context.currentState,
-            context.slots,
-            context.detectedIntent,
-            context.stallCount,
-            context.frustrationLevel,
-            context.messageCount
+            context.currentState, context.slots, context.detectedIntent,
+            context.stallCount, context.frustrationLevel, context.messageCount
         );
 
         if (transition.nextState) {
-            await transitionTo(
-                conversation.id,
-                transition.nextState,
-                transition.reason,
-                store.id
-            );
-            context.currentState = transition.nextState;
+            await transitionTo(conversation.id, transition.nextState, transition.reason, store.id);
+            context.currentState = transition.nextState!;
+            // Log de state em CHAT_ONLY
+            if (chatOnly) {
+                console.log(`[STATE] transition ${context.currentState} <- ${transition.reason}`);
+            }
         }
-        debugLog("Step 10 passed (State transition)");
 
-        // ─── STEP 11: Update slots if new data extracted ───
         if (context.slotExtraction.hasNewData) {
-            await updateSlots(conversation.id, context.slotExtraction.extracted);
+            await updateSlots(conversation.id, context.slotExtraction.extracted, context.slots);
             await resetStall(conversation.id);
-            console.log(`[WEBHOOK] 📋 Slots atualizados:`, context.slotExtraction.extracted);
         } else {
-            const stallCount = await incrementStall(conversation.id);
-            if (stallCount >= 3) {
-                console.log(`[WEBHOOK] ⚠️ Conversa estagnada (${stallCount} stalls)`);
+            await incrementStall(conversation.id);
+        }
+
+        // ─── FASE 2: AUTO-ROUTING SAC ───
+        // Roteia conversa baseado no intent detectado pelo buildContext
+        // Nota: uses raw SQL pois prisma client ainda não foi regenerado com conversationType
+        {
+            const sacIntents = ["SUPPORT", "HANDOFF", "SAC_TROCA", "SAC_ATRASO", "SAC_RETIRADA", "SAC_REEMBOLSO"];
+            const targetType =
+                context.currentState === "support_sac" || sacIntents.includes(context.detectedIntent)
+                    ? "sac"
+                    : "sales";
+
+            const rows = await prisma.$queryRaw<{ conversation_type: string }[]>`
+                SELECT conversation_type FROM conversations WHERE id = ${conversation.id} LIMIT 1
+            `;
+
+            if (rows[0] && rows[0].conversation_type !== targetType) {
+                await prisma.$executeRaw`
+                    UPDATE conversations SET conversation_type = ${targetType} WHERE id = ${conversation.id}
+                `;
+                console.log(`[WORKER] 🚦 Conversa ${conversation.id} roteada para: ${targetType} (intent: ${context.detectedIntent})`);
             }
         }
-        debugLog("Step 11 passed (Slot update)");
+        // ─── FIM FASE 2 ───
 
-        // ─── STEP 12: Compose prompt + Call LLM ───
-        const systemPrompt = composeSystemPrompt(context);
-
-        console.log(`[WEBHOOK] 🧠 Chamando IA (estado: ${context.currentState}, intent: ${context.detectedIntent})`);
-        debugLog(`Step 12 Start. API Key present: ${process.env.OPENROUTER_API_KEY ? "YES" : "NO"}`);
-
-        let decision = await generateAIResponse(
-            systemPrompt,
-            msg.text,
-            context.conversationHistory
+        // ─── TELEMETRY: Momento 1 — Eventos de estoque (pós buildContext) ───
+        const hasProductSignal = Boolean(
+            context.slots.product || context.slots.usage ||
+            context.slots.marca || context.slots.categoria || context.slots.size
         );
-        debugLog(`Step 12 End. Decision: ${JSON.stringify(decision)}`);
 
-        console.log("[WEBHOOK] 🧠 Decisão:", JSON.stringify(decision, null, 2));
+        // TELEMETRY: SKIP em CHAT_ONLY para reduzir latência
+        if (!chatOnly && context.detectedIntent === "SALES" && hasProductSignal) {
+            // A: O que o cliente queria buscar
+            emitTelemetry({
+                ...telemetryBase,
+                eventType: "product_interest",
+                payload: {
+                    ...telemetryBase,
+                    channel: "whatsapp",
+                    waMessageId: msg.waMessageId,
+                    query_original: msg.text,
+                    marca: context.slots.marca,
+                    categoria: context.slots.categoria,
+                    genero: context.slots.genero,
+                    tamanho: context.slots.size,
+                    uso: context.slots.usage,
+                    goal: context.slots.goal,
+                },
+            });
 
-        // ─── STEP 13: Guardrails validation ───
-        const validation = validateResponse(decision, {
-            currentState: context.currentState,
-            slots: context.slots,
-            conversationHistory: context.conversationHistory,
-            availableProducts: context.availableProducts,
+            // B: Parâmetros que o motor de busca recebeu
+            emitTelemetry({
+                ...telemetryBase,
+                eventType: "stock_check",
+                payload: {
+                    ...telemetryBase,
+                    channel: "whatsapp",
+                    waMessageId: msg.waMessageId,
+                    query_normalizada: context.slots.product ?? context.slots.usage ?? msg.text,
+                    engine: "findRelevantProducts",
+                    slots_snapshot: {
+                        marca: context.slots.marca,
+                        categoria: context.slots.categoria,
+                        tamanho: context.slots.size,
+                        uso: context.slots.usage,
+                    },
+                },
+            });
+
+            // C: Resultado do motor de busca
+            const stockStatus = context.availableProducts.length > 0 ? "found" : "not_found";
+            emitTelemetry({
+                ...telemetryBase,
+                eventType: "stock_result",
+                payload: {
+                    ...telemetryBase,
+                    channel: "whatsapp",
+                    waMessageId: msg.waMessageId,
+                    status: stockStatus,
+                    sku_encontrado: context.availableProducts[0]?.description,
+                    quantidade_disponivel: context.availableProducts[0]?.quantity,
+                    similares: context.availableProducts.slice(1).map(p => p.description),
+                    motivo_falha: stockStatus === "not_found" ? "sem_estoque" : undefined,
+                },
+            });
+        }
+
+        // ─── HUMAN LOOP: Verifica se deve transferir para humano ───
+        // Esta verificação acontece APÓS a checagem de estoque (context.stockResult)
+        //
+        // PRIORIDADES:
+        // 1. Se cliente quer reserva (lead quente) → handoff independente do estoque
+        // 2. Se estoque indisponível + alta intenção → handoff
+        // 3. Caso contrário → continua fluxo normal
+        {
+            const sessionData = {
+                intent: context.detectedIntent,
+                slots: context.slots,
+                botStatus: 'BOT' as 'BOT' | 'HUMAN',
+                alertSent: null,
+            };
+
+            const handoffDecision = evaluateHandoff(
+                sessionData,
+                context.stockResult,
+                msg.text,
+                0.8 // Higher intent score since we're in SALES flow with product info
+            );
+
+            if (handoffDecision.shouldHandoff) {
+                const reason = handoffDecision.reason as HandoffReason;
+                console.log(`[humanLoop] handoff { reason: ${reason}, product: ${context.slots.product}, clientId: ${msg.from}, until: end_of_day }`);
+                if (chatOnly) console.log(`[ACTION] handoff_sales reason=${reason}`);
+
+                // 1. Envia alerta para o grupo de vendas (com reason)
+                const salesGroupId = humanLoopConfig.groups.sales;
+                if (salesGroupId) {
+                    const alertMessage = buildSaleAlertMessage(context.slots, msg.from, reason);
+                    const alertResult = await sendTextMessage(salesGroupId, alertMessage);
+                    console.log(`[humanLoop] Alert sent to sales group: ${alertResult.success}`);
+
+                    // 2. Envia mensagem de transferência para o cliente
+                    const handoffMessage = buildHandoffMessage();
+                    const handoffSendResult = await sendTextMessage(msg.from, handoffMessage);
+                    const handoffMessageId = handoffSendResult.data?.messages?.[0]?.id || `handoff_${Date.now()}`;
+                    if (chatOnly) {
+                        console.log(`[RESPONSE] "${handoffMessage.substring(0, 50)}..." source=human_loop_sales`);
+                        saveToOutbox(msg.from, {
+                            conversationId: conversation.id,
+                            content: `[ESCALADO] ${handoffMessage}`,
+                            timestamp: Date.now(),
+                            id: handoffMessageId,
+                            status: "PENDING_HUMAN",
+                            state: "handoff_sales",
+                        });
+                        console.log(`[OUTBOUND] handoff_sales to=${msg.from} conv=${conversation.id} success=${handoffSendResult.success}`);
+                    }
+                    try {
+                        await prisma.message.create({
+                            data: {
+                                storeId: store.id,
+                                conversationId: conversation.id,
+                                direction: "outbound",
+                                content: handoffMessage,
+                                waMessageId: handoffMessageId,
+                                metadata: { handoff: true, queue: "sales", reason },
+                            },
+                        });
+                    } catch (err) {
+                        const msgErr = String((err as any)?.message || err || "");
+                        if (msgErr.includes("disk I/O error")) {
+                            console.warn(chatOnly ? "[OUTBOX] [WARN] disk I/O on sales handoff persist (ignored)" : "[WORKER] disk I/O on sales handoff persist");
+                        } else {
+                            throw err;
+                        }
+                    }
+
+                    // 3. Trava a conversa em modo HUMAN até fim do dia
+                    await lockToHuman(conversation.id, {
+                        type: 'SALE',
+                        messageId: alertResult.data?.messages?.[0]?.id || `alert_${Date.now()}`,
+                        groupId: salesGroupId,
+                    });
+
+                    // 4. Não chama o orchestrator - retorna imediatamente
+                    // O humano owns a conversa pelo resto do dia
+                    console.log(`[humanLoop] ✅ Handoff completo para ${conversation.id}`);
+                    return;
+                } else {
+                    console.warn(`[humanLoop] WPP_GROUP_SALES_ID não configurado, pulando handoff`);
+                }
+            }
+        }
+
+        // ─── SAC FLOW: Coleta mínimo de dados antes do handoff ───
+        // Se intent é SAC, verifica se dados mínimos estão completos
+        const sacIntents = ['SAC_TROCA', 'SAC_ATRASO', 'SAC_RETIRADA', 'SAC_REEMBOLSO', 'SUPPORT'];
+        const isSacConversation = sacIntents.includes(context.detectedIntent) || context.currentState === "support_sac";
+        const bypassSacMinimumForInfo = shouldBypassSacMinimumForPolicyInfo(
+            context.detectedIntent,
+            context.currentState,
+            msg.text
+        );
+        if (isSacConversation && bypassSacMinimumForInfo) {
+            console.log(`[SAC] Bypass sac_minimum: consulta de politica/info detectada (intent=${context.detectedIntent})`);
+        }
+        if (isSacConversation && !bypassSacMinimumForInfo) {
+            const effectiveCustomerName = (ctx.customer.name || context.slots.customerName || "").trim() || undefined;
+            const effectiveEmail = String(context.slots.email || "").trim() || undefined;
+            const sacSlotsForMinimum = {
+                ...context.slots,
+                // Se já estamos no fluxo SAC, o problema-base já foi descrito antes.
+                statusPedido: context.slots.statusPedido || "informado",
+            };
+            const missingData = getMissingSacData(effectiveCustomerName, sacSlotsForMinimum, { email: effectiveEmail });
+
+            if (hasAnyMissingSacData(effectiveCustomerName, sacSlotsForMinimum, { email: effectiveEmail })) {
+                // Dados SAC incompletos - pergunta TODOS os campos de uma vez
+                // NÃO envia alerta, NÃO faz handoff
+                // Passa slots para diferenciar loja física vs site
+                const sacQuestion = buildSacQuestion(missingData, context.slots);
+                console.log(`[SAC] Pedindo dados: ${JSON.stringify(missingData)}`);
+                if (chatOnly) {
+                    console.log("[ACTION] request_order_data");
+                    console.log(`[RESPONSE] "${sacQuestion.substring(0, 50)}..." source=sac_minimum`);
+                }
+
+                // Envia a pergunta ao cliente
+                const sacQuestionSend = await sendTextMessage(msg.from, sacQuestion);
+                const sacQuestionMessageId = sacQuestionSend.data?.messages?.[0]?.id || `sac_q_${Date.now()}`;
+                if (chatOnly) {
+                    saveToOutbox(msg.from, {
+                        conversationId: conversation.id,
+                        content: sacQuestion,
+                        timestamp: Date.now(),
+                        id: sacQuestionMessageId,
+                        status: "BOT",
+                        state: "support_sac",
+                    });
+                    console.log(`[OUTBOUND] sac_question to=${msg.from} conv=${conversation.id} success=${sacQuestionSend.success}`);
+                }
+
+                // Persiste a mensagem de resposta (SQLite em WSL/OneDrive pode falhar transitoriamente)
+                const sacOutboundData = {
+                    storeId: store.id,
+                    conversationId: conversation.id,
+                    direction: 'outbound',
+                    content: sacQuestion,
+                    waMessageId: sacQuestionMessageId,
+                    metadata: {
+                        intent: context.detectedIntent,
+                        missingName: missingData.missingName,
+                        missingOrderOrEmail: missingData.missingOrderOrEmail,
+                        missingProblem: missingData.missingProblem,
+                    },
+                };
+                try {
+                    await prisma.message.create({ data: sacOutboundData });
+                } catch (err) {
+                    const msgErr = String((err as any)?.message || err || "");
+                    if (msgErr.includes("disk I/O error")) {
+                        console.warn("[SAC] ⚠️ SQLite disk I/O error ao salvar pergunta SAC. Retry em 150ms...");
+                        await new Promise((r) => setTimeout(r, 150));
+                        await prisma.message.create({ data: sacOutboundData });
+                    } else {
+                        throw err;
+                    }
+                }
+
+                // Retorna sem chamar orchestrator -bot fez uma pergunta com todos os dados
+                console.log(`[SAC] Dados incompletos, pergunta enviada. Retornando.`);
+                return;
+            } else {
+                // Dados mínimos completos - faz handoff para SAC
+                const sacGroupId = humanLoopConfig.groups.sac;
+                if (sacGroupId) {
+                    console.log(`[SAC] Dados mínimos completos. Enviando alerta para grupo SAC.`);
+                    if (chatOnly) console.log("[ACTION] handoff_sac");
+
+                    // 1. Envia alerta para o grupo SAC
+                    const sacAlertMessage = buildSACAlertMessage(
+                        context.slots,
+                        context.detectedIntent,
+                        effectiveCustomerName,
+                        msg.from,
+                        effectiveEmail
+                    );
+                    const alertResult = await sendTextMessage(sacGroupId, sacAlertMessage);
+                    console.log(`[SAC] Alert sent to SAC group: ${alertResult.success}`);
+
+                    // 2. Envia mensagem de transferência para o cliente
+                    const handoffMessage = "Vou te direcionar para nosso time de atendimento, e eles vao priorizar seu caso por aqui. ✅";
+                    const sacHandoffSend = await sendTextMessage(msg.from, handoffMessage);
+                    const sacHandoffMessageId = sacHandoffSend.data?.messages?.[0]?.id || `sac_handoff_${Date.now()}`;
+                    if (chatOnly) {
+                        console.log(`[RESPONSE] "${handoffMessage.substring(0, 50)}..." source=human_loop_sac`);
+                        saveToOutbox(msg.from, {
+                            conversationId: conversation.id,
+                            content: `[ESCALADO] ${handoffMessage}`,
+                            timestamp: Date.now(),
+                            id: sacHandoffMessageId,
+                            status: "PENDING_HUMAN",
+                            state: "handoff_sac",
+                        });
+                        console.log(`[OUTBOUND] handoff_sac to=${msg.from} conv=${conversation.id} success=${sacHandoffSend.success}`);
+                    }
+
+                    // 3. Trava a conversa em modo HUMAN até fim do dia
+                    await lockToHuman(conversation.id, {
+                        type: 'SAC',
+                        messageId: alertResult.data?.messages?.[0]?.id || `sac_alert_${Date.now()}`,
+                        groupId: sacGroupId,
+                    });
+
+                    // 4. Persiste mensagem de handoff
+                    try {
+                        await prisma.message.create({
+                            data: {
+                                storeId: store.id,
+                                conversationId: conversation.id,
+                                direction: 'outbound',
+                                content: handoffMessage,
+                                waMessageId: sacHandoffMessageId,
+                                metadata: { intent: context.detectedIntent, handoff: true },
+                            },
+                        });
+                    } catch (err) {
+                        const msgErr = String((err as any)?.message || err || "");
+                        if (msgErr.includes("disk I/O error")) {
+                            console.warn(chatOnly ? "[OUTBOX] [WARN] disk I/O on sac handoff persist (ignored)" : "[SAC] disk I/O on handoff persist");
+                        } else {
+                            throw err;
+                        }
+                    }
+
+                    console.log(`[SAC] ✅ Handoff completo para ${conversation.id}`);
+                    return;
+                } else {
+                    console.warn(`[SAC] WPP_GROUP_SAC_ID não configurado, pulando handoff SAC`);
+                }
+            }
+        }
+
+        // ─── AGENT RUNTIME: Unificado - Template + LLM + Guardrails ───
+        // O orchestrator legado faz: decideAction() -> template -> llm fallback -> guardrails
+        console.time("orchestrator_call");
+        const storeAddressText =
+            (store as any).addressText ||
+            "Av. Monsenhor Angelo Sampaio, nº 100, Centro - Petrolina-PE, CEP 56304-920";
+        const storeMapsUrl =
+            (store as any).mapsUrl ||
+            "https://maps.google.com/?q=Av.+Monsenhor+Angelo+Sampaio,+100,+Petrolina-PE";
+        const responseSlots = {
+            ...context.slots,
+            addressText: storeAddressText,
+            mapsUrl: storeMapsUrl,
+        };
+
+        // Setup AgentRuntime environment
+        const runtimeEnv = getAgentRuntimeForConversation(msg.from);
+
+        // Prepare context for the runtime
+        const runtimeContext = {
+            storeId: store.id,
+            conversationId: conversation.id,
+            customerId: ctx.customer.id,
+            customerPhone: msg.from,
+            state: {
+                currentState: context.currentState,
+                frustrationLevel: context.frustrationLevel,
+                lastQuestionType: context.lastQuestionType,
+                messageCount: context.messageCount,
+                stallCount: context.stallCount,
+                slots: responseSlots,
+                botStatus: (context as any).botStatus || 'BOT',
+                handoffUntil: (context as any).handoffUntil || null,
+                alertSent: (context as any).alertSent || null,
+            },
+            slots: responseSlots,
+            intent: context.detectedIntent,
+            lastIntent: context.detectedIntent,
+            lastAction: undefined,
+            messages: context.conversationHistory.map((m, idx) => ({
+                direction: m.role === 'user' ? 'inbound' as const : 'outbound' as const,
+                content: m.content,
+                timestamp: new Date(Date.now() - (context.conversationHistory.length - idx) * 60000),
+            })),
             frustrationLevel: context.frustrationLevel,
-        });
+            lastQuestionType: context.lastQuestionType,
+            hasClosingSignal: context.currentState === 'closing' || hasLexicalClosingSignal(msg.text),
+            stockResult: context.stockResult,
+            customerName: context.customerName,
+        };
 
-        if (!validation.approved) {
-            console.log(`[GUARDRAILS] ❌ Resposta rejeitada: ${validation.reason}`);
-            if (validation.shouldEscalate) {
-                decision.requires_human = true;
-                decision.intent = "HANDOFF";
-            }
-            if (validation.modifiedReply) {
-                decision.reply_text = validation.modifiedReply;
-            }
+        let orchestratorResult: OrchestratorResult;
+
+        if (runtimeEnv === "langgraph") {
+            const { LangGraphRuntime } = await import("@/lib/agent/runtime-langgraph");
+            const runtime = new LangGraphRuntime();
+            const langgraphStart = Date.now();
+            const out = await runtime.generateReply({
+                conversationId: runtimeContext.conversationId,
+                storeId: runtimeContext.storeId,
+                customerId: runtimeContext.customerId,
+                customerPhone: runtimeContext.customerPhone,
+                message: msg.text,
+            });
+            orchestratorResult = {
+                text: out.reply,
+                action: out.requiresHuman ? "ESCALATE" : "RESPOND",
+                source: "langgraph",
+                metadata: out.metadata as any,
+            };
+            const langgraphMeta = (out.metadata || {}) as Record<string, any>;
+            logShadowAudit({
+                conversationId: conversation.id,
+                storeId: store.id,
+                runtimeMode: process.env.AGENT_RUNTIME === "langgraph" ? "langgraph_active" : "langgraph_canary",
+                result: "success",
+                durationMs: Date.now() - langgraphStart,
+                langgraphPreview: out.reply,
+                langgraphActiveAgent: typeof langgraphMeta.activeAgent === "string" ? langgraphMeta.activeAgent : undefined,
+                langgraphToolCallsCount: typeof langgraphMeta.toolCallsCount === "number" ? langgraphMeta.toolCallsCount : undefined,
+                langgraphToolNames: Array.isArray(langgraphMeta.toolNames) ? langgraphMeta.toolNames : undefined,
+                langgraphUsedMockTool: langgraphMeta.usedMockTool === true,
+                langgraphLoopSignal: langgraphMeta.loopSignal === true,
+                langgraphSummaryPresent: langgraphMeta.summaryPresent === true,
+                langgraphSummaryLength: typeof langgraphMeta.summaryLength === "number" ? langgraphMeta.summaryLength : undefined,
+            });
+        } else if (runtimeEnv === "shadow") {
+            // Shadow Mode: Run legacy sequentially and LangGraph asynchronously
+            orchestratorResult = await orchestrate(msg.text, runtimeContext);
+
+            // Fire and forget the LangGraph run for telemetry/comparison
+            Promise.resolve().then(async () => {
+                const startTime = Date.now();
+                try {
+                    const { LangGraphRuntime } = await import("@/lib/agent/runtime-langgraph");
+                    const runtime = new LangGraphRuntime();
+                    const shadowTimeoutMsRaw = Number(process.env.LANGGRAPH_SHADOW_TIMEOUT_MS || "");
+                    const shadowTimeoutMs = Number.isFinite(shadowTimeoutMsRaw) && shadowTimeoutMsRaw > 0
+                        ? shadowTimeoutMsRaw
+                        : (chatOnly ? 15000 : 8000);
+
+                    // Timebox configurável (CHAT_ONLY precisa mais folga para auditoria)
+                    const timeoutPromise = new Promise<never>((_, reject) =>
+                        setTimeout(() => reject(new Error("LangGraph Shadow Mode Timeout")), shadowTimeoutMs)
+                    );
+
+                    const out = await Promise.race([
+                        runtime.generateReply({
+                            conversationId: runtimeContext.conversationId,
+                            storeId: runtimeContext.storeId,
+                            customerId: runtimeContext.customerId,
+                            customerPhone: runtimeContext.customerPhone,
+                            message: msg.text,
+                        }),
+                        timeoutPromise
+                    ]);
+
+                    const duration = Date.now() - startTime;
+                    const langgraphMeta = (out.metadata || {}) as Record<string, any>;
+                    const route = typeof langgraphMeta.activeAgent === "string" ? langgraphMeta.activeAgent : "unknown";
+                    const tools = Array.isArray(langgraphMeta.toolNames) ? langgraphMeta.toolNames.join(",") : "";
+                    console.log(`[SHADOW] route=${route} tools=[${tools}] mock=${langgraphMeta.usedMockTool === true} loop=${langgraphMeta.loopSignal === true}`);
+                    logShadowAudit({
+                        conversationId: conversation.id,
+                        storeId: store.id,
+                        runtimeMode: "shadow",
+                        result: "success",
+                        durationMs: duration,
+                        legacyAction: orchestratorResult.action,
+                        legacySource: orchestratorResult.source,
+                        legacyPreview: orchestratorResult.text,
+                        langgraphPreview: out.reply,
+                        langgraphActiveAgent: typeof langgraphMeta.activeAgent === "string" ? langgraphMeta.activeAgent : undefined,
+                        langgraphToolCallsCount: typeof langgraphMeta.toolCallsCount === "number" ? langgraphMeta.toolCallsCount : undefined,
+                        langgraphToolNames: Array.isArray(langgraphMeta.toolNames) ? langgraphMeta.toolNames : undefined,
+                        langgraphUsedMockTool: langgraphMeta.usedMockTool === true,
+                        langgraphLoopSignal: langgraphMeta.loopSignal === true,
+                        langgraphSummaryPresent: langgraphMeta.summaryPresent === true,
+                        langgraphSummaryLength: typeof langgraphMeta.summaryLength === "number" ? langgraphMeta.summaryLength : undefined,
+                    });
+                    console.log(`[SHADOW] ⚡ LangGraph executado em ${duration}ms!`);
+                    console.log(`[SHADOW] 📝 Legacy: "${orchestratorResult.text.substring(0, 100).replace(/\n/g, ' ')}..."`);
+                    console.log(`[SHADOW] 🤖 LangGraph: "${out.reply.substring(0, 100).replace(/\n/g, ' ')}..."`);
+                } catch (err: any) {
+                    const shadowErrorMessage = String(err?.message || err || "unknown shadow error");
+                    logShadowAudit({
+                        conversationId: conversation.id,
+                        storeId: store.id,
+                        runtimeMode: "shadow",
+                        result: "error",
+                        durationMs: Date.now() - startTime,
+                        timedOut: shadowErrorMessage.includes("Timeout"),
+                        errorMessage: shadowErrorMessage,
+                        legacyAction: orchestratorResult.action,
+                        legacySource: orchestratorResult.source,
+                        legacyPreview: orchestratorResult.text,
+                    });
+                    console.error("[SHADOW] ❌ Erro/Timeout na execução LangGraph paralela:", err.message);
+                }
+            });
+        } else {
+            // Legacy Mode
+            orchestratorResult = await orchestrate(msg.text, runtimeContext);
         }
 
-        // ─── STEP 14: Handle forced escalation ───
-        if (transition.shouldEscalate) {
-            decision.requires_human = true;
-            decision.intent = "HANDOFF";
-            if (!decision.reply_text.includes("equipe") && !decision.reply_text.includes("transferir")) {
-                decision.reply_text = "Vou te passar para a equipe resolver isso agora. Só um momento.";
-            }
+        console.timeEnd("orchestrator_call");
+
+        const decision: { reply_text: string; requires_human: boolean } = {
+            reply_text: orchestratorResult.text,
+            requires_human: orchestratorResult.action === "ESCALATE" ||
+                (orchestratorResult.metadata?.guardrailChecks?.shouldEscalate === true),
+        };
+        if (chatOnly && orchestratorResult.action) console.log(`[ACTION] ${orchestratorResult.action}`);
+
+        // Override with transition decision if needed
+        if (transition.shouldEscalate) decision.requires_human = true;
+
+        // Log com tags padronizadas em CHAT_ONLY
+        if (chatOnly) {
+            console.log(`[RESPONSE] "${decision.reply_text.substring(0, 50)}..." source=${orchestratorResult.source}`);
+        } else {
+            console.log(`[WORKER] 📤 Enviando: "${decision.reply_text}" (source: ${orchestratorResult.source})`);
         }
 
-        // ─── STEP 15: Send response ───
-        console.log(`[WEBHOOK] 📤 Enviando resposta para ${msg.from}: "${decision.reply_text}"`);
         const sendResult = await sendTextMessage(msg.from, decision.reply_text);
-        console.log(`[WEBHOOK] 📤 Resultado envio: success=${sendResult.success}, http=${sendResult.httpStatus}, error=${sendResult.error}`);
-        let outMessageId = `out_${Date.now()}`;
 
+        let outMessageId = `out_${Date.now()}`;
         if (sendResult.success && sendResult.data?.messages?.[0]?.id) {
             outMessageId = sendResult.data.messages[0].id;
         }
 
-        // ─── STEP 16: Save outbound message ───
-        await prisma.message.create({
-            data: {
-                storeId: store.id,
-                conversationId: conversation.id,
-                direction: "outbound",
-                content: decision.reply_text,
-                waMessageId: outMessageId,
-                metadata: {
-                    intent: decision.intent,
-                    requires_human: decision.requires_human,
-                    engine: "cadu-v2-state-driven",
-                    state: context.currentState,
-                    slots: context.slots,
-                },
+        const outboundMessageData = {
+            storeId: store.id,
+            conversationId: conversation.id,
+            direction: "outbound",
+            content: decision.reply_text,
+            waMessageId: outMessageId,
+            metadata: {
+                intent: decision.requires_human ? "HANDOFF" : context.detectedIntent,
+                requires_human: decision.requires_human,
+                state: context.currentState,
             },
-        });
+        };
 
-        // ─── STEP 17: Execute action ───
-        if (decision.requires_human) {
-            console.log("[WEBHOOK] 🚨 Handoff acionado");
-            await prisma.conversation.update({
-                where: { id: conversation.id },
-                data: { status: "PENDING_HUMAN" },
-            });
-        } else {
-            console.log(`[WEBHOOK] ✅ Resposta enviada (estado: ${context.currentState})`);
+        // 📦 Persistir no banco com retry para disk I/O error
+        try {
+            await prisma.message.create({ data: outboundMessageData });
+        } catch (err) {
+            const msgErr = String((err as any)?.message || err || "");
+            if (msgErr.includes("disk I/O error")) {
+                const warnMsg = chatOnly
+                    ? "[OUTBOX] [WARN] disk I/O error, retrying..."
+                    : "[WORKER] ⚠️ SQLite disk I/O error ao salvar outbound. Retry em 150ms...";
+                console.warn(warnMsg);
+                await new Promise((r) => setTimeout(r, 150));
+                await prisma.message.create({ data: outboundMessageData });
+            } else {
+                throw err;
+            }
         }
 
-    } catch (error: any) {
-        console.error("[WEBHOOK] ❌ Erro Crítico no processamento:", error);
-        debugLog(`[ERROR] Critical error: ${error?.message || error}`);
+        // 💾 Salvar na outbox in-memory (CHAT_ONLY mode)
+        if (chatOnly) {
+            // Se há handoff para humano, mostra mensagem de escalação
+            const outboxContent = decision.requires_human
+                ? ((context.detectedIntent.startsWith("SAC_") || context.detectedIntent === "SUPPORT" || context.currentState === "support_sac")
+                    ? "[ESCALADO] Sua solicitacao foi encaminhada para o time de atendimento. Alguem vai priorizar seu caso por aqui."
+                    : "[ESCALADO] Sua solicitacao foi encaminhada para nossa equipe da loja. Aguarde contato.")
+                : decision.reply_text;
+
+            saveToOutbox(msg.from, {
+                conversationId: conversation.id,
+                content: outboxContent,
+                timestamp: Date.now(),
+                id: outMessageId,
+                status: decision.requires_human ? "PENDING_HUMAN" : "BOT",
+                state: context.currentState,
+            });
+        }
+
+        // 📤 Log de outbound
+        if (chatOnly) {
+            console.log(`[OUTBOUND] sent to=${msg.from} conv=${conversation.id} success=${sendResult.success}`);
+        }
+
+        if (decision.requires_human) {
+            // Gerar Warm Handoff
+            const handoffContext: HandoffContext = {
+                intent: context.detectedIntent,
+                slots: context.slots,
+                frustrationLevel: context.frustrationLevel,
+                customerName: context.customerName,
+                orderId: context.slots.orderId,
+                conversationId: conversation.id,
+                storeId: store.id,
+                messageCount: context.messageCount,
+                stallCount: context.stallCount,
+                conversationHistory: context.conversationHistory,
+            };
+
+            const handoff = generateWarmHandoffSummary(handoffContext);
+            const slaDeadline = calculateSLADeadline(handoff.queue, handoff.priority);
+
+            // Criar Ticket de escalonamento
+            const ticket = await prisma.ticket.create({
+                data: {
+                    storeId: store.id,
+                    customerId: ctx.customer.id,
+                    conversationId: conversation.id,
+                    type: handoff.queue === "SALES_RESERVE" ? "reserva" : "sac",
+                    queueType: handoff.queue,
+                    priority: handoff.priority,
+                    warmHandoffSummary: handoff.summary,
+                    status: "open",
+                    escalatedAt: new Date(),
+                    slaDeadline: slaDeadline,
+                },
+            });
+
+            // Atualizar Conversation
+            await prisma.conversation.update({
+                where: { id: conversation.id },
+                data: {
+                    status: "PENDING_HUMAN",
+                    currentQueue: handoff.queue,
+                },
+            });
+
+            // Log estruturado
+            console.log(`[WORKER] 🚨 Handoff criado:`, {
+                ticketId: ticket.id,
+                queue: handoff.queue,
+                priority: handoff.priority,
+                slaMinutes: handoff.slaMinutes,
+            });
+
+            // Emitir telemetria de escalonamento (SKIP em CHAT_ONLY)
+            if (!chatOnly) {
+                emitTelemetry({
+                    ...telemetryBase,
+                    eventType: "sac_case",
+                    payload: {
+                        ticket_id: ticket.id,
+                        queue_type: handoff.queue,
+                        priority: handoff.priority,
+                        frustration_level: context.frustrationLevel,
+                        intent: context.detectedIntent,
+                        sla_deadline: slaDeadline.toISOString(),
+                    },
+                });
+            }
+        } else {
+            console.log(`[WORKER] ✅ Fim. t=${Date.now() - startTime}ms`);
+        }
+
+        // ─── RESERVE CONFIRMATION TRACKING ──────────────────────────────────
+        // Se Cadu perguntou se quer confirmar/reservar, marca a conversa.
+        // Assim, na próxima mensagem do cliente, saberemos que uma resposta
+        // "sim" é confirmação de reserva (não resposta a outra pergunta).
+        {
+            const replyLower = decision.reply_text.toLowerCase();
+            const isAskingConfirmation =
+                context.stockResult.requiresPhysicalCheck &&
+                (replyLower.includes("confirmar no estoque") ||
+                    replyLower.includes("confirme no estoque") ||
+                    replyLower.includes("separe pra você") ||
+                    replyLower.includes("separar pra você") ||
+                    replyLower.includes("quer que a gente confirme") ||
+                    replyLower.includes("quer que separe"));
+
+            if (isAskingConfirmation) {
+                prisma.conversation.update({
+                    where: { id: conversation.id },
+                    data: { lastQuestionType: "RESERVE_CONFIRMATION" },
+                }).catch(err => console.error("[WORKER] lastQuestionType update error:", err));
+            } else if (context.lastQuestionType === "RESERVE_CONFIRMATION") {
+                // Limpa o flag após qualquer outra resposta (evita trigger em mensagens futuras)
+                prisma.conversation.update({
+                    where: { id: conversation.id },
+                    data: { lastQuestionType: null },
+                }).catch(() => { });
+            }
+        }
+        // ─── FIM RESERVE CONFIRMATION ────────────────────────────────────────
+
+        // ─── STOCK CHECK TICKET (fire-and-forget) ──────────────────────────
+        // Cria ticket de checagem física quando:
+        // 1. Stock Agent indicou requiresPhysicalCheck
+        // 2. Cliente confirmou com resposta afirmativa
+        // 3. Cadu havia perguntado sobre confirmação (lastQuestionType = RESERVE_CONFIRMATION)
+        {
+            const sr = context.stockResult;
+            const shouldCreateTicket =
+                sr.requiresPhysicalCheck &&
+                sr.missingSlots.length === 0 &&
+                context.lastQuestionType === "RESERVE_CONFIRMATION" &&
+                isAffirmativeResponse(msg.text);
+
+            if (shouldCreateTicket) {
+                const checkPayload = {
+                    conversationId: conversation.id,
+                    productDescription: sr.best?.description ?? context.slots.product,
+                    size: sr.best?.size ?? context.slots.size,
+                    quantity: 1,
+                };
+
+                fetch(`http://localhost:${process.env.PORT ?? 3000}/api/inventory/check`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(checkPayload),
+                }).then(async r => {
+                    const data = await r.json();
+                    console.log(`[STOCK CHECK] 🎟️ Ticket criado: ${data.ticketNumber}`);
+                }).catch(err => console.error("[STOCK CHECK] ❌ Falha ao criar ticket:", err));
+            }
+        }
+        // ─── FIM STOCK CHECK ────────────────────────────────────────────────
+
+        // ─── FASE 2: AUTO-LEARNING REMOVED ──────────────────────────────────
+        // ─── FIM FASE 2 ─────────────────────────────────────────────────────
+
+        // ─── TELEMETRY: Momento 2 — Desfechos (pós envio) ───
+        // SKIP em CHAT_ONLY: telemetria adiciona latência desnecessária
+        if (!chatOnly) {
+            // D: Resultado da venda
+            emitTelemetry({
+                ...telemetryBase,
+                eventType: "sale_outcome",
+                payload: {
+                    ...telemetryBase,
+                    channel: "whatsapp",
+                    waMessageId: msg.waMessageId,
+                    status: decision.requires_human
+                        ? "escalated"
+                        : context.currentState === "closing"
+                            ? "converted"
+                            : "pending",
+                    motivo: transition.reason,
+                },
+            });
+
+            // E: Caso SAC (somente em escalações por suporte/handoff)
+            if (
+                decision.requires_human &&
+                (context.detectedIntent === "SUPPORT" || context.detectedIntent === "HANDOFF")
+            ) {
+                emitTelemetry({
+                    ...telemetryBase,
+                    eventType: "sac_case",
+                    payload: {
+                        ...telemetryBase,
+                        channel: "whatsapp",
+                        waMessageId: msg.waMessageId,
+                        tipo: context.detectedIntent,
+                        sentimento: context.frustrationLevel >= 2 ? "negativo" : "neutro",
+                    },
+                });
+            }
+        }
+
+    } catch (error) {
+        console.error("[WORKER] ❌ Erro no processamento:", error);
+    } finally {
+        await releaseLock(conversation.id);
     }
 }
