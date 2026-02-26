@@ -1,0 +1,98 @@
+[
+    {
+        "id": "real_sales_umbro_bump",
+        "intent": "SALES",
+        "description": "Cliente técnico procurando chuteira específica com dúvida sobre a forma (fit).",
+        "flow_logic": {
+            "start": "Cliente pergunta modelo e condição de tamanho (forma grande).",
+            "middle": "Agente explica característica técnica (forma justa), confirma estoque de tamanhos adjacentes.",
+            "end": "Agente oferece reserva de dois tamanhos para prova (experiência de loja)."
+        },
+        "dialogue": [
+            {
+                "role": "user",
+                "content": "Boa tarde. Vcs tem qual pro 5 bump disponível na loja?"
+            },
+            {
+                "role": "assistant",
+                "content": "Boa tarde! Temos sim. Qual seria a numeração que você procura?"
+            },
+            {
+                "role": "user",
+                "content": "42 se a forma for grande"
+            },
+            {
+                "role": "assistant",
+                "content": "Entendi. A Pro 5 Bump tem a forma bem justa por conta do amortecimento interno. Se você calça 42, recomendo provar a 42 e a 43. Tenho as duas na cor preta aqui. Quer que eu deixe separadas pra você vir testar?"
+            },
+            {
+                "role": "user",
+                "content": "Pode ser, tô indo aí."
+            },
+            {
+                "role": "assistant",
+                "content": "Combinado! Já separei aqui no balcão. Só procurar por Cadu quando chegar. Até já!"
+            }
+        ]
+    },
+    {
+        "id": "real_sac_error_chk099",
+        "intent": "SAC_REEMBOLSO",
+        "description": "Erro técnico específico de vale-troca no app (Anti-fraude).",
+        "flow_logic": {
+            "start": "Cliente relata erro CÓD CHK099 ao usar vale.",
+            "middle": "Agente diagnostica causa raiz (mudança de endereço/prevenção) e dá solução real.",
+            "end": "Agente oferece alternativa (loja ou manter endereço)."
+        },
+        "dialogue": [
+            {
+                "role": "user",
+                "content": "Boa tarde, recebi um vale troca mas ao tentar usar no app aparece o erro “CÓD CHK099”. Podem me ajudar?"
+            },
+            {
+                "role": "assistant",
+                "content": "Boa tarde! Esse erro CHK099 acontece quando o endereço de entrega do novo pedido é diferente do original. É uma trava de segurança do sistema. Tenta refazer o pedido mantendo o endereço antigo ou, se preferir, pode vir aqui na loja que a gente consegue usar o vale no caixa pra você."
+            }
+        ]
+    },
+    {
+        "id": "real_info_pickup_fail",
+        "intent": "INFO_PICKUP_POLICY",
+        "description": "Cliente frustrado por não conseguir 'Retira Rápido' no site.",
+        "flow_logic": {
+            "start": "Cliente questiona por que não consegue retirar na loja.",
+            "middle": "Agente explica regra de estoque local vs CD.",
+            "end": "Agente tenta converter para venda física (verificar estoque local)."
+        },
+        "dialogue": [
+            {
+                "role": "user",
+                "content": "Eu consigo pedir pelo site e retirar na loja? Tentei mas não aparece a opção..."
+            },
+            {
+                "role": "assistant",
+                "content": "A opção de retirada só aparece quando a gente tem o produto fisicamente aqui no estoque da loja. Se não apareceu, é porque viria do Centro de Distribuição. Mas me manda a foto ou nome do produto? Posso ver se tenho algo similar aqui pra você levar na hora!"
+            }
+        ]
+    },
+    {
+        "id": "real_sac_logistics_nike",
+        "intent": "SAC_ATRASO",
+        "description": "Confusão logística entre marcas do grupo (Nike/Centauro).",
+        "flow_logic": {
+            "start": "Cliente comprou Nike, rastreio mostra Centauro, pedido voltou.",
+            "middle": "Agente esclarece relação entre marcas e assume responsabilidade de busca.",
+            "end": "Agente coleta dados para rastreio interno."
+        },
+        "dialogue": [
+            {
+                "role": "user",
+                "content": "Fiz uma compra pela Nike e constou que ia ser devolvido. Vi que o CD é na Centauro, o pedido tá aí?"
+            },
+            {
+                "role": "assistant",
+                "content": "Entendo a dúvida. A Centauro opera a logística da Nike no Brasil, mas os estoques são integrados. Se constou devolução, ele volta pra triagem. Me passa seu CPF e o número do pedido (começado em 9 ou com letras) que eu rastreio exatamente onde ele está agora."
+            }
+        ]
+    }
+]

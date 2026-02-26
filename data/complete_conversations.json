@@ -1,0 +1,5532 @@
+[
+  {
+    "id": 1,
+    "chatId": "558796195385@s.whatsapp.net",
+    "intent": "SALES",
+    "turns": [
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Bom dia",
+        "timestamp": "2025-09-03T11:06:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Gostaria de saber quais tenis adidas feminino tem disponível na loja.",
+        "timestamp": "2025-09-03T11:06:42.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "Gostaria de saber quais modelos de maio para natação, vcs tem disponível.",
+        "timestamp": "2025-12-15T15:15:48.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "client",
+        "text": "Bom dia",
+        "timestamp": "2026-01-16T12:59:50.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "agent",
+        "text": "Olá Bom dia.",
+        "timestamp": "2026-01-16T13:10:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "temos o fila,oxer,speedo.",
+        "timestamp": "2026-01-16T13:10:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "client",
+        "text": "Tem essa?",
+        "timestamp": "2026-01-16T13:11:00.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "temos ela na cor vermelha e azul.",
+        "timestamp": "2026-01-16T13:12:20.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "client",
+        "text": "Quais tem disponível dessa marca?",
+        "timestamp": "2026-01-16T13:14:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "agent",
+        "text": "camisas puma?",
+        "timestamp": "2026-01-16T13:16:47.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "client",
+        "text": "Isso",
+        "timestamp": "2026-01-16T13:16:54.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 11,
+        "role": "client",
+        "text": "Puma, fila, nike",
+        "timestamp": "2026-01-16T13:17:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 12,
+        "role": "client",
+        "text": "E me manda os valores pfvr",
+        "timestamp": "2026-01-16T13:17:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 13,
+        "role": "agent",
+        "text": "Esportiva?",
+        "timestamp": "2026-01-16T16:05:30.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 14,
+        "role": "agent",
+        "text": "Temos essa e a vermelha também",
+        "timestamp": "2026-01-16T16:06:33.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 15,
+        "role": "agent",
+        "text": "Branca, vermelho e azul",
+        "timestamp": "2026-01-16T16:06:56.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796195385"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Bom dia",
+        "timestamp": "2025-09-03T11:06:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Gostaria de saber quais tenis adidas feminino tem disponível na loja.",
+        "timestamp": "2025-09-03T11:06:42.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "Gostaria de saber quais modelos de maio para natação, vcs tem disponível.",
+        "timestamp": "2025-12-15T15:15:48.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "client",
+        "text": "Bom dia",
+        "timestamp": "2026-01-16T12:59:50.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "agent",
+        "text": "Olá Bom dia.",
+        "timestamp": "2026-01-16T13:10:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "temos o fila,oxer,speedo.",
+        "timestamp": "2026-01-16T13:10:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "client",
+        "text": "Tem essa?",
+        "timestamp": "2026-01-16T13:11:00.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "temos ela na cor vermelha e azul.",
+        "timestamp": "2026-01-16T13:12:20.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "client",
+        "text": "Quais tem disponível dessa marca?",
+        "timestamp": "2026-01-16T13:14:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "agent",
+        "text": "camisas puma?",
+        "timestamp": "2026-01-16T13:16:47.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "client",
+        "text": "Isso",
+        "timestamp": "2026-01-16T13:16:54.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 11,
+        "role": "client",
+        "text": "Puma, fila, nike",
+        "timestamp": "2026-01-16T13:17:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 12,
+        "role": "client",
+        "text": "E me manda os valores pfvr",
+        "timestamp": "2026-01-16T13:17:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 13,
+        "role": "agent",
+        "text": "Esportiva?",
+        "timestamp": "2026-01-16T16:05:30.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 14,
+        "role": "agent",
+        "text": "Temos essa e a vermelha também",
+        "timestamp": "2026-01-16T16:06:33.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796195385"
+        }
+      },
+      {
+        "conversation_id": "558796195385@s.whatsapp.net",
+        "turn_index": 15,
+        "role": "agent",
+        "text": "Branca, vermelho e azul",
+        "timestamp": "2026-01-16T16:06:56.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796195385"
+        }
+      }
+    ],
+    "clientTurns": 9,
+    "agentTurns": 7,
+    "avgClientWords": 5,
+    "avgAgentWords": 4,
+    "conversation": [
+      {
+        "role": "client",
+        "text": "Bom dia"
+      },
+      {
+        "role": "client",
+        "text": "Gostaria de saber quais tenis adidas feminino tem disponível na loja."
+      },
+      {
+        "role": "client",
+        "text": "Gostaria de saber quais modelos de maio para natação, vcs tem disponível."
+      },
+      {
+        "role": "client",
+        "text": "Bom dia"
+      },
+      {
+        "role": "agent",
+        "text": "Olá Bom dia."
+      },
+      {
+        "role": "agent",
+        "text": "temos o fila,oxer,speedo."
+      },
+      {
+        "role": "client",
+        "text": "Tem essa?"
+      },
+      {
+        "role": "agent",
+        "text": "temos ela na cor vermelha e azul."
+      },
+      {
+        "role": "client",
+        "text": "Quais tem disponível dessa marca?"
+      },
+      {
+        "role": "agent",
+        "text": "camisas puma?"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "chatId": "558788612996@s.whatsapp.net",
+    "intent": "SALES",
+    "turns": [
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "boa tarde",
+        "timestamp": "2025-12-15T16:01:30.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "tem camisa do Corinthians feminina?",
+        "timestamp": "2025-12-15T16:01:47.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa tarde",
+        "timestamp": "2025-12-18T17:25:25.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "Tamanho p",
+        "timestamp": "2025-12-18T17:25:30.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "tem a preta com laranja não né?",
+        "timestamp": "2025-12-18T17:26:36.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "Boa tarde somente para pedir direto no site",
+        "timestamp": "2025-12-18T17:28:45.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "boa tarde",
+        "timestamp": "2025-12-15T16:01:30.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "tem camisa do Corinthians feminina?",
+        "timestamp": "2025-12-15T16:01:47.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa tarde",
+        "timestamp": "2025-12-18T17:25:25.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "Tamanho p",
+        "timestamp": "2025-12-18T17:25:30.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "tem a preta com laranja não né?",
+        "timestamp": "2025-12-18T17:26:36.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      },
+      {
+        "conversation_id": "558788612996@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "Boa tarde somente para pedir direto no site",
+        "timestamp": "2025-12-18T17:28:45.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558788612996"
+        }
+      }
+    ],
+    "clientTurns": 3,
+    "agentTurns": 3,
+    "avgClientWords": 5,
+    "avgAgentWords": 4,
+    "conversation": [
+      {
+        "role": "client",
+        "text": "boa tarde"
+      },
+      {
+        "role": "client",
+        "text": "tem camisa do Corinthians feminina?"
+      },
+      {
+        "role": "agent",
+        "text": "Boa tarde"
+      },
+      {
+        "role": "agent",
+        "text": "Tamanho p"
+      },
+      {
+        "role": "client",
+        "text": "tem a preta com laranja não né?"
+      },
+      {
+        "role": "agent",
+        "text": "Boa tarde somente para pedir direto no site"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "chatId": "558799623937@s.whatsapp.net",
+    "intent": "SALES",
+    "turns": [
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "tem bola de futebol?",
+        "timestamp": "2025-09-30T00:18:23.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "?",
+        "timestamp": "2025-09-30T00:42:43.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "bom dia",
+        "timestamp": "2025-10-03T14:19:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "client",
+        "text": "boa tarde",
+        "timestamp": "2025-12-15T16:19:14.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "tem essa camisa feminina?",
+        "timestamp": "2025-12-15T16:19:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "boa tarde",
+        "timestamp": "2025-12-15T18:55:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "agent",
+        "text": "loja fisica nao, mas temos pra pedido",
+        "timestamp": "2025-12-15T18:55:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "client",
+        "text": "tem ela masculina?",
+        "timestamp": "2025-12-18T14:14:57.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "client",
+        "text": "no tamanho P",
+        "timestamp": "2025-12-18T14:15:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "client",
+        "text": "bom dia",
+        "timestamp": "2025-12-18T14:15:02.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "agent",
+        "text": "Boa tarde temos não somente para pedir direto no site",
+        "timestamp": "2025-12-18T17:17:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "tem bola de futebol?",
+        "timestamp": "2025-09-30T00:18:23.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "?",
+        "timestamp": "2025-09-30T00:42:43.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "bom dia",
+        "timestamp": "2025-10-03T14:19:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "client",
+        "text": "boa tarde",
+        "timestamp": "2025-12-15T16:19:14.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "tem essa camisa feminina?",
+        "timestamp": "2025-12-15T16:19:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "boa tarde",
+        "timestamp": "2025-12-15T18:55:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "agent",
+        "text": "loja fisica nao, mas temos pra pedido",
+        "timestamp": "2025-12-15T18:55:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "client",
+        "text": "tem ela masculina?",
+        "timestamp": "2025-12-18T14:14:57.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "client",
+        "text": "no tamanho P",
+        "timestamp": "2025-12-18T14:15:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "client",
+        "text": "bom dia",
+        "timestamp": "2025-12-18T14:15:02.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      },
+      {
+        "conversation_id": "558799623937@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "agent",
+        "text": "Boa tarde temos não somente para pedir direto no site",
+        "timestamp": "2025-12-18T17:17:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558799623937"
+        }
+      }
+    ],
+    "clientTurns": 8,
+    "agentTurns": 3,
+    "avgClientWords": 3,
+    "avgAgentWords": 6,
+    "conversation": [
+      {
+        "role": "client",
+        "text": "tem bola de futebol?"
+      },
+      {
+        "role": "client",
+        "text": "?"
+      },
+      {
+        "role": "client",
+        "text": "bom dia"
+      },
+      {
+        "role": "client",
+        "text": "boa tarde"
+      },
+      {
+        "role": "client",
+        "text": "tem essa camisa feminina?"
+      },
+      {
+        "role": "agent",
+        "text": "boa tarde"
+      },
+      {
+        "role": "agent",
+        "text": "loja fisica nao, mas temos pra pedido"
+      },
+      {
+        "role": "client",
+        "text": "tem ela masculina?"
+      },
+      {
+        "role": "client",
+        "text": "no tamanho P"
+      },
+      {
+        "role": "client",
+        "text": "bom dia"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "chatId": "551142002236@s.whatsapp.net",
+    "intent": "SALES",
+    "turns": [
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "agent",
+        "text": "Boa tarde",
+        "timestamp": "2025-12-12T18:15:32.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Olá, tudo bem? Eu sou a *Ceci*, a assistente virtual do time de *Contas a Receber!* 👩🏽🤖\n\n⚠Esse número é exclusivo para as lojas, *não sendo permitido a divulgação para os clientes finais*⚠\n\nPara falar com nosso time financeiro primeiro preciso que você responda algumas perguntinhas, assim consigo te passar as orientações corretas, combinado? 😎",
+        "timestamp": "2025-12-12T18:15:39.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "Escolha sua unidade de negócio / procedimento abaixo: \n\n1️⃣ Centauro ⚽\n2️⃣ Nike 🏀\n3️⃣ Cartões Corporativos - Clara 💳\n\nDigite o número da opção escolhida 👇",
+        "timestamp": "2025-12-12T18:15:42.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "1",
+        "timestamp": "2025-12-12T18:16:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "Sobre qual assunto você quer falar com o nosso time?\n\n*1* - Chamados ServiceNow/Fênix 🖥💲\n*2* - Vendas via transferência - TED 💱\n*3* - Numerário da loja 🏧\n*4* - Equipamentos (maquinetas) 📱\n*5* - Vale troca 🔀\n*6* - Cartão presente 💳\n*7* - Pix 💷 📱\n*8* - *Comunicados* Contas a receber 📢\n*9* - Reembolso no ato 💵\n*10* - Repasse 🚨\n*11* - Documentos para Download 🆘\n*12* - Links úteis 🔗\n*13* - Voltar 🔙\n\nDigite o número da opção escolhida 👇",
+        "timestamp": "2025-12-12T18:16:26.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "6",
+        "timestamp": "2025-12-12T18:18:07.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "client",
+        "text": "Essa opção é sobre diversos procedimentos de cartão presente.\n\nJá encaminhou um chamado para tratativa? \n\n1️⃣ Sim, falar com consultor\n2️⃣ Não, tirar dúvidas antes de abrir o chamado\n3️⃣ Voltar\n4️⃣ Encerrar atendimento\n\nDigite o número da opção escolhida 👇",
+        "timestamp": "2025-12-12T18:18:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "1",
+        "timestamp": "2025-12-12T18:18:59.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "client",
+        "text": "Qual o nº de sua loja ? (Caso já tenha informado anteriormente em alguma conversa, apenas digite *0*)",
+        "timestamp": "2025-12-12T18:19:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "agent",
+        "text": "Ce-0178",
+        "timestamp": "2025-12-12T18:19:19.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "client",
+        "text": "Informe por favor o *nº do chamado* para irmos adiantando 🏃🏼‍♀️🏃🏼‍♂️ e nos diga do que precisa falar sobre ele por favor.\n\nVocê já viu que houveram mudanças ao abrir chamados no *ServiceNow*? Veja no link abaixo:\n\n*https://drive.google.com/file/d/1K1WEBCB9z8JfZH4MRniek5z9knRtBAeK/view?usp=sharing*",
+        "timestamp": "2025-12-12T18:19:23.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 11,
+        "role": "agent",
+        "text": "Fui tentar fazer um cartão presente pra um cliente e não consegui",
+        "timestamp": "2025-12-12T18:20:45.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 12,
+        "role": "client",
+        "text": "Olá, tudo bem? Eu sou a *Ceci*, a assistente virtual do time de *Contas a Receber!* 👩🏽🤖\n\n⚠Esse número é exclusivo para as lojas, *não sendo permitido a divulgação para os clientes finais*⚠\n\nPara falar com nosso time financeiro primeiro preciso que você responda algumas perguntinhas, assim consigo te passar as orientações corretas, combinado? 😎",
+        "timestamp": "2025-12-12T18:20:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 13,
+        "role": "client",
+        "text": "Escolha sua unidade de negócio / procedimento abaixo: \n\n1️⃣ Centauro ⚽\n2️⃣ Nike 🏀\n3️⃣ Cartões Corporativos - Clara 💳\n\nDigite o número da opção escolhida 👇",
+        "timestamp": "2025-12-12T18:20:57.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "agent",
+        "text": "Boa tarde",
+        "timestamp": "2025-12-12T18:15:32.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Olá, tudo bem? Eu sou a *Ceci*, a assistente virtual do time de *Contas a Receber!* 👩🏽🤖\n\n⚠Esse número é exclusivo para as lojas, *não sendo permitido a divulgação para os clientes finais*⚠\n\nPara falar com nosso time financeiro primeiro preciso que você responda algumas perguntinhas, assim consigo te passar as orientações corretas, combinado? 😎",
+        "timestamp": "2025-12-12T18:15:39.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "Escolha sua unidade de negócio / procedimento abaixo: \n\n1️⃣ Centauro ⚽\n2️⃣ Nike 🏀\n3️⃣ Cartões Corporativos - Clara 💳\n\nDigite o número da opção escolhida 👇",
+        "timestamp": "2025-12-12T18:15:42.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "1",
+        "timestamp": "2025-12-12T18:16:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "Sobre qual assunto você quer falar com o nosso time?\n\n*1* - Chamados ServiceNow/Fênix 🖥💲\n*2* - Vendas via transferência - TED 💱\n*3* - Numerário da loja 🏧\n*4* - Equipamentos (maquinetas) 📱\n*5* - Vale troca 🔀\n*6* - Cartão presente 💳\n*7* - Pix 💷 📱\n*8* - *Comunicados* Contas a receber 📢\n*9* - Reembolso no ato 💵\n*10* - Repasse 🚨\n*11* - Documentos para Download 🆘\n*12* - Links úteis 🔗\n*13* - Voltar 🔙\n\nDigite o número da opção escolhida 👇",
+        "timestamp": "2025-12-12T18:16:26.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "6",
+        "timestamp": "2025-12-12T18:18:07.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "client",
+        "text": "Essa opção é sobre diversos procedimentos de cartão presente.\n\nJá encaminhou um chamado para tratativa? \n\n1️⃣ Sim, falar com consultor\n2️⃣ Não, tirar dúvidas antes de abrir o chamado\n3️⃣ Voltar\n4️⃣ Encerrar atendimento\n\nDigite o número da opção escolhida 👇",
+        "timestamp": "2025-12-12T18:18:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "1",
+        "timestamp": "2025-12-12T18:18:59.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "client",
+        "text": "Qual o nº de sua loja ? (Caso já tenha informado anteriormente em alguma conversa, apenas digite *0*)",
+        "timestamp": "2025-12-12T18:19:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "agent",
+        "text": "Ce-0178",
+        "timestamp": "2025-12-12T18:19:19.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "client",
+        "text": "Informe por favor o *nº do chamado* para irmos adiantando 🏃🏼‍♀️🏃🏼‍♂️ e nos diga do que precisa falar sobre ele por favor.\n\nVocê já viu que houveram mudanças ao abrir chamados no *ServiceNow*? Veja no link abaixo:\n\n*https://drive.google.com/file/d/1K1WEBCB9z8JfZH4MRniek5z9knRtBAeK/view?usp=sharing*",
+        "timestamp": "2025-12-12T18:19:23.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 11,
+        "role": "agent",
+        "text": "Fui tentar fazer um cartão presente pra um cliente e não consegui",
+        "timestamp": "2025-12-12T18:20:45.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 12,
+        "role": "client",
+        "text": "Olá, tudo bem? Eu sou a *Ceci*, a assistente virtual do time de *Contas a Receber!* 👩🏽🤖\n\n⚠Esse número é exclusivo para as lojas, *não sendo permitido a divulgação para os clientes finais*⚠\n\nPara falar com nosso time financeiro primeiro preciso que você responda algumas perguntinhas, assim consigo te passar as orientações corretas, combinado? 😎",
+        "timestamp": "2025-12-12T18:20:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      },
+      {
+        "conversation_id": "551142002236@s.whatsapp.net",
+        "turn_index": 13,
+        "role": "client",
+        "text": "Escolha sua unidade de negócio / procedimento abaixo: \n\n1️⃣ Centauro ⚽\n2️⃣ Nike 🏀\n3️⃣ Cartões Corporativos - Clara 💳\n\nDigite o número da opção escolhida 👇",
+        "timestamp": "2025-12-12T18:20:57.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "551142002236"
+        }
+      }
+    ],
+    "clientTurns": 8,
+    "agentTurns": 6,
+    "avgClientWords": 44,
+    "avgAgentWords": 3,
+    "conversation": [
+      {
+        "role": "agent",
+        "text": "Boa tarde"
+      },
+      {
+        "role": "client",
+        "text": "Olá, tudo bem? Eu sou a *Ceci*, a assistente virtual do time de *Contas a Receber!* 👩🏽🤖\n\n⚠Esse número é exclusivo para as lojas, *não sendo permitido a divulgação para os clientes finais*⚠\n\nPara fa"
+      },
+      {
+        "role": "client",
+        "text": "Escolha sua unidade de negócio / procedimento abaixo: \n\n1️⃣ Centauro ⚽\n2️⃣ Nike 🏀\n3️⃣ Cartões Corporativos - Clara 💳\n\nDigite o número da opção escolhida 👇"
+      },
+      {
+        "role": "agent",
+        "text": "1"
+      },
+      {
+        "role": "client",
+        "text": "Sobre qual assunto você quer falar com o nosso time?\n\n*1* - Chamados ServiceNow/Fênix 🖥💲\n*2* - Vendas via transferência - TED 💱\n*3* - Numerário da loja 🏧\n*4* - Equipamentos (maquinetas) 📱\n*5* - V"
+      },
+      {
+        "role": "agent",
+        "text": "6"
+      },
+      {
+        "role": "client",
+        "text": "Essa opção é sobre diversos procedimentos de cartão presente.\n\nJá encaminhou um chamado para tratativa? \n\n1️⃣ Sim, falar com consultor\n2️⃣ Não, tirar dúvidas antes de abrir o chamado\n3️⃣ Voltar\n4️⃣ En"
+      },
+      {
+        "role": "agent",
+        "text": "1"
+      },
+      {
+        "role": "client",
+        "text": "Qual o nº de sua loja ? (Caso já tenha informado anteriormente em alguma conversa, apenas digite *0*)"
+      },
+      {
+        "role": "agent",
+        "text": "Ce-0178"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "chatId": "558781725270@s.whatsapp.net",
+    "intent": "SAC_REEMBOLSO",
+    "turns": [
+      {
+        "conversation_id": "558781725270@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde, hoje realizei o reembolso de uma compra feita pelo aplicativo diretamente na loja, e o atendente me forneceu um código vale para utilizar na minha conta do app. Porém, ao tentar resgatar o código, aparece o erro “CÓD CHK099”",
+        "timestamp": "2025-12-01T20:19:25.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558781725270"
+        }
+      },
+      {
+        "conversation_id": "558781725270@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "poderiam verificar o que está acontecendo e me ajudar a resolver, por favor?",
+        "timestamp": "2025-12-01T20:19:58.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558781725270"
+        }
+      },
+      {
+        "conversation_id": "558781725270@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa tarde, quando se muda o endereço original para prevenção o VT não se liberar para uso, quando for assim teria que vir em loja refazer o pedido, ou solicitar o estorno no app.",
+        "timestamp": "2025-12-01T20:23:15.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558781725270"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "558781725270@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde, hoje realizei o reembolso de uma compra feita pelo aplicativo diretamente na loja, e o atendente me forneceu um código vale para utilizar na minha conta do app. Porém, ao tentar resgatar o código, aparece o erro “CÓD CHK099”",
+        "timestamp": "2025-12-01T20:19:25.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558781725270"
+        }
+      },
+      {
+        "conversation_id": "558781725270@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "poderiam verificar o que está acontecendo e me ajudar a resolver, por favor?",
+        "timestamp": "2025-12-01T20:19:58.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558781725270"
+        }
+      },
+      {
+        "conversation_id": "558781725270@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa tarde, quando se muda o endereço original para prevenção o VT não se liberar para uso, quando for assim teria que vir em loja refazer o pedido, ou solicitar o estorno no app.",
+        "timestamp": "2025-12-01T20:23:15.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558781725270"
+        }
+      }
+    ],
+    "clientTurns": 2,
+    "agentTurns": 1,
+    "avgClientWords": 27,
+    "avgAgentWords": 34,
+    "conversation": [
+      {
+        "role": "client",
+        "text": "Boa tarde, hoje realizei o reembolso de uma compra feita pelo aplicativo diretamente na loja, e o atendente me forneceu um código vale para utilizar na minha conta do app. Porém, ao tentar resgatar o "
+      },
+      {
+        "role": "client",
+        "text": "poderiam verificar o que está acontecendo e me ajudar a resolver, por favor?"
+      },
+      {
+        "role": "agent",
+        "text": "Boa tarde, quando se muda o endereço original para prevenção o VT não se liberar para uso, quando for assim teria que vir em loja refazer o pedido, ou solicitar o estorno no app."
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "chatId": "558994646763@s.whatsapp.net",
+    "intent": "INFO",
+    "turns": [
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde! Esse contato é centauro Petrolina?",
+        "timestamp": "2025-11-27T19:25:15.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Fiz uma compra (pela Nike) e constou que meu pedido ia ser devolvido por conta do endereço errado, após uma única tentativa de entrega. Quando pesquisei pelo centro de distribuição, foi informado que é na centauro, então gostaria de saber se esse pedido realmente se encontra aí ou se já foi devolvido.",
+        "timestamp": "2025-11-27T19:32:11.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa noite,é o número da Centauro, vou precisar do número do pedido e do seu CPF",
+        "timestamp": "2025-11-29T23:05:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "client",
+        "text": "Pedido ***.***.***-** \nCpf ***.***.***-**",
+        "timestamp": "2025-11-29T23:14:40.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "agent",
+        "text": ".",
+        "timestamp": "2025-12-02T19:57:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "olha no app ve se geraram vale-troca",
+        "timestamp": "2025-12-02T19:57:57.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde! Esse contato é centauro Petrolina?",
+        "timestamp": "2025-11-27T19:25:15.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Fiz uma compra (pela Nike) e constou que meu pedido ia ser devolvido por conta do endereço errado, após uma única tentativa de entrega. Quando pesquisei pelo centro de distribuição, foi informado que é na centauro, então gostaria de saber se esse pedido realmente se encontra aí ou se já foi devolvido.",
+        "timestamp": "2025-11-27T19:32:11.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa noite,é o número da Centauro, vou precisar do número do pedido e do seu CPF",
+        "timestamp": "2025-11-29T23:05:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "client",
+        "text": "Pedido ***.***.***-** \nCpf ***.***.***-**",
+        "timestamp": "2025-11-29T23:14:40.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "agent",
+        "text": ".",
+        "timestamp": "2025-12-02T19:57:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      },
+      {
+        "conversation_id": "558994646763@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "olha no app ve se geraram vale-troca",
+        "timestamp": "2025-12-02T19:57:57.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558994646763"
+        }
+      }
+    ],
+    "clientTurns": 3,
+    "agentTurns": 3,
+    "avgClientWords": 21,
+    "avgAgentWords": 8,
+    "conversation": [
+      {
+        "role": "client",
+        "text": "Boa tarde! Esse contato é centauro Petrolina?"
+      },
+      {
+        "role": "client",
+        "text": "Fiz uma compra (pela Nike) e constou que meu pedido ia ser devolvido por conta do endereço errado, após uma única tentativa de entrega. Quando pesquisei pelo centro de distribuição, foi informado que "
+      },
+      {
+        "role": "agent",
+        "text": "Boa noite,é o número da Centauro, vou precisar do número do pedido e do seu CPF"
+      },
+      {
+        "role": "client",
+        "text": "Pedido ***.***.***-** \nCpf ***.***.***-**"
+      },
+      {
+        "role": "agent",
+        "text": "."
+      },
+      {
+        "role": "agent",
+        "text": "olha no app ve se geraram vale-troca"
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "chatId": "557481001414@s.whatsapp.net",
+    "intent": "INFO",
+    "turns": [
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde!",
+        "timestamp": "2025-10-29T18:07:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557481001414"
+        }
+      },
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Eu consigo pedir pelo site e retirar na loja?",
+        "timestamp": "2025-10-29T18:07:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557481001414"
+        }
+      },
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa tarde",
+        "timestamp": "2025-10-29T18:48:40.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557481001414"
+        }
+      },
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "Consegue sim.",
+        "timestamp": "2025-10-29T18:49:30.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "557481001414"
+        }
+      },
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "Como faço? Tentei ao finalizar o pedido, mas não aparece a opção de retirar na loja....",
+        "timestamp": "2025-10-29T18:50:34.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557481001414"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde!",
+        "timestamp": "2025-10-29T18:07:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557481001414"
+        }
+      },
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Eu consigo pedir pelo site e retirar na loja?",
+        "timestamp": "2025-10-29T18:07:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557481001414"
+        }
+      },
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa tarde",
+        "timestamp": "2025-10-29T18:48:40.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557481001414"
+        }
+      },
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "Consegue sim.",
+        "timestamp": "2025-10-29T18:49:30.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "557481001414"
+        }
+      },
+      {
+        "conversation_id": "557481001414@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "Como faço? Tentei ao finalizar o pedido, mas não aparece a opção de retirar na loja....",
+        "timestamp": "2025-10-29T18:50:34.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557481001414"
+        }
+      }
+    ],
+    "clientTurns": 3,
+    "agentTurns": 2,
+    "avgClientWords": 9,
+    "avgAgentWords": 2,
+    "conversation": [
+      {
+        "role": "client",
+        "text": "Boa tarde!"
+      },
+      {
+        "role": "client",
+        "text": "Eu consigo pedir pelo site e retirar na loja?"
+      },
+      {
+        "role": "agent",
+        "text": "Boa tarde"
+      },
+      {
+        "role": "agent",
+        "text": "Consegue sim."
+      },
+      {
+        "role": "client",
+        "text": "Como faço? Tentei ao finalizar o pedido, mas não aparece a opção de retirar na loja...."
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "chatId": "558796554259@s.whatsapp.net",
+    "intent": "UNKNOWN",
+    "turns": [
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "agent",
+        "text": "Ticket #18169444",
+        "timestamp": "2025-09-02T21:41:34.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "agent",
+        "text": "985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406",
+        "timestamp": "2025-09-02T21:41:48.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "Ticket #18169444985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406",
+        "timestamp": "2025-09-02T22:05:48.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "client",
+        "text": "Ticket #18169444985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406\nGerar Vale troca pra atender cliente em loja",
+        "timestamp": "2025-09-02T22:06:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "agent",
+        "text": "111\t75\t***.***.***-**\t99557\t113654\t21/08/2025 17:56:57",
+        "timestamp": "2025-09-03T21:20:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "Ticket #18181606 LIBERAR VT BOLETO 99",
+        "timestamp": "2025-09-03T21:55:09.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "agent",
+        "text": "985078066",
+        "timestamp": "2025-09-03T22:32:55.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "chamado CSCR00177676",
+        "timestamp": "2025-09-03T23:18:49.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "agent",
+        "text": "Ticket #18204861 985078066 rafael",
+        "timestamp": "2025-09-05T21:28:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "agent",
+        "text": "CSCR00179709 duplicidade",
+        "timestamp": "2025-09-11T00:27:28.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "agent",
+        "text": "985472062 pedido",
+        "timestamp": "2025-09-15T13:42:16.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 11,
+        "role": "agent",
+        "text": "CSCR00180666",
+        "timestamp": "2025-09-15T13:54:19.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 12,
+        "role": "client",
+        "text": "Ne isso não",
+        "timestamp": "2025-09-17T21:31:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 13,
+        "role": "client",
+        "text": "Quero print",
+        "timestamp": "2025-09-17T21:31:26.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 14,
+        "role": "agent",
+        "text": "https://app.aliax.com.br/",
+        "timestamp": "2025-09-23T18:05:10.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 15,
+        "role": "agent",
+        "text": "ticket #18408188",
+        "timestamp": "2025-09-23T22:04:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 16,
+        "role": "agent",
+        "text": "ticket #18408185",
+        "timestamp": "2025-09-23T22:04:17.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 17,
+        "role": "agent",
+        "text": "ticket #18408188 ticket #18408185 devolução em loja, cliente deseja estorno. Pedido 984317525",
+        "timestamp": "2025-09-23T22:05:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 18,
+        "role": "agent",
+        "text": "Ticket #18424710",
+        "timestamp": "2025-09-25T00:31:52.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 19,
+        "role": "client",
+        "text": "Protocolo das maquininhas",
+        "timestamp": "2025-09-26T17:50:54.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 20,
+        "role": "client",
+        "text": "Muito obrigado por aguardar Ingrid. Eu já finalizei a abertura de sua solicitação. Seu protocolo é: ***.***.***-** e o prazo ficou para até o dia 30/09/2025 23:59:59, você pode acompanhar prazos e status referentes ao(s) seu(s) equipamento(s) pelo APP GETNET BRASIL, na aba INICIO > Clique na flechinha ao lado do seu nome > MEUS PEDIDOS., Lembrando que o atendimento pode acontecer a partir de amanhã. Sua ordem é a número: 65718639, 65718761, 65718747, 65718767 e 65718803. Eu lhe ajudaria com algo mais além disto?",
+        "timestamp": "2025-09-26T17:50:54.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 21,
+        "role": "agent",
+        "text": "Ticket #18459847 985768036",
+        "timestamp": "2025-09-27T20:19:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 22,
+        "role": "agent",
+        "text": "Ticket #18465379 985950548 estorno",
+        "timestamp": "2025-09-28T21:14:28.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 23,
+        "role": "client",
+        "text": "Feedback sobre metas. Entender que, quanto mais você converte Quanto mais você acrescenta uma meia ou um outro produto do auto-serviço, mais aumenta na sua venda. E isso ajuda a aumentar a sua venda no valor final do mês.",
+        "timestamp": "2025-09-29T23:35:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 24,
+        "role": "client",
+        "text": "***.***.***-** \n121217 \nEscala",
+        "timestamp": "2025-09-30T19:31:16.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 25,
+        "role": "agent",
+        "text": "Ananda maria\tESTORNO\t18491183\t985729296\nAnanda maria\tESTORNO\t18491179\t98572929",
+        "timestamp": "2025-09-30T22:55:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 26,
+        "role": "agent",
+        "text": "Ticket #18515109 pedido 983848621",
+        "timestamp": "2025-10-02T20:43:47.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 27,
+        "role": "agent",
+        "text": "Ticket #18541314  986379592",
+        "timestamp": "2025-10-04T21:54:55.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 28,
+        "role": "agent",
+        "text": "Baixo resultado no indicadores, com um bom resultado da meta. Realizar o roteiro de atendimento é o passo inicial. estudar sobre os beneficios das meias e exercitar seus conhecimentos.",
+        "timestamp": "2025-10-06T23:52:16.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 29,
+        "role": "agent",
+        "text": "Ticket #18559816 pedido 985042281",
+        "timestamp": "2025-10-07T00:24:48.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 30,
+        "role": "agent",
+        "text": "986834463 pedido. Ticket #18571682 pedido devolvido em loja. Deseja estorno.",
+        "timestamp": "2025-10-07T21:32:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 31,
+        "role": "agent",
+        "text": "Ticket #18590594 PEDIDO 986271080 Atraso na entrega. conferir endereço e novo prazo.",
+        "timestamp": "2025-10-09T13:49:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 32,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-10-09T15:13:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 33,
+        "role": "agent",
+        "text": "CSCR00188252",
+        "timestamp": "2025-10-09T15:40:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 34,
+        "role": "client",
+        "text": "***.***.***-**",
+        "timestamp": "2025-10-09T17:30:41.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 35,
+        "role": "agent",
+        "text": "Ticket #18594379 pedido 985042281 vale troca cancelado desde o dia 15/09 mas estorno ainda não foi realizado.",
+        "timestamp": "2025-10-09T17:45:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 36,
+        "role": "agent",
+        "text": "Número do pedido\n\n987473945",
+        "timestamp": "2025-10-22T00:26:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 37,
+        "role": "client",
+        "text": "Teve um bom desempenho em vendas, ficando pouquíssimo pra atingir a meta. De misto, mas dentro dos outros indicadores.",
+        "timestamp": "2025-10-23T18:00:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 38,
+        "role": "agent",
+        "text": "HRREQ00172303 solicitação de uniforme",
+        "timestamp": "2025-10-24T22:27:32.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 39,
+        "role": "agent",
+        "text": "ENTREGA\t18734514\t987348472",
+        "timestamp": "2025-10-26T16:33:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 40,
+        "role": "agent",
+        "text": "Ticket #18736812 984556755",
+        "timestamp": "2025-10-26T22:45:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 41,
+        "role": "client",
+        "text": "NPS 2,7%\n\nFeedback voltado para NPS. e falamos sobre como ajudar na quantidade de respondentes. Falar sobre a pesquisa ao pedir o e-mail do cliente, reforçar sobre a pesquisa na saída do cliente e levar ele ate a porta.",
+        "timestamp": "2025-10-28T22:42:33.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 42,
+        "role": "client",
+        "text": "Foi pontuado a ida ao ao serviço no início do atendimento ao ir buscar o tênis no estoque, deixando o cliente olhar outras peças enquanto ele busca tênis no estoque.",
+        "timestamp": "2025-11-03T23:48:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 43,
+        "role": "agent",
+        "text": "Ticket #18795102",
+        "timestamp": "2025-11-04T18:26:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 44,
+        "role": "agent",
+        "text": "Ticket #18809555",
+        "timestamp": "2025-11-06T13:40:39.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 45,
+        "role": "agent",
+        "text": "Ingrid",
+        "timestamp": "2025-11-11T20:42:10.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 46,
+        "role": "agent",
+        "text": "Thaise aqui",
+        "timestamp": "2025-11-11T20:42:19.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 47,
+        "role": "client",
+        "text": "Oii",
+        "timestamp": "2025-11-11T20:42:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 48,
+        "role": "agent",
+        "text": "qual o site pra a gente consultar a venda na hora",
+        "timestamp": "2025-11-11T20:42:37.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 49,
+        "role": "agent",
+        "text": "?",
+        "timestamp": "2025-11-11T20:42:39.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 50,
+        "role": "client",
+        "text": "Portal de loja",
+        "timestamp": "2025-11-11T20:42:52.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 51,
+        "role": "agent",
+        "text": "não subia ainda a venda",
+        "timestamp": "2025-11-11T20:43:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 52,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-11-11T23:11:43.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 53,
+        "role": "agent",
+        "text": "Ticket #18954577",
+        "timestamp": "2025-11-20T22:31:36.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 54,
+        "role": "agent",
+        "text": "988706308",
+        "timestamp": "2025-11-20T22:31:46.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 55,
+        "role": "agent",
+        "text": "987430741 pedido pra abrir chamado de atrelar venda",
+        "timestamp": "2025-11-23T19:26:23.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 56,
+        "role": "agent",
+        "text": "8798856-3778",
+        "timestamp": "2025-11-23T19:38:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 57,
+        "role": "agent",
+        "text": "Ticket #18993081 pedido 986959350",
+        "timestamp": "2025-11-25T00:07:59.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 58,
+        "role": "agent",
+        "text": "https://app.aliax.com.br/",
+        "timestamp": "2025-11-26T01:18:02.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 59,
+        "role": "agent",
+        "text": "Ticket #19036449",
+        "timestamp": "2025-11-28T00:04:50.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 60,
+        "role": "agent",
+        "text": "Ticket #19115617 988544346 pedido fechado no 99",
+        "timestamp": "2025-12-03T18:37:45.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 61,
+        "role": "agent",
+        "text": "989954304",
+        "timestamp": "2025-12-03T22:44:43.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 62,
+        "role": "agent",
+        "text": "Ticket #19119897",
+        "timestamp": "2025-12-03T22:45:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 63,
+        "role": "client",
+        "text": "***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**",
+        "timestamp": "2025-12-04T15:02:29.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 64,
+        "role": "client",
+        "text": "Olá, tudo bem? \n\nEstou te chamando para vermos juntos alguns pedidos que passaram do prazo de retirada. Você consegue dar uma olhadinha para mim?\n\nPrecisamos fazer as devoluções, já que os 15 dias já foram completos.\n\nSegue os pedidos abaixo:",
+        "timestamp": "2025-12-04T15:02:29.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 65,
+        "role": "agent",
+        "text": "989263484  Ticket #19166279",
+        "timestamp": "2025-12-07T19:32:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 66,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-12-10T18:21:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 67,
+        "role": "agent",
+        "text": "ei esse cliente foi o do debito q passou e ainda nao foi extornado",
+        "timestamp": "2025-12-10T18:22:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 68,
+        "role": "client",
+        "text": "10/12 foi parcelado e ja ta na décima parcela",
+        "timestamp": "2025-12-10T18:48:29.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 69,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-12-10T23:43:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 70,
+        "role": "agent",
+        "text": "989746585",
+        "timestamp": "2025-12-10T23:43:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 71,
+        "role": "agent",
+        "text": "Ticket #19260202 pedido 989068557",
+        "timestamp": "2025-12-12T20:52:02.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 72,
+        "role": "agent",
+        "text": "Ticket #19475949 pedido não consta como entregue e cliente não consegue fazer a troca.",
+        "timestamp": "2025-12-28T21:41:16.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 73,
+        "role": "agent",
+        "text": "CSCR00213930",
+        "timestamp": "2025-12-31T15:46:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 74,
+        "role": "client",
+        "text": "Olhar chamado na sexta-feira",
+        "timestamp": "2025-12-31T15:46:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 75,
+        "role": "agent",
+        "text": "Ei",
+        "timestamp": "2026-01-05T19:22:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 76,
+        "role": "agent",
+        "text": "Thaise aqui",
+        "timestamp": "2026-01-05T19:22:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 77,
+        "role": "agent",
+        "text": "o cliente retornou em loja",
+        "timestamp": "2026-01-05T19:22:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 78,
+        "role": "agent",
+        "text": "tu fez o estorno em caixa ou abriu chamado?",
+        "timestamp": "2026-01-05T19:22:46.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 79,
+        "role": "client",
+        "text": "Esse chamado aqui",
+        "timestamp": "2026-01-05T19:22:48.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 80,
+        "role": "agent",
+        "text": "certo",
+        "timestamp": "2026-01-05T19:22:54.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 81,
+        "role": "client",
+        "text": "Olha ai",
+        "timestamp": "2026-01-05T19:22:56.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 82,
+        "role": "agent",
+        "text": "vou conferir",
+        "timestamp": "2026-01-05T19:22:59.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 83,
+        "role": "agent",
+        "text": "pelo service now, né?!",
+        "timestamp": "2026-01-05T19:23:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 84,
+        "role": "client",
+        "text": "Isso",
+        "timestamp": "2026-01-05T19:23:23.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 85,
+        "role": "agent",
+        "text": "vou precisar do teu login",
+        "timestamp": "2026-01-05T19:27:02.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 86,
+        "role": "agent",
+        "text": "esse chamado n dá pra consultar pelo consulta ai",
+        "timestamp": "2026-01-05T19:27:16.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 87,
+        "role": "client",
+        "text": "Ingrid.ribeiro@centauro.com.br",
+        "timestamp": "2026-01-05T19:38:40.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 88,
+        "role": "client",
+        "text": "Acho qua ja ta salvo",
+        "timestamp": "2026-01-05T19:38:53.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 89,
+        "role": "client",
+        "text": "Conseguiu?",
+        "timestamp": "2026-01-05T19:39:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 90,
+        "role": "agent",
+        "text": "Ticket #19563921 990973048 pedido consta como entregue mas a cliente não recebeu.",
+        "timestamp": "2026-01-06T19:14:11.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 91,
+        "role": "agent",
+        "text": "Ticket #19577663 Ticket #19577664 Assistente gerou vale troca pra usar em loja mas o cliente desistiu e quer estorno.",
+        "timestamp": "2026-01-07T20:51:15.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 92,
+        "role": "agent",
+        "text": "990830725",
+        "timestamp": "2026-01-07T20:51:32.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 93,
+        "role": "agent",
+        "text": "Ticket #19581944 Cliente já recebeu o pedido, mas não consegue realizar a troca pq no sistema ainda consta como pedido em transito. Por gentileza alterar status do pedido para ENTREGE",
+        "timestamp": "2026-01-08T00:36:47.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 94,
+        "role": "agent",
+        "text": "CSCR00216813 chamado. Cliente não recebeu estorno, pedido foi realizado no mês 09/25",
+        "timestamp": "2026-01-10T18:38:11.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 95,
+        "role": "client",
+        "text": "https://platform.senior.com.br/login/?redirectTo=https%3A%2F%2Fplatform.senior.com.br%2Fsenior-x%2F&tenant=gruposbf.com.br&saml=true",
+        "timestamp": "2026-01-13T20:38:55.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 96,
+        "role": "agent",
+        "text": "pedido 989899824   Ticket #19708217 Cliente fez a devolução do produto pelo correios, no site dos correios informa que o produto já chegou mas o vale troca ainda não foi gerado.",
+        "timestamp": "2026-01-21T22:49:17.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 97,
+        "role": "agent",
+        "text": "☐ Recebimento de mercadoria (abrir e alocar) TERÇA E QUINTA\n☐ CHECK estoque (alinhamento da rua, e organização das meias)\n☐ CHECK meias (ruptura) e organização \n☐ CHECK área de vendas (parede, pilha, 90°)\n☐ FECHAMENTO alarmar tênis, alocar as trocas VENDEX e reposição, parede, 90° e pilha",
+        "timestamp": "2026-01-22T00:56:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 98,
+        "role": "agent",
+        "text": "REGRA DE EXECUÇÃO☐ Marcar concluído ou não realizado\n☐ ❌ exige justificativa\n☐ Meta mínima: 70% da rotina conclu",
+        "timestamp": "2026-01-22T00:56:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 99,
+        "role": "agent",
+        "text": "990888658 pedido  Ticket #19747224 pedido devolvido pelo correios a cliente já recebeu o e-mail que a devolução foi entregue, mas ainda não foi gerado o vale trocar",
+        "timestamp": "2026-01-26T23:01:07.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 100,
+        "role": "agent",
+        "text": "991739519 pedido  Ticket #19754422 pedido colocado pra cidade errada, cliente quer vale troca.",
+        "timestamp": "2026-01-27T18:16:40.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 101,
+        "role": "agent",
+        "text": "Ticket #19797908 991235142 cancelar pedido. cliente colocou retirada na loja errada",
+        "timestamp": "2026-02-01T21:49:37.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 102,
+        "role": "agent",
+        "text": "Ticket #19806996 pedido 991855143 cliente não está conseguindo devolver pq o status da entrega ainda consta como \"em transito\". por gentileza entrar em contato com a transportadora para mudar o status para \"entregue\".",
+        "timestamp": "2026-02-02T23:14:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 103,
+        "role": "client",
+        "text": "@159678411583507",
+        "timestamp": "2026-02-03T22:16:17.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 104,
+        "role": "client",
+        "text": "@212768921788526",
+        "timestamp": "2026-02-03T22:16:17.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 105,
+        "role": "agent",
+        "text": "879647-3150",
+        "timestamp": "2026-02-04T00:36:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 106,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2026-02-04T00:36:18.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 107,
+        "role": "client",
+        "text": "Cupom misto\n\nFato:\n descumprimento de roteiro. (OU FALTA DE CONHECIMENTO DOS PRODUTOS DO AUTO). \n\nCausa: \nDescumprimento do roteiro de atendimento na etapa, descobrir. Não convidando o cliente para o autoerviço.\n\n Ação:\nOfertar 3 itens selecionados, de acordo com o uso inicial do cliente, tendo uma conversa identificando qual iten tem que trazer.",
+        "timestamp": "2026-02-05T00:32:20.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 108,
+        "role": "agent",
+        "text": "Cupom misto\n\nFato:\n descumprimento de roteiro. (OU FALTA DE CONHECIMENTO DOS PRODUTOS DO AUTO). \n\nCausa: \nDescumprimento do roteiro de atendimento na etapa, descobrir. Não convidando o cliente para o autoserviço.\n\n Ação:\nFazer 15 minutos de imersão no auto serviço todos os dias, e passar tudo que foi ensinado pela vm para o supervisor de calçados.",
+        "timestamp": "2026-02-05T00:35:55.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 109,
+        "role": "agent",
+        "text": "Cupom misto\n\nFato:\n descumprimento de roteiro. (OU FALTA DE CONHECIMENTO DOS PRODUTOS DO AUTO). \n\nCausa: \nDescumprimento do roteiro de atendimento na etapa, descobrir. Não convidando o cliente para o autoserviço.\n\n Ação:\nFazer 15 minutos de imersão no auto serviço todos os dias, e passar tudo que foi ensinado pela vm para o supervisor de calçados.",
+        "timestamp": "2026-02-09T22:23:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 110,
+        "role": "agent",
+        "text": "@212768921788526",
+        "timestamp": "2026-02-09T22:24:52.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 111,
+        "role": "agent",
+        "text": "@159678411583507",
+        "timestamp": "2026-02-09T22:25:01.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 112,
+        "role": "agent",
+        "text": "Ticket #19813824",
+        "timestamp": "2026-02-10T18:22:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 113,
+        "role": "agent",
+        "text": "Ticket #19806996 pedido 991855143 cliente não está conseguindo devolver pq o status da entrega ainda consta como \"em transito\". por gentileza entrar em contato com a transportadora para mudar o status para \"entregue\".",
+        "timestamp": "2026-02-10T19:45:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 114,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2026-02-10T20:14:26.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 115,
+        "role": "agent",
+        "text": "979705868 estorno nunca realizado  Ticket #19872369",
+        "timestamp": "2026-02-10T22:46:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 116,
+        "role": "agent",
+        "text": "544\t122\t02/12/2025 20:35:24",
+        "timestamp": "2026-02-11T00:54:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 117,
+        "role": "agent",
+        "text": "Oie, Paula, como vai?\nMe chamo wichanlyeivli e faço parte do time de suporte da Centauro.\nEstou aqui para resolver isso o mais rápido possível com você. \n \nA nossa devolução pode ser realizada apenas via Correios, por isso, eu gerei um código de postagem pra você por aqui ******6559. Ele é válido até 10  dias\n \nEssa postagem é gratuita;\nVocê pode ver a agência dos correios mais próxima de você clicando aqui;\nUse a embalagem do próprio produto para a devolução, é só usar o verso da embalagem - a parte preta. Se você não tiver a embalagem original, use papel pardo ou caixa;\n É importante levar um documento com foto e a Nota Fiscal.\n Assim que você devolver o item nos Correios, o nosso sistema receberá um código de postagem para acompanhar a sua devolução e prosseguir com o atendimento;\nEssa postagem é apenas para o [inserir aqui o item] Caso queira devolver outros produtos, será necessário gerar um código para cada um deles.\n \n\nImportante!\nAo devolver pelos Correios, é preciso aguardar a chegada ao nosso Centro de Distribuição. Após o recebimento, o nosso estoque leva até 6 dias úteis para concluir a análise. Logo após, você receberá as próximas informações do seu atendimento.\n \nO protocolo deste atendimento é: 19813824",
+        "timestamp": "2026-02-12T00:35:52.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 118,
+        "role": "agent",
+        "text": "Ticket #19904718 pedido 991895509 Produto conta como entrege pela transportadora, mas o produto não se encontra na loja e no sistema da loja ainda consta com \"em transito\"",
+        "timestamp": "2026-02-13T21:37:14.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 119,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2026-02-14T17:06:10.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 120,
+        "role": "agent",
+        "text": "992090072 pedido  Ticket #19925881 Pedido foi colocado o endereço errado, foi enviado o endereço correto e deram prazo pra entregar ate dia 11/02 já passou do prazo e o cliente quer o produto ou alguma posição. cliente disse que ia no procon",
+        "timestamp": "2026-02-17T22:29:01.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 121,
+        "role": "agent",
+        "text": "979705868",
+        "timestamp": "2026-02-20T18:48:01.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 122,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2026-02-20T18:48:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "agent",
+        "text": "Ticket #18169444",
+        "timestamp": "2025-09-02T21:41:34.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "agent",
+        "text": "985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406",
+        "timestamp": "2025-09-02T21:41:48.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "Ticket #18169444985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406",
+        "timestamp": "2025-09-02T22:05:48.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "client",
+        "text": "Ticket #18169444985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406\nGerar Vale troca pra atender cliente em loja",
+        "timestamp": "2025-09-02T22:06:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "agent",
+        "text": "111\t75\t***.***.***-**\t99557\t113654\t21/08/2025 17:56:57",
+        "timestamp": "2025-09-03T21:20:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "agent",
+        "text": "Ticket #18181606 LIBERAR VT BOLETO 99",
+        "timestamp": "2025-09-03T21:55:09.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "agent",
+        "text": "985078066",
+        "timestamp": "2025-09-03T22:32:55.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "chamado CSCR00177676",
+        "timestamp": "2025-09-03T23:18:49.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "agent",
+        "text": "Ticket #18204861 985078066 rafael",
+        "timestamp": "2025-09-05T21:28:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "agent",
+        "text": "CSCR00179709 duplicidade",
+        "timestamp": "2025-09-11T00:27:28.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "agent",
+        "text": "985472062 pedido",
+        "timestamp": "2025-09-15T13:42:16.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 11,
+        "role": "agent",
+        "text": "CSCR00180666",
+        "timestamp": "2025-09-15T13:54:19.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 12,
+        "role": "client",
+        "text": "Ne isso não",
+        "timestamp": "2025-09-17T21:31:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 13,
+        "role": "client",
+        "text": "Quero print",
+        "timestamp": "2025-09-17T21:31:26.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 14,
+        "role": "agent",
+        "text": "https://app.aliax.com.br/",
+        "timestamp": "2025-09-23T18:05:10.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 15,
+        "role": "agent",
+        "text": "ticket #18408188",
+        "timestamp": "2025-09-23T22:04:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 16,
+        "role": "agent",
+        "text": "ticket #18408185",
+        "timestamp": "2025-09-23T22:04:17.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 17,
+        "role": "agent",
+        "text": "ticket #18408188 ticket #18408185 devolução em loja, cliente deseja estorno. Pedido 984317525",
+        "timestamp": "2025-09-23T22:05:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 18,
+        "role": "agent",
+        "text": "Ticket #18424710",
+        "timestamp": "2025-09-25T00:31:52.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 19,
+        "role": "client",
+        "text": "Protocolo das maquininhas",
+        "timestamp": "2025-09-26T17:50:54.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 20,
+        "role": "client",
+        "text": "Muito obrigado por aguardar Ingrid. Eu já finalizei a abertura de sua solicitação. Seu protocolo é: ***.***.***-** e o prazo ficou para até o dia 30/09/2025 23:59:59, você pode acompanhar prazos e status referentes ao(s) seu(s) equipamento(s) pelo APP GETNET BRASIL, na aba INICIO > Clique na flechinha ao lado do seu nome > MEUS PEDIDOS., Lembrando que o atendimento pode acontecer a partir de amanhã. Sua ordem é a número: 65718639, 65718761, 65718747, 65718767 e 65718803. Eu lhe ajudaria com algo mais além disto?",
+        "timestamp": "2025-09-26T17:50:54.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 21,
+        "role": "agent",
+        "text": "Ticket #18459847 985768036",
+        "timestamp": "2025-09-27T20:19:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 22,
+        "role": "agent",
+        "text": "Ticket #18465379 985950548 estorno",
+        "timestamp": "2025-09-28T21:14:28.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 23,
+        "role": "client",
+        "text": "Feedback sobre metas. Entender que, quanto mais você converte Quanto mais você acrescenta uma meia ou um outro produto do auto-serviço, mais aumenta na sua venda. E isso ajuda a aumentar a sua venda no valor final do mês.",
+        "timestamp": "2025-09-29T23:35:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 24,
+        "role": "client",
+        "text": "***.***.***-** \n121217 \nEscala",
+        "timestamp": "2025-09-30T19:31:16.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 25,
+        "role": "agent",
+        "text": "Ananda maria\tESTORNO\t18491183\t985729296\nAnanda maria\tESTORNO\t18491179\t98572929",
+        "timestamp": "2025-09-30T22:55:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 26,
+        "role": "agent",
+        "text": "Ticket #18515109 pedido 983848621",
+        "timestamp": "2025-10-02T20:43:47.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 27,
+        "role": "agent",
+        "text": "Ticket #18541314  986379592",
+        "timestamp": "2025-10-04T21:54:55.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 28,
+        "role": "agent",
+        "text": "Baixo resultado no indicadores, com um bom resultado da meta. Realizar o roteiro de atendimento é o passo inicial. estudar sobre os beneficios das meias e exercitar seus conhecimentos.",
+        "timestamp": "2025-10-06T23:52:16.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 29,
+        "role": "agent",
+        "text": "Ticket #18559816 pedido 985042281",
+        "timestamp": "2025-10-07T00:24:48.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 30,
+        "role": "agent",
+        "text": "986834463 pedido. Ticket #18571682 pedido devolvido em loja. Deseja estorno.",
+        "timestamp": "2025-10-07T21:32:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 31,
+        "role": "agent",
+        "text": "Ticket #18590594 PEDIDO 986271080 Atraso na entrega. conferir endereço e novo prazo.",
+        "timestamp": "2025-10-09T13:49:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 32,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-10-09T15:13:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 33,
+        "role": "agent",
+        "text": "CSCR00188252",
+        "timestamp": "2025-10-09T15:40:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 34,
+        "role": "client",
+        "text": "***.***.***-**",
+        "timestamp": "2025-10-09T17:30:41.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 35,
+        "role": "agent",
+        "text": "Ticket #18594379 pedido 985042281 vale troca cancelado desde o dia 15/09 mas estorno ainda não foi realizado.",
+        "timestamp": "2025-10-09T17:45:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 36,
+        "role": "agent",
+        "text": "Número do pedido\n\n987473945",
+        "timestamp": "2025-10-22T00:26:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 37,
+        "role": "client",
+        "text": "Teve um bom desempenho em vendas, ficando pouquíssimo pra atingir a meta. De misto, mas dentro dos outros indicadores.",
+        "timestamp": "2025-10-23T18:00:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 38,
+        "role": "agent",
+        "text": "HRREQ00172303 solicitação de uniforme",
+        "timestamp": "2025-10-24T22:27:32.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 39,
+        "role": "agent",
+        "text": "ENTREGA\t18734514\t987348472",
+        "timestamp": "2025-10-26T16:33:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 40,
+        "role": "agent",
+        "text": "Ticket #18736812 984556755",
+        "timestamp": "2025-10-26T22:45:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 41,
+        "role": "client",
+        "text": "NPS 2,7%\n\nFeedback voltado para NPS. e falamos sobre como ajudar na quantidade de respondentes. Falar sobre a pesquisa ao pedir o e-mail do cliente, reforçar sobre a pesquisa na saída do cliente e levar ele ate a porta.",
+        "timestamp": "2025-10-28T22:42:33.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 42,
+        "role": "client",
+        "text": "Foi pontuado a ida ao ao serviço no início do atendimento ao ir buscar o tênis no estoque, deixando o cliente olhar outras peças enquanto ele busca tênis no estoque.",
+        "timestamp": "2025-11-03T23:48:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 43,
+        "role": "agent",
+        "text": "Ticket #18795102",
+        "timestamp": "2025-11-04T18:26:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 44,
+        "role": "agent",
+        "text": "Ticket #18809555",
+        "timestamp": "2025-11-06T13:40:39.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 45,
+        "role": "agent",
+        "text": "Ingrid",
+        "timestamp": "2025-11-11T20:42:10.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 46,
+        "role": "agent",
+        "text": "Thaise aqui",
+        "timestamp": "2025-11-11T20:42:19.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 47,
+        "role": "client",
+        "text": "Oii",
+        "timestamp": "2025-11-11T20:42:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 48,
+        "role": "agent",
+        "text": "qual o site pra a gente consultar a venda na hora",
+        "timestamp": "2025-11-11T20:42:37.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 49,
+        "role": "agent",
+        "text": "?",
+        "timestamp": "2025-11-11T20:42:39.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 50,
+        "role": "client",
+        "text": "Portal de loja",
+        "timestamp": "2025-11-11T20:42:52.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 51,
+        "role": "agent",
+        "text": "não subia ainda a venda",
+        "timestamp": "2025-11-11T20:43:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 52,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-11-11T23:11:43.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 53,
+        "role": "agent",
+        "text": "Ticket #18954577",
+        "timestamp": "2025-11-20T22:31:36.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 54,
+        "role": "agent",
+        "text": "988706308",
+        "timestamp": "2025-11-20T22:31:46.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 55,
+        "role": "agent",
+        "text": "987430741 pedido pra abrir chamado de atrelar venda",
+        "timestamp": "2025-11-23T19:26:23.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 56,
+        "role": "agent",
+        "text": "8798856-3778",
+        "timestamp": "2025-11-23T19:38:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 57,
+        "role": "agent",
+        "text": "Ticket #18993081 pedido 986959350",
+        "timestamp": "2025-11-25T00:07:59.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 58,
+        "role": "agent",
+        "text": "https://app.aliax.com.br/",
+        "timestamp": "2025-11-26T01:18:02.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 59,
+        "role": "agent",
+        "text": "Ticket #19036449",
+        "timestamp": "2025-11-28T00:04:50.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 60,
+        "role": "agent",
+        "text": "Ticket #19115617 988544346 pedido fechado no 99",
+        "timestamp": "2025-12-03T18:37:45.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 61,
+        "role": "agent",
+        "text": "989954304",
+        "timestamp": "2025-12-03T22:44:43.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 62,
+        "role": "agent",
+        "text": "Ticket #19119897",
+        "timestamp": "2025-12-03T22:45:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 63,
+        "role": "client",
+        "text": "***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**\n***.***.***-**",
+        "timestamp": "2025-12-04T15:02:29.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 64,
+        "role": "client",
+        "text": "Olá, tudo bem? \n\nEstou te chamando para vermos juntos alguns pedidos que passaram do prazo de retirada. Você consegue dar uma olhadinha para mim?\n\nPrecisamos fazer as devoluções, já que os 15 dias já foram completos.\n\nSegue os pedidos abaixo:",
+        "timestamp": "2025-12-04T15:02:29.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 65,
+        "role": "agent",
+        "text": "989263484  Ticket #19166279",
+        "timestamp": "2025-12-07T19:32:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 66,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-12-10T18:21:12.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 67,
+        "role": "agent",
+        "text": "ei esse cliente foi o do debito q passou e ainda nao foi extornado",
+        "timestamp": "2025-12-10T18:22:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 68,
+        "role": "client",
+        "text": "10/12 foi parcelado e ja ta na décima parcela",
+        "timestamp": "2025-12-10T18:48:29.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 69,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-12-10T23:43:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 70,
+        "role": "agent",
+        "text": "989746585",
+        "timestamp": "2025-12-10T23:43:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 71,
+        "role": "agent",
+        "text": "Ticket #19260202 pedido 989068557",
+        "timestamp": "2025-12-12T20:52:02.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 72,
+        "role": "agent",
+        "text": "Ticket #19475949 pedido não consta como entregue e cliente não consegue fazer a troca.",
+        "timestamp": "2025-12-28T21:41:16.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 73,
+        "role": "agent",
+        "text": "CSCR00213930",
+        "timestamp": "2025-12-31T15:46:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 74,
+        "role": "client",
+        "text": "Olhar chamado na sexta-feira",
+        "timestamp": "2025-12-31T15:46:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 75,
+        "role": "agent",
+        "text": "Ei",
+        "timestamp": "2026-01-05T19:22:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 76,
+        "role": "agent",
+        "text": "Thaise aqui",
+        "timestamp": "2026-01-05T19:22:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 77,
+        "role": "agent",
+        "text": "o cliente retornou em loja",
+        "timestamp": "2026-01-05T19:22:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 78,
+        "role": "agent",
+        "text": "tu fez o estorno em caixa ou abriu chamado?",
+        "timestamp": "2026-01-05T19:22:46.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 79,
+        "role": "client",
+        "text": "Esse chamado aqui",
+        "timestamp": "2026-01-05T19:22:48.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 80,
+        "role": "agent",
+        "text": "certo",
+        "timestamp": "2026-01-05T19:22:54.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 81,
+        "role": "client",
+        "text": "Olha ai",
+        "timestamp": "2026-01-05T19:22:56.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 82,
+        "role": "agent",
+        "text": "vou conferir",
+        "timestamp": "2026-01-05T19:22:59.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 83,
+        "role": "agent",
+        "text": "pelo service now, né?!",
+        "timestamp": "2026-01-05T19:23:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 84,
+        "role": "client",
+        "text": "Isso",
+        "timestamp": "2026-01-05T19:23:23.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 85,
+        "role": "agent",
+        "text": "vou precisar do teu login",
+        "timestamp": "2026-01-05T19:27:02.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 86,
+        "role": "agent",
+        "text": "esse chamado n dá pra consultar pelo consulta ai",
+        "timestamp": "2026-01-05T19:27:16.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 87,
+        "role": "client",
+        "text": "Ingrid.ribeiro@centauro.com.br",
+        "timestamp": "2026-01-05T19:38:40.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 88,
+        "role": "client",
+        "text": "Acho qua ja ta salvo",
+        "timestamp": "2026-01-05T19:38:53.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 89,
+        "role": "client",
+        "text": "Conseguiu?",
+        "timestamp": "2026-01-05T19:39:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 90,
+        "role": "agent",
+        "text": "Ticket #19563921 990973048 pedido consta como entregue mas a cliente não recebeu.",
+        "timestamp": "2026-01-06T19:14:11.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 91,
+        "role": "agent",
+        "text": "Ticket #19577663 Ticket #19577664 Assistente gerou vale troca pra usar em loja mas o cliente desistiu e quer estorno.",
+        "timestamp": "2026-01-07T20:51:15.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 92,
+        "role": "agent",
+        "text": "990830725",
+        "timestamp": "2026-01-07T20:51:32.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 93,
+        "role": "agent",
+        "text": "Ticket #19581944 Cliente já recebeu o pedido, mas não consegue realizar a troca pq no sistema ainda consta como pedido em transito. Por gentileza alterar status do pedido para ENTREGE",
+        "timestamp": "2026-01-08T00:36:47.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 94,
+        "role": "agent",
+        "text": "CSCR00216813 chamado. Cliente não recebeu estorno, pedido foi realizado no mês 09/25",
+        "timestamp": "2026-01-10T18:38:11.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 95,
+        "role": "client",
+        "text": "https://platform.senior.com.br/login/?redirectTo=https%3A%2F%2Fplatform.senior.com.br%2Fsenior-x%2F&tenant=gruposbf.com.br&saml=true",
+        "timestamp": "2026-01-13T20:38:55.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 96,
+        "role": "agent",
+        "text": "pedido 989899824   Ticket #19708217 Cliente fez a devolução do produto pelo correios, no site dos correios informa que o produto já chegou mas o vale troca ainda não foi gerado.",
+        "timestamp": "2026-01-21T22:49:17.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 97,
+        "role": "agent",
+        "text": "☐ Recebimento de mercadoria (abrir e alocar) TERÇA E QUINTA\n☐ CHECK estoque (alinhamento da rua, e organização das meias)\n☐ CHECK meias (ruptura) e organização \n☐ CHECK área de vendas (parede, pilha, 90°)\n☐ FECHAMENTO alarmar tênis, alocar as trocas VENDEX e reposição, parede, 90° e pilha",
+        "timestamp": "2026-01-22T00:56:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 98,
+        "role": "agent",
+        "text": "REGRA DE EXECUÇÃO☐ Marcar concluído ou não realizado\n☐ ❌ exige justificativa\n☐ Meta mínima: 70% da rotina conclu",
+        "timestamp": "2026-01-22T00:56:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 99,
+        "role": "agent",
+        "text": "990888658 pedido  Ticket #19747224 pedido devolvido pelo correios a cliente já recebeu o e-mail que a devolução foi entregue, mas ainda não foi gerado o vale trocar",
+        "timestamp": "2026-01-26T23:01:07.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 100,
+        "role": "agent",
+        "text": "991739519 pedido  Ticket #19754422 pedido colocado pra cidade errada, cliente quer vale troca.",
+        "timestamp": "2026-01-27T18:16:40.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 101,
+        "role": "agent",
+        "text": "Ticket #19797908 991235142 cancelar pedido. cliente colocou retirada na loja errada",
+        "timestamp": "2026-02-01T21:49:37.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 102,
+        "role": "agent",
+        "text": "Ticket #19806996 pedido 991855143 cliente não está conseguindo devolver pq o status da entrega ainda consta como \"em transito\". por gentileza entrar em contato com a transportadora para mudar o status para \"entregue\".",
+        "timestamp": "2026-02-02T23:14:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 103,
+        "role": "client",
+        "text": "@159678411583507",
+        "timestamp": "2026-02-03T22:16:17.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 104,
+        "role": "client",
+        "text": "@212768921788526",
+        "timestamp": "2026-02-03T22:16:17.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 105,
+        "role": "agent",
+        "text": "879647-3150",
+        "timestamp": "2026-02-04T00:36:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 106,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2026-02-04T00:36:18.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 107,
+        "role": "client",
+        "text": "Cupom misto\n\nFato:\n descumprimento de roteiro. (OU FALTA DE CONHECIMENTO DOS PRODUTOS DO AUTO). \n\nCausa: \nDescumprimento do roteiro de atendimento na etapa, descobrir. Não convidando o cliente para o autoerviço.\n\n Ação:\nOfertar 3 itens selecionados, de acordo com o uso inicial do cliente, tendo uma conversa identificando qual iten tem que trazer.",
+        "timestamp": "2026-02-05T00:32:20.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 108,
+        "role": "agent",
+        "text": "Cupom misto\n\nFato:\n descumprimento de roteiro. (OU FALTA DE CONHECIMENTO DOS PRODUTOS DO AUTO). \n\nCausa: \nDescumprimento do roteiro de atendimento na etapa, descobrir. Não convidando o cliente para o autoserviço.\n\n Ação:\nFazer 15 minutos de imersão no auto serviço todos os dias, e passar tudo que foi ensinado pela vm para o supervisor de calçados.",
+        "timestamp": "2026-02-05T00:35:55.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 109,
+        "role": "agent",
+        "text": "Cupom misto\n\nFato:\n descumprimento de roteiro. (OU FALTA DE CONHECIMENTO DOS PRODUTOS DO AUTO). \n\nCausa: \nDescumprimento do roteiro de atendimento na etapa, descobrir. Não convidando o cliente para o autoserviço.\n\n Ação:\nFazer 15 minutos de imersão no auto serviço todos os dias, e passar tudo que foi ensinado pela vm para o supervisor de calçados.",
+        "timestamp": "2026-02-09T22:23:08.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 110,
+        "role": "agent",
+        "text": "@212768921788526",
+        "timestamp": "2026-02-09T22:24:52.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 111,
+        "role": "agent",
+        "text": "@159678411583507",
+        "timestamp": "2026-02-09T22:25:01.000Z",
+        "meta": {
+          "message_type": "imageMessage",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 112,
+        "role": "agent",
+        "text": "Ticket #19813824",
+        "timestamp": "2026-02-10T18:22:27.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 113,
+        "role": "agent",
+        "text": "Ticket #19806996 pedido 991855143 cliente não está conseguindo devolver pq o status da entrega ainda consta como \"em transito\". por gentileza entrar em contato com a transportadora para mudar o status para \"entregue\".",
+        "timestamp": "2026-02-10T19:45:35.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 114,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2026-02-10T20:14:26.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 115,
+        "role": "agent",
+        "text": "979705868 estorno nunca realizado  Ticket #19872369",
+        "timestamp": "2026-02-10T22:46:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 116,
+        "role": "agent",
+        "text": "544\t122\t02/12/2025 20:35:24",
+        "timestamp": "2026-02-11T00:54:00.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 117,
+        "role": "agent",
+        "text": "Oie, Paula, como vai?\nMe chamo wichanlyeivli e faço parte do time de suporte da Centauro.\nEstou aqui para resolver isso o mais rápido possível com você. \n \nA nossa devolução pode ser realizada apenas via Correios, por isso, eu gerei um código de postagem pra você por aqui ******6559. Ele é válido até 10  dias\n \nEssa postagem é gratuita;\nVocê pode ver a agência dos correios mais próxima de você clicando aqui;\nUse a embalagem do próprio produto para a devolução, é só usar o verso da embalagem - a parte preta. Se você não tiver a embalagem original, use papel pardo ou caixa;\n É importante levar um documento com foto e a Nota Fiscal.\n Assim que você devolver o item nos Correios, o nosso sistema receberá um código de postagem para acompanhar a sua devolução e prosseguir com o atendimento;\nEssa postagem é apenas para o [inserir aqui o item] Caso queira devolver outros produtos, será necessário gerar um código para cada um deles.\n \n\nImportante!\nAo devolver pelos Correios, é preciso aguardar a chegada ao nosso Centro de Distribuição. Após o recebimento, o nosso estoque leva até 6 dias úteis para concluir a análise. Logo após, você receberá as próximas informações do seu atendimento.\n \nO protocolo deste atendimento é: 19813824",
+        "timestamp": "2026-02-12T00:35:52.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 118,
+        "role": "agent",
+        "text": "Ticket #19904718 pedido 991895509 Produto conta como entrege pela transportadora, mas o produto não se encontra na loja e no sistema da loja ainda consta com \"em transito\"",
+        "timestamp": "2026-02-13T21:37:14.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 119,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2026-02-14T17:06:10.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 120,
+        "role": "agent",
+        "text": "992090072 pedido  Ticket #19925881 Pedido foi colocado o endereço errado, foi enviado o endereço correto e deram prazo pra entregar ate dia 11/02 já passou do prazo e o cliente quer o produto ou alguma posição. cliente disse que ia no procon",
+        "timestamp": "2026-02-17T22:29:01.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 121,
+        "role": "agent",
+        "text": "979705868",
+        "timestamp": "2026-02-20T18:48:01.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      },
+      {
+        "conversation_id": "558796554259@s.whatsapp.net",
+        "turn_index": 122,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2026-02-20T18:48:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558796554259"
+        }
+      }
+    ],
+    "clientTurns": 28,
+    "agentTurns": 95,
+    "avgClientWords": 15,
+    "avgAgentWords": 11,
+    "conversation": [
+      {
+        "role": "agent",
+        "text": "Ticket #18169444"
+      },
+      {
+        "role": "agent",
+        "text": "985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406"
+      },
+      {
+        "role": "client",
+        "text": "Ticket #18169444985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406"
+      },
+      {
+        "role": "client",
+        "text": "Ticket #18169444985078066 Tênis adidas Lightblaze. Entrega pela FutFanatics referência - M16SOJ510406\nGerar Vale troca pra atender cliente em loja"
+      },
+      {
+        "role": "agent",
+        "text": "111\t75\t***.***.***-**\t99557\t113654\t21/08/2025 17:56:57"
+      },
+      {
+        "role": "agent",
+        "text": "Ticket #18181606 LIBERAR VT BOLETO 99"
+      },
+      {
+        "role": "agent",
+        "text": "985078066"
+      },
+      {
+        "role": "agent",
+        "text": "chamado CSCR00177676"
+      },
+      {
+        "role": "agent",
+        "text": "Ticket #18204861 985078066 rafael"
+      },
+      {
+        "role": "agent",
+        "text": "CSCR00179709 duplicidade"
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "chatId": "558791524852@s.whatsapp.net",
+    "intent": "UNKNOWN",
+    "turns": [
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde",
+        "timestamp": "2025-11-14T17:01:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Vcs tem qual pro 5 bump disponível na loja ?",
+        "timestamp": "2025-11-14T17:01:55.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa tarde, meu nome é Felipe",
+        "timestamp": "2025-11-14T17:52:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "Qual seria a numeração?",
+        "timestamp": "2025-11-14T17:52:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "42 se a forma for grande",
+        "timestamp": "2025-11-14T18:07:34.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "client",
+        "text": "Olha esse produto que encontrei: Chuteira Futsal Umbro Pro 5 Bump - Adulto \n https://www.centauro.com.br/chuteira-futsal-umbro-pro-5-bump-adulto-970150.html?cor=58",
+        "timestamp": "2025-11-14T18:12:52.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "client",
+        "text": "Essa daqui",
+        "timestamp": "2025-11-14T18:13:00.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "Temos sim",
+        "timestamp": "2025-11-14T19:18:11.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "agent",
+        "text": "3 cores",
+        "timestamp": "2025-11-14T19:18:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "client",
+        "text": "Blz",
+        "timestamp": "2025-11-14T19:18:30.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "client",
+        "text": "Mas essa que eu mandei tem ?",
+        "timestamp": "2025-11-14T19:18:44.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 11,
+        "role": "agent",
+        "text": "gostaria que eu deixasse reservada ?",
+        "timestamp": "2025-11-14T19:18:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 12,
+        "role": "agent",
+        "text": "sim",
+        "timestamp": "2025-11-14T19:20:46.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 13,
+        "role": "agent",
+        "text": "se quiser que eu reserve para voce",
+        "timestamp": "2025-11-14T19:21:01.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 14,
+        "role": "agent",
+        "text": "eu posso deixa-la na reserva",
+        "timestamp": "2025-11-14T19:21:17.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 15,
+        "role": "client",
+        "text": "Eu estou indo aí na Centauro",
+        "timestamp": "2025-11-14T19:21:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 16,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-11-14T19:21:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 17,
+        "role": "agent",
+        "text": "me mande um oi quando estiver vindo",
+        "timestamp": "2025-11-14T19:21:46.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 18,
+        "role": "agent",
+        "text": "airton o meu nome [",
+        "timestamp": "2025-11-14T19:21:51.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 19,
+        "role": "agent",
+        "text": "estou te esperando",
+        "timestamp": "2025-11-14T19:21:54.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 20,
+        "role": "agent",
+        "text": "ok ?",
+        "timestamp": "2025-11-14T19:21:56.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 21,
+        "role": "client",
+        "text": "Ok",
+        "timestamp": "2025-11-14T19:21:59.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 22,
+        "role": "client",
+        "text": "Jaja eu chego aí",
+        "timestamp": "2025-11-14T19:22:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 23,
+        "role": "agent",
+        "text": "estou",
+        "timestamp": "2025-11-14T19:22:06.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 24,
+        "role": "agent",
+        "text": "ate as 21 hoje",
+        "timestamp": "2025-11-14T19:22:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 25,
+        "role": "agent",
+        "text": "te espero",
+        "timestamp": "2025-11-14T19:22:15.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 26,
+        "role": "agent",
+        "text": "chegando é so perguntar por airton",
+        "timestamp": "2025-11-14T19:22:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 27,
+        "role": "client",
+        "text": "Blz mano",
+        "timestamp": "2025-11-14T19:22:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 28,
+        "role": "client",
+        "text": "Boa tarde",
+        "timestamp": "2026-02-18T15:10:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 29,
+        "role": "client",
+        "text": "Olha esse produto que encontrei: Chuteira Society Masculina Nike Mercurial Superfly 10 Club \n https://www.centauro.com.br/chuteira-society-masculina-nike-mercurial-superfly-10-club-m17a1t-mktp.html?cor=RI",
+        "timestamp": "2026-02-18T15:10:33.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 30,
+        "role": "client",
+        "text": "Vcs tem essa chuteira disponível na loja ?",
+        "timestamp": "2026-02-18T15:10:55.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 31,
+        "role": "agent",
+        "text": "boa tarde",
+        "timestamp": "2026-02-18T16:02:20.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 32,
+        "role": "agent",
+        "text": "qual numeração",
+        "timestamp": "2026-02-18T16:02:24.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 33,
+        "role": "client",
+        "text": "43",
+        "timestamp": "2026-02-18T16:11:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 34,
+        "role": "agent",
+        "text": "em loja não vai ter",
+        "timestamp": "2026-02-18T16:37:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 35,
+        "role": "client",
+        "text": "Blz",
+        "timestamp": "2026-02-18T16:38:09.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde",
+        "timestamp": "2025-11-14T17:01:05.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Vcs tem qual pro 5 bump disponível na loja ?",
+        "timestamp": "2025-11-14T17:01:55.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "agent",
+        "text": "Boa tarde, meu nome é Felipe",
+        "timestamp": "2025-11-14T17:52:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "Qual seria a numeração?",
+        "timestamp": "2025-11-14T17:52:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "42 se a forma for grande",
+        "timestamp": "2025-11-14T18:07:34.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "client",
+        "text": "Olha esse produto que encontrei: Chuteira Futsal Umbro Pro 5 Bump - Adulto \n https://www.centauro.com.br/chuteira-futsal-umbro-pro-5-bump-adulto-970150.html?cor=58",
+        "timestamp": "2025-11-14T18:12:52.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "client",
+        "text": "Essa daqui",
+        "timestamp": "2025-11-14T18:13:00.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "Temos sim",
+        "timestamp": "2025-11-14T19:18:11.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "agent",
+        "text": "3 cores",
+        "timestamp": "2025-11-14T19:18:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "client",
+        "text": "Blz",
+        "timestamp": "2025-11-14T19:18:30.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 10,
+        "role": "client",
+        "text": "Mas essa que eu mandei tem ?",
+        "timestamp": "2025-11-14T19:18:44.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 11,
+        "role": "agent",
+        "text": "gostaria que eu deixasse reservada ?",
+        "timestamp": "2025-11-14T19:18:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 12,
+        "role": "agent",
+        "text": "sim",
+        "timestamp": "2025-11-14T19:20:46.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 13,
+        "role": "agent",
+        "text": "se quiser que eu reserve para voce",
+        "timestamp": "2025-11-14T19:21:01.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 14,
+        "role": "agent",
+        "text": "eu posso deixa-la na reserva",
+        "timestamp": "2025-11-14T19:21:17.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 15,
+        "role": "client",
+        "text": "Eu estou indo aí na Centauro",
+        "timestamp": "2025-11-14T19:21:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 16,
+        "role": "agent",
+        "text": "***.***.***-**",
+        "timestamp": "2025-11-14T19:21:29.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 17,
+        "role": "agent",
+        "text": "me mande um oi quando estiver vindo",
+        "timestamp": "2025-11-14T19:21:46.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 18,
+        "role": "agent",
+        "text": "airton o meu nome [",
+        "timestamp": "2025-11-14T19:21:51.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 19,
+        "role": "agent",
+        "text": "estou te esperando",
+        "timestamp": "2025-11-14T19:21:54.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 20,
+        "role": "agent",
+        "text": "ok ?",
+        "timestamp": "2025-11-14T19:21:56.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 21,
+        "role": "client",
+        "text": "Ok",
+        "timestamp": "2025-11-14T19:21:59.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 22,
+        "role": "client",
+        "text": "Jaja eu chego aí",
+        "timestamp": "2025-11-14T19:22:04.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 23,
+        "role": "agent",
+        "text": "estou",
+        "timestamp": "2025-11-14T19:22:06.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 24,
+        "role": "agent",
+        "text": "ate as 21 hoje",
+        "timestamp": "2025-11-14T19:22:13.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 25,
+        "role": "agent",
+        "text": "te espero",
+        "timestamp": "2025-11-14T19:22:15.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 26,
+        "role": "agent",
+        "text": "chegando é so perguntar por airton",
+        "timestamp": "2025-11-14T19:22:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 27,
+        "role": "client",
+        "text": "Blz mano",
+        "timestamp": "2025-11-14T19:22:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 28,
+        "role": "client",
+        "text": "Boa tarde",
+        "timestamp": "2026-02-18T15:10:22.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 29,
+        "role": "client",
+        "text": "Olha esse produto que encontrei: Chuteira Society Masculina Nike Mercurial Superfly 10 Club \n https://www.centauro.com.br/chuteira-society-masculina-nike-mercurial-superfly-10-club-m17a1t-mktp.html?cor=RI",
+        "timestamp": "2026-02-18T15:10:33.000Z",
+        "meta": {
+          "message_type": "extendedTextMessage",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 30,
+        "role": "client",
+        "text": "Vcs tem essa chuteira disponível na loja ?",
+        "timestamp": "2026-02-18T15:10:55.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 31,
+        "role": "agent",
+        "text": "boa tarde",
+        "timestamp": "2026-02-18T16:02:20.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 32,
+        "role": "agent",
+        "text": "qual numeração",
+        "timestamp": "2026-02-18T16:02:24.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 33,
+        "role": "client",
+        "text": "43",
+        "timestamp": "2026-02-18T16:11:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 34,
+        "role": "agent",
+        "text": "em loja não vai ter",
+        "timestamp": "2026-02-18T16:37:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      },
+      {
+        "conversation_id": "558791524852@s.whatsapp.net",
+        "turn_index": 35,
+        "role": "client",
+        "text": "Blz",
+        "timestamp": "2026-02-18T16:38:09.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "558791524852"
+        }
+      }
+    ],
+    "clientTurns": 16,
+    "agentTurns": 20,
+    "avgClientWords": 5,
+    "avgAgentWords": 4,
+    "conversation": [
+      {
+        "role": "client",
+        "text": "Boa tarde"
+      },
+      {
+        "role": "client",
+        "text": "Vcs tem qual pro 5 bump disponível na loja ?"
+      },
+      {
+        "role": "agent",
+        "text": "Boa tarde, meu nome é Felipe"
+      },
+      {
+        "role": "agent",
+        "text": "Qual seria a numeração?"
+      },
+      {
+        "role": "client",
+        "text": "42 se a forma for grande"
+      },
+      {
+        "role": "client",
+        "text": "Olha esse produto que encontrei: Chuteira Futsal Umbro Pro 5 Bump - Adulto \n https://www.centauro.com.br/chuteira-futsal-umbro-pro-5-bump-adulto-970150.html?cor=58"
+      },
+      {
+        "role": "client",
+        "text": "Essa daqui"
+      },
+      {
+        "role": "agent",
+        "text": "Temos sim"
+      },
+      {
+        "role": "agent",
+        "text": "3 cores"
+      },
+      {
+        "role": "client",
+        "text": "Blz"
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "chatId": "557499776276@s.whatsapp.net",
+    "intent": "UNKNOWN",
+    "turns": [
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde",
+        "timestamp": "2025-11-14T16:14:50.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Bom dia",
+        "timestamp": "2025-11-25T14:34:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "Já chegou camisas do Palmeiras?",
+        "timestamp": "2025-11-25T14:34:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "boa tarde,somente para pedir direto no site",
+        "timestamp": "2025-11-25T17:38:57.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "Bom dia",
+        "timestamp": "2026-02-15T14:55:41.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "client",
+        "text": "Camisa do palmeiras chegou?",
+        "timestamp": "2026-02-15T14:55:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "agent",
+        "text": "Boa tarde",
+        "timestamp": "2026-02-15T16:37:26.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "Chegou sim",
+        "timestamp": "2026-02-15T16:37:32.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "client",
+        "text": "Pronto obrigado",
+        "timestamp": "2026-02-15T16:37:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "client",
+        "text": "Eu passo aí",
+        "timestamp": "2026-02-15T16:37:50.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      }
+    ],
+    "totalTurns": [
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 0,
+        "role": "client",
+        "text": "Boa tarde",
+        "timestamp": "2025-11-14T16:14:50.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 1,
+        "role": "client",
+        "text": "Bom dia",
+        "timestamp": "2025-11-25T14:34:21.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 2,
+        "role": "client",
+        "text": "Já chegou camisas do Palmeiras?",
+        "timestamp": "2025-11-25T14:34:38.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 3,
+        "role": "agent",
+        "text": "boa tarde,somente para pedir direto no site",
+        "timestamp": "2025-11-25T17:38:57.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 4,
+        "role": "client",
+        "text": "Bom dia",
+        "timestamp": "2026-02-15T14:55:41.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 5,
+        "role": "client",
+        "text": "Camisa do palmeiras chegou?",
+        "timestamp": "2026-02-15T14:55:49.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 6,
+        "role": "agent",
+        "text": "Boa tarde",
+        "timestamp": "2026-02-15T16:37:26.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 7,
+        "role": "agent",
+        "text": "Chegou sim",
+        "timestamp": "2026-02-15T16:37:32.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 8,
+        "role": "client",
+        "text": "Pronto obrigado",
+        "timestamp": "2026-02-15T16:37:44.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      },
+      {
+        "conversation_id": "557499776276@s.whatsapp.net",
+        "turn_index": 9,
+        "role": "client",
+        "text": "Eu passo aí",
+        "timestamp": "2026-02-15T16:37:50.000Z",
+        "meta": {
+          "message_type": "conversation",
+          "chat_name": "557499776276"
+        }
+      }
+    ],
+    "clientTurns": 7,
+    "agentTurns": 3,
+    "avgClientWords": 3,
+    "avgAgentWords": 4,
+    "conversation": [
+      {
+        "role": "client",
+        "text": "Boa tarde"
+      },
+      {
+        "role": "client",
+        "text": "Bom dia"
+      },
+      {
+        "role": "client",
+        "text": "Já chegou camisas do Palmeiras?"
+      },
+      {
+        "role": "agent",
+        "text": "boa tarde,somente para pedir direto no site"
+      },
+      {
+        "role": "client",
+        "text": "Bom dia"
+      },
+      {
+        "role": "client",
+        "text": "Camisa do palmeiras chegou?"
+      },
+      {
+        "role": "agent",
+        "text": "Boa tarde"
+      },
+      {
+        "role": "agent",
+        "text": "Chegou sim"
+      },
+      {
+        "role": "client",
+        "text": "Pronto obrigado"
+      },
+      {
+        "role": "client",
+        "text": "Eu passo aí"
+      }
+    ]
+  }
+]

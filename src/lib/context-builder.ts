@@ -67,7 +67,7 @@ export async function buildContext(params: {
         content: m.content,
     }));
 
-    // 3. Extract slots from full history + current message
+    // 3. Extract slots from user history + current message
     const userHistoryText = conversationHistory
         .filter((m) => m.role === "user")
         .map((m) => m.content)
@@ -82,7 +82,7 @@ export async function buildContext(params: {
         conversationHistory
     );
 
-    // 5. RAG: Search relevant products (apenas se houver snapshot ativo)
+    // 5. RAG: Search relevant products (somente quando a intencao precisa)
     const mergedSlots = { ...state.slots, ...slotExtraction.extracted };
     const isInfoIntent = detectedIntent === "INFO" || detectedIntent.startsWith("INFO_");
     const isSacIntent = detectedIntent === "SUPPORT" || detectedIntent.startsWith("SAC_");
@@ -97,7 +97,7 @@ export async function buildContext(params: {
         const snapshotExists = await hasActiveSnapshot(storeId);
 
         if (!snapshotExists) {
-            console.log(`[CONTEXT] ?? Sem snapshot ativo para store ${storeId}`);
+            console.log(`[CONTEXT] [WARN] Sem snapshot ativo para store ${storeId}`);
             stockResult = createStockUnknownResult();
         } else {
             const activeImportId = await getActiveImportId(storeId);

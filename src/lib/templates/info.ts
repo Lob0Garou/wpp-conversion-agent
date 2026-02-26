@@ -57,6 +57,16 @@ export const infoTemplates: Template[] = [
         maxQuestions: 1,
     },
     {
+        id: "info_sac_policy_generic",
+        action: "PROVIDE_POLICY",
+        intent: "INFO_SAC_POLICY",
+        state: ["greeting", "discovery", "proposal", "closing", "support", "support_sac"],
+        requiredSlots: [],
+        template: "Consigo te orientar sim 😊 Me fala se sua duvida e sobre troca, devolucao/reembolso, garantia ou retirada na loja que eu te respondo certinho.",
+        maxChars: 170,
+        maxQuestions: 1,
+    },
+    {
         id: "info_pickup_policy_third_party",
         action: "PROVIDE_POLICY",
         intent: ["INFO_PICKUP_POLICY"],
