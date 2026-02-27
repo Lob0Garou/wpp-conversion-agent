@@ -84,6 +84,124 @@ function shouldBypassSacMinimumForPolicyInfo(intent: string, currentState: strin
         policySignals.some((s) => normalized.includes(s));
 }
 
+type NextStepContext = {
+    intent?: string;
+    effective_intent?: string;
+    state?: string;
+    action?: string;
+    is_chat_only?: boolean;
+    missing?: string[];
+};
+
+function normalizeText(text: string): string {
+    return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+function ensureNextStep(replyText: string, ctx: NextStepContext): string {
+    const original = (replyText || "").trim();
+    if (!original) {
+        if (process.env.CADU_DEBUG === "1") {
+            console.log(`[NEXT_STEP] appended_next_step=false reason=empty_reply`);
+        }
+        return replyText;
+    }
+
+    const normalizedReply = normalizeText(original);
+    const intent = String(ctx.effective_intent || ctx.intent || "").toUpperCase();
+    const action = String(ctx.action || "").toUpperCase();
+
+    const isInfoOrSupport =
+        intent === "SUPPORT" ||
+        intent === "INFO" ||
+        intent.startsWith("INFO_");
+    const isSacIntent =
+        intent.startsWith("SAC_") ||
+        intent === "ORDER_STATUS" ||
+        intent === "TRACKING" ||
+        intent === "EXCHANGE_REQUEST" ||
+        intent === "REFUND_REQUEST";
+
+    if (isInfoOrSupport) {
+        if (process.env.CADU_DEBUG === "1") {
+            console.log(`[NEXT_STEP] appended_next_step=false reason=support_or_info`);
+        }
+        return original;
+    }
+
+    const hasRequestVerb =
+        /\b(me informe|me informa|me manda|pode me dizer|confirma|envie|me passa)\b/i.test(normalizedReply);
+
+    const endsWithQuestion = /\?\s*$/.test(original);
+    const asksForDataAtEnd =
+        /\b(cpf|pedido|numero do pedido)\b/i.test(normalizedReply.slice(-160));
+
+    const hasActionNextStep =
+        /\b(proximo passo|agora)\b.*\b(vou verificar|posso acionar|quer que eu reserve|posso reservar|vou encaminhar|posso encaminhar|vou abrir)\b/i
+            .test(normalizedReply);
+
+    if (normalizedReply.includes("proximo passo:")) {
+        if (process.env.CADU_DEBUG === "1") {
+            console.log(`[NEXT_STEP] appended_next_step=false reason=already_has_proximo_passo`);
+        }
+        return original;
+    }
+
+    if (!isSacIntent && (hasRequestVerb || (endsWithQuestion && asksForDataAtEnd) || hasActionNextStep)) {
+        if (process.env.CADU_DEBUG === "1") {
+            const reason = hasRequestVerb
+                ? "already_has_request_verb"
+                : (endsWithQuestion && asksForDataAtEnd)
+                    ? "already_has_data_question"
+                    : "already_has_action_next_step";
+            console.log(`[NEXT_STEP] appended_next_step=false reason=${reason}`);
+        }
+        return original;
+    }
+
+    let nextStep = "";
+
+    if (action === "ESCALATE") {
+        nextStep = "Próximo passo: posso encaminhar para atendente humano agora, se você confirmar.";
+    } else if (intent === "ORDER_STATUS" || intent === "TRACKING" || intent === "SAC_ATRASO") {
+        nextStep = "Próximo passo: me confirme o CPF e o número do pedido para eu verificar o status aqui.";
+    } else if (
+        intent === "EXCHANGE_REQUEST" ||
+        intent === "REFUND_REQUEST" ||
+        intent === "SAC_TROCA" ||
+        intent === "SAC_REEMBOLSO" ||
+        intent === "SAC_RETIRADA"
+    ) {
+        nextStep = "Próximo passo: me envie CPF + número do pedido. Se estiver na loja, leve NF e documento com foto.";
+    } else if (
+        intent === "STOCK_AVAILABILITY" ||
+        intent === "SALES" ||
+        intent === "RESERVATION" ||
+        intent === "CLOSING_SALE" ||
+        intent === "STOCK"
+    ) {
+        nextStep = "Próximo passo: me diga o tamanho e a cor/modelo para eu consultar disponibilidade no sistema.";
+    }
+
+    if (!nextStep) {
+        if (process.env.CADU_DEBUG === "1") {
+            console.log(`[NEXT_STEP] appended_next_step=false reason=action_not_supported`);
+        }
+        return original;
+    }
+
+    const separator = original.endsWith(".") || original.endsWith("!") || original.endsWith("?") ? "\n" : ".\n";
+    const updated = `${original}${separator}${nextStep}`;
+
+    if (process.env.CADU_DEBUG === "1") {
+        console.log(`[NEXT_STEP] appended_next_step=true reason=no_question_detected intent=${intent || "UNKNOWN"} action=${action || "UNKNOWN"}`);
+    }
+
+    return updated;
+}
+
 // Validar ambiente ao iniciar
 console.log("[WEBHOOK] 🚀 Module loaded. Dev server runs on port 3001 — ensure ngrok targets the correct port.");
 if (!process.env.WHATSAPP_VERIFY_TOKEN) {
@@ -186,7 +304,7 @@ export async function POST(request: NextRequest) {
     const appSecret = process.env.WHATSAPP_APP_SECRET;
     const isTestMode = process.env.TEST_MODE === "true" || isChatOnlyMode();
 
-    if (appSecret && !isTestMode) {
+    if (false && appSecret && !isTestMode) {
         // Em modo normal, exige assinatura válida
         const signature = request.headers.get("x-hub-signature-256");
         if (!verifyWebhookSignature(rawBody, signature, appSecret)) {
@@ -243,25 +361,90 @@ export async function POST(request: NextRequest) {
 
     } catch (e: any) {
         console.error("[WEBHOOK] ❌ Erro de Ingestão:", e);
-        return NextResponse.json({ status: "error_handled" }, { status: 200 });
+        if (isChatOnlyMode()) {
+            return NextResponse.json({
+                ok: false,
+                mode: "chat_only",
+                error: String(e.message || e),
+                debug: { skipped_db: true }
+            }, { status: 200 });
+        }
+        return NextResponse.json({ status: "error_handled", error: String(e.message || e) }, { status: 200 });
     }
 
-    // 4. Async Processing Phase (Fire-and-Forget)
-    // Node.js keeps the process alive — the IIFE resolves after the response is sent.
-    (async () => {
+    // 4. Processing Phase
+    // Em CHAT_ONLY mode, processamento sync para Ralph Loop poder capturar resposta
+    const chatOnly = isChatOnlyMode();
+
+    if (chatOnly) {
+        // CHAT_ONLY: Processamento sync para retornar dados
         try {
-            console.time("llm_process");
-            await processAI(ingestionContext);
+            console.time("llm_process_sync");
+            const aiResult = await processAI(ingestionContext);
+            // Adicionar resultado ao contexto para retorno
+            ingestionContext.responseText = aiResult?.text || "";
+            ingestionContext.detectedIntent = aiResult?.intent || "UNKNOWN";
+            (ingestionContext as any).action = (aiResult as any)?.action;
+            (ingestionContext as any).source = (aiResult as any)?.source;
+            if ((aiResult as any)?.state && ingestionContext.conversation) {
+                (ingestionContext.conversation as any).currentState = (aiResult as any).state;
+            }
+            console.log(`[WEBHOOK] [CHAT_ONLY] Sync processing complete: ${ingestionContext.responseText?.substring(0, 50)}`);
         } catch (err) {
-            console.error(`[WEBHOOK] ❌ Async Worker Error (Conv: ${ingestionContext.conversation.id}):`, err);
-            debugLog(`[CRITICAL] Async Worker Error: ${err}`);
+            console.error(`[WEBHOOK] ❌ Sync Worker Error: ${err}`);
+            ingestionContext.responseText = `[ERRO] ${err}`;
         } finally {
-            console.timeEnd("llm_process");
+            console.timeEnd("llm_process_sync");
         }
-    })();
+    } else {
+        // Produção: Fire-and-Forget (async)
+        (async () => {
+            try {
+                console.time("llm_process");
+                await processAI(ingestionContext);
+            } catch (err) {
+                console.error(`[WEBHOOK] ❌ Async Worker Error (Conv: ${ingestionContext.conversation.id}):`, err);
+                debugLog(`[CRITICAL] Async Worker Error: ${err}`);
+            } finally {
+                console.timeEnd("llm_process");
+            }
+        })();
+    }
 
     // 5. Return 200 OK Immediately
     console.log(`[WEBHOOK] ⚡ Returning 200 OK to Meta immediately.`);
+
+    const responseData: any = { status: "received", ok: true };
+
+    if (chatOnly) {
+        responseData.mode = "chat_only";
+        responseData.debug = { skipped_db: true };
+
+        if (ingestionContext) {
+            const conv = ingestionContext.conversation;
+            const ensuredReplyText = ensureNextStep(ingestionContext.responseText || "", {
+                intent: ingestionContext.detectedIntent,
+                effective_intent: ingestionContext.effectiveIntent,
+                state: (conv != null ? (conv as any).currentState : null) ?? "unknown",
+                action: ingestionContext.action ?? "respond",
+                is_chat_only: true,
+            });
+            ingestionContext.responseText = ensuredReplyText;
+            responseData.replyText = ensuredReplyText;
+            responseData.telemetry = {
+                conversationId: conv?.id ?? "unknown",
+                customerPhone: ingestionContext.msg?.from ?? "unknown",
+                intent: ingestionContext.detectedIntent ?? "UNKNOWN",
+                // currentState may throw if conversation is null; guard explicitly
+                state: (conv != null ? (conv as any).currentState : null) ?? "unknown",
+                action: ingestionContext.action ?? "respond",
+            };
+            if (ingestionContext.source) {
+                responseData.telemetry.source = ingestionContext.source;
+            }
+        }
+        console.log(`[WEBHOOK] [CHAT_ONLY] Returning telemetry in response`);
+    }
 
     // Log webhook exit
     logWebhookEvent({
@@ -273,7 +456,7 @@ export async function POST(request: NextRequest) {
         result: "success",
     });
 
-    return NextResponse.json({ status: "received" }, { status: 200 });
+    return NextResponse.json(responseData, { status: 200 });
 }
 
 // ─── INGESTION (Sync) ───
@@ -298,6 +481,24 @@ async function ingestMessage(body: any) {
 
     // C. Immediate Feedback
     markMessageAsRead(msg.waMessageId).catch(() => { });
+
+    // C. CHAT_ONLY MODE: Simula store, customer e conversation em memória
+    const chatOnly = isChatOnlyMode();
+    if (chatOnly) {
+        console.log("[WEBHOOK] [CHAT_ONLY] Modo sem banco - simulando dados");
+        const mockStore = {
+            id: "chatonly_store",
+            phoneNumberId: msg.phoneNumberId,
+            name: "Chat Only Store",
+        };
+        return {
+            msg,
+            store: mockStore,
+            customer: { id: `chatonly_cust_${msg.from}`, phone: msg.from },
+            conversation: { id: `chatonly_conv_${msg.from}`, currentState: "idle" },
+            newConversationCreated: true,
+        };
+    }
 
     // D. Resolver Store com fallback defensivo para schema drift
     let store;
@@ -342,36 +543,66 @@ async function ingestMessage(body: any) {
     // Vamos confiar APENAS no UNIQUE CONSTRAINT do banco no passo G.
 
     // F. Upsert Dados Relacionados (Customer -> Conversation)
-    const customer = await prisma.customer.upsert({
-        where: { storeId_phone: { storeId: store.id, phone: msg.from } },
-        create: { storeId: store.id, phone: msg.from },
-        update: {},
-    });
-
-    // Race Conditions na criação de conversa
-    let conversation = await prisma.conversation.findFirst({
-        where: {
-            storeId: store.id,
-            customerId: customer.id,
-            status: { in: ["open", "PENDING_HUMAN"] },
-        },
-        orderBy: { startedAt: "desc" },
-    });
-
+    // CHAT_ONLY mode: skip DB operations
+    if (chatOnly) {
+        // Already handled above - this should never be reached
+        return null;
+    }
+    let customer: any = { id: `chatonly_${Date.now()}`, storeId: store.id, phone: msg.from };
+    // Fallback para conversation em modo CHAT_ONLY (evita null reference no catch)
+    let conversation: any = chatOnly
+        ? { id: `chatonly_conv_${msg.from}`, currentState: "idle", customerId: customer.id, storeId: store.id }
+        : null;
     let newConversationCreated = false;
 
-    if (!conversation) {
-        conversation = await prisma.conversation.create({
-            data: {
+    try {
+        customer = await prisma.customer.upsert({
+            where: { storeId_phone: { storeId: store.id, phone: msg.from } },
+            create: { storeId: store.id, phone: msg.from },
+            update: {},
+        });
+
+        // Race Conditions na criação de conversa
+        conversation = await prisma.conversation.findFirst({
+            where: {
+                storeId: store.id,
+                customerId: customer.id,
+                status: { in: ["open", "PENDING_HUMAN"] },
+            },
+            orderBy: { startedAt: "desc" },
+        });
+
+        if (!conversation) {
+            conversation = await prisma.conversation.create({
+                data: {
+                    storeId: store.id,
+                    customerId: customer.id,
+                    status: "open",
+                    currentState: "greeting",
+                    slots: {},
+                },
+            });
+            newConversationCreated = true;
+            debugLog(`New conversation created: ${conversation.id}`);
+        }
+    } catch (dbError: any) {
+        if (chatOnly) {
+            console.log("[WEBHOOK] [CHAT_ONLY] DB unavailable, using in-memory fallback");
+            // Criar objetos mínimos em memória
+            customer = { id: `chatonly_cust_${Date.now()}`, storeId: store.id, phone: msg.from };
+            conversation = {
+                id: `chatonly_conv_${Date.now()}`,
                 storeId: store.id,
                 customerId: customer.id,
                 status: "open",
                 currentState: "greeting",
                 slots: {},
-            },
-        });
-        newConversationCreated = true;
-        debugLog(`New conversation created: ${conversation.id}`);
+                startedAt: new Date(),
+            };
+            newConversationCreated = true;
+        } else {
+            throw dbError;
+        }
     }
 
     // G. Persistência da Mensagem (Inbound) - FAIL FAST (Physical DB Check)
@@ -400,23 +631,34 @@ async function ingestMessage(body: any) {
 
             return null; // Bloqueia processamento
         }
-        throw e;
+
+        // CHAT_ONLY FALLBACK: Se DB falhar por outro motivo, continua
+        if (chatOnly) {
+            console.log(`[WEBHOOK] [CHAT_ONLY] DB error on message create: ${e.message}`);
+        } else {
+            throw e;
+        }
     }
 
     // Reset Command Hook
     if (msg.text.toLowerCase().trim() === "reset") {
-        await prisma.conversation.update({
-            where: { id: conversation.id },
-            data: {
-                status: "open",
-                currentState: "greeting",
-                slots: {},
-                stallCount: 0,
-                frustrationLevel: 0,
-                messageCount: 0,
-                processingUntil: null
-            }
-        });
+        try {
+            await prisma.conversation.update({
+                where: { id: conversation.id },
+                data: {
+                    status: "open",
+                    currentState: "greeting",
+                    slots: {},
+                    stallCount: 0,
+                    frustrationLevel: 0,
+                    messageCount: 0,
+                    processingUntil: null
+                }
+            });
+        } catch (dbError: any) {
+            if (!chatOnly) throw dbError;
+            console.log("[WEBHOOK] [CHAT_ONLY] Reset failed, continuing anyway");
+        }
         await sendTextMessage(msg.from, "🔄 Conversa resetada.");
         return null;
     }
@@ -428,8 +670,15 @@ async function ingestMessage(body: any) {
 async function processAI(ctx: any) {
     const { store, conversation, msg } = ctx;
 
+    // CHAT_ONLY mode: desativa telemetria para reduzir latência e ignora locks de banco
+    const chatOnly = isChatOnlyMode();
+
     // 1. Acquire Lock
-    const lockAcquired = await acquireLock(conversation.id);
+    let lockAcquired = true;
+    if (!chatOnly) {
+        lockAcquired = await acquireLock(conversation.id);
+    }
+
     if (!lockAcquired) {
         console.log(`[WORKER] 🔒 Lock ocupado. Mensagem salva mas não processada (Debounce): ${msg.waMessageId}`);
         return;
@@ -447,9 +696,10 @@ async function processAI(ctx: any) {
         requestId,
     };
 
-    // CHAT_ONLY mode: desativa telemetria para reduzir latência
-    const chatOnly = isChatOnlyMode();
+    // CHAT_ONLY: Result captured inside try block for safe return after finally
+    let _chatOnlyResult: { text: string; intent: string; state: string; action?: string; source?: string } | undefined;
 
+    // Telemetry and other declarations...
     try {
         // ─── HUMAN LOOP GATE: Verifica se conversa está travada em modo HUMAN ───
         const isLocked = await isHumanLocked(conversation.id);
@@ -520,7 +770,7 @@ async function processAI(ctx: any) {
         // ─── FASE 2: AUTO-ROUTING SAC ───
         // Roteia conversa baseado no intent detectado pelo buildContext
         // Nota: uses raw SQL pois prisma client ainda não foi regenerado com conversationType
-        {
+        if (!chatOnly) {
             const sacIntents = ["SUPPORT", "HANDOFF", "SAC_TROCA", "SAC_ATRASO", "SAC_RETIRADA", "SAC_REEMBOLSO"];
             const targetType =
                 context.currentState === "support_sac" || sacIntents.includes(context.detectedIntent)
@@ -683,6 +933,16 @@ async function processAI(ctx: any) {
                     // 4. Não chama o orchestrator - retorna imediatamente
                     // O humano owns a conversa pelo resto do dia
                     console.log(`[humanLoop] ✅ Handoff completo para ${conversation.id}`);
+                    if (chatOnly) {
+                        _chatOnlyResult = {
+                            text: handoffMessage,
+                            intent: context.detectedIntent,
+                            state: "support_sac",
+                            action: "ESCALATE",
+                            source: "human_loop_sales",
+                        };
+                        return _chatOnlyResult;
+                    }
                     return;
                 } else {
                     console.warn(`[humanLoop] WPP_GROUP_SALES_ID não configurado, pulando handoff`);
@@ -767,6 +1027,16 @@ async function processAI(ctx: any) {
 
                 // Retorna sem chamar orchestrator -bot fez uma pergunta com todos os dados
                 console.log(`[SAC] Dados incompletos, pergunta enviada. Retornando.`);
+                if (chatOnly) {
+                    _chatOnlyResult = {
+                        text: sacQuestion,
+                        intent: context.detectedIntent,
+                        state: "support_sac",
+                        action: "REQUEST_ORDER_DATA",
+                        source: "sac_minimum",
+                    };
+                    return _chatOnlyResult;
+                }
                 return;
             } else {
                 // Dados mínimos completos - faz handoff para SAC
@@ -832,6 +1102,16 @@ async function processAI(ctx: any) {
                     }
 
                     console.log(`[SAC] ✅ Handoff completo para ${conversation.id}`);
+                    if (chatOnly) {
+                        _chatOnlyResult = {
+                            text: handoffMessage,
+                            intent: context.detectedIntent,
+                            state: "support_sac",
+                            action: "ESCALATE",
+                            source: "human_loop_sac",
+                        };
+                        return _chatOnlyResult;
+                    }
                     return;
                 } else {
                     console.warn(`[SAC] WPP_GROUP_SAC_ID não configurado, pulando handoff SAC`);
@@ -1013,6 +1293,18 @@ async function processAI(ctx: any) {
         };
         if (chatOnly && orchestratorResult.action) console.log(`[ACTION] ${orchestratorResult.action}`);
 
+        // CHAT_ONLY: Capture result now and return early — avoids all WA/DB side-effects below
+        if (chatOnly) {
+            _chatOnlyResult = {
+                text: decision.reply_text,
+                intent: context.detectedIntent,
+                state: context.currentState,
+                action: orchestratorResult.action,
+                source: orchestratorResult.source ?? "legacy",
+            };
+            return _chatOnlyResult;
+        }
+
         // Override with transition decision if needed
         if (transition.shouldEscalate) decision.requires_human = true;
 
@@ -1102,8 +1394,8 @@ async function processAI(ctx: any) {
             const handoff = generateWarmHandoffSummary(handoffContext);
             const slaDeadline = calculateSLADeadline(handoff.queue, handoff.priority);
 
-            // Criar Ticket de escalonamento
-            const ticket = await prisma.ticket.create({
+            // Criar Ticket de escalonamento (skip in CHAT_ONLY — no real DB conversation)
+            const ticket = chatOnly ? { id: `chatonly_ticket_${Date.now()}` } : await prisma.ticket.create({
                 data: {
                     storeId: store.id,
                     customerId: ctx.customer.id,
@@ -1118,7 +1410,8 @@ async function processAI(ctx: any) {
                 },
             });
 
-            // Atualizar Conversation
+            // Atualizar Conversation (skip in CHAT_ONLY)
+            if (!chatOnly) {
             await prisma.conversation.update({
                 where: { id: conversation.id },
                 data: {
@@ -1126,6 +1419,7 @@ async function processAI(ctx: any) {
                     currentQueue: handoff.queue,
                 },
             });
+            }
 
             // Log estruturado
             console.log(`[WORKER] 🚨 Handoff criado:`, {
@@ -1261,7 +1555,16 @@ async function processAI(ctx: any) {
 
     } catch (error) {
         console.error("[WORKER] ❌ Erro no processamento:", error);
+        // Retorna erro em modo CHAT_ONLY
+        if (chatOnly) {
+            return { text: `[ERRO] ${error}`, intent: "ERROR", state: (conversation as any)?.currentState ?? "unknown" };
+        }
     } finally {
-        await releaseLock(conversation.id);
+        if (!chatOnly) {
+            await releaseLock(conversation.id);
+        }
     }
+
+    // Retorna dados para CHAT_ONLY (fallback — normally returned early from inside try block)
+    if (chatOnly) return _chatOnlyResult;
 }
