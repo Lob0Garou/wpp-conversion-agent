@@ -136,7 +136,7 @@ export default function ChatTimeline({
             >
                 {/* System Message Divider */}
                 <div className="flex justify-center mb-10 mt-2">
-                    <span className="text-[10px] font-black px-4 py-1.5 rounded-full flex items-center gap-2 border shadow-sm uppercase tracking-widest" style={{ background: "var(--color-ai-sales-bg)", color: "var(--color-ai-sales)", borderColor: "var(--color-ai-sales-border)" }}>
+                    <span className="text-[var(--text-xs)] font-black px-4 py-1.5 rounded-full flex items-center gap-2 border shadow-sm uppercase tracking-widest" style={{ background: "var(--color-ai-sales-bg)", color: "var(--color-ai-sales)", borderColor: "var(--color-ai-sales-border)" }}>
                         <Bot className="w-3.5 h-3.5" />
                         {agentLabel} assumiu o atendimento
                     </span>
@@ -147,7 +147,7 @@ export default function ChatTimeline({
                         <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-4" style={{ background: "var(--bg-elevated)" }}>
                             <MessageSquare size={32} style={{ color: "var(--text-muted)" }} />
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Iniciando nova conversa...</p>
+                        <p className="text-[var(--text-xs)] font-black uppercase tracking-widest" style={{ color: "var(--text-muted)" }}>Iniciando nova conversa...</p>
                     </div>
                 ) : (
                     timelineItems.map((item, i) => {
@@ -253,7 +253,7 @@ export default function ChatTimeline({
                         </div>
 
                         {saleError && (
-                            <p className="text-[11px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-2 border" style={{ background: "var(--color-brand-subtle)", color: "var(--color-brand)", borderColor: "var(--color-brand-border)" }}>
+                            <p className="text-[var(--text-xs)] font-bold px-3 py-1.5 rounded-lg flex items-center gap-2 border" style={{ background: "var(--color-brand-subtle)", color: "var(--color-brand)", borderColor: "var(--color-brand-border)" }}>
                                 <CheckCircle className="w-3.5 h-3.5 rotate-180" />
                                 {saleError}
                             </p>
@@ -275,15 +275,15 @@ export default function ChatTimeline({
                     <div className="px-6 py-3 flex items-center gap-2 overflow-x-auto no-scrollbar" style={{ borderBottom: "1px solid var(--border-default)" }}>
                         <button
                             onClick={() => setShowSaleModal(v => !v)}
-                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all text-white shadow-sm shrink-0"
-                            style={{ background: "#E31C2D" }}
+                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[var(--text-xs)] font-black uppercase tracking-widest transition-all text-white shadow-sm shrink-0"
+                            style={{ background: "var(--color-brand)" }}
                         >
                             <CheckCircle size={14} />
                             Fechar venda
                         </button>
 
                         <button
-                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shrink-0 shadow-sm"
+                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[var(--text-xs)] font-black uppercase tracking-widest transition-all shrink-0 shadow-sm"
                             style={{
                                 background: "transparent",
                                 color: "var(--text-muted)"
@@ -296,7 +296,7 @@ export default function ChatTimeline({
                         </button>
 
                         <button
-                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shrink-0 shadow-sm"
+                            className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[var(--text-xs)] font-black uppercase tracking-widest transition-all shrink-0 shadow-sm"
                             style={{
                                 background: "transparent",
                                 color: "var(--text-muted)"

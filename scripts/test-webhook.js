@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/no-require-imports */
 const crypto = require("crypto");
 const http = require("http");
 require("dotenv").config({ path: ".env" });
@@ -56,7 +56,7 @@ const signature = crypto
 
 const options = {
     hostname: "localhost",
-    port: 3001,
+    port: process.env.PORT || 8081,
     path: "/api/webhook",
     method: "POST",
     headers: {
@@ -68,9 +68,31 @@ const options = {
 
 const req = http.request(options, (res) => {
     console.log(`STATUS: ${res.statusCode}`);
+    let data = '';
     res.setEncoding("utf8");
     res.on("data", (chunk) => {
-        console.log(`BODY: ${chunk}`);
+        data += chunk;
+    });
+    res.on("end", () => {
+        try {
+            const parsed = JSON.parse(data);
+            console.log("\n📦 Response Payload:");
+            console.log(JSON.stringify(parsed, null, 2));
+
+            if (parsed.ok) {
+                console.log(`\n✅ Status: OK (mode: ${parsed.mode || "unknown"})`);
+                if (parsed.replyText) {
+                    console.log(`\n💬 Reply Text:\n${parsed.replyText}`);
+                }
+                if (parsed.debug?.skipped_db) {
+                    console.log(`\n[CHAT_ONLY] DB skipped successfully as expected.`);
+                }
+            } else {
+                console.log(`\n❌ Error: ${parsed.error}`);
+            }
+        } catch (e) {
+            console.log(`RAW BODY: ${data}`);
+        }
     });
 });
 

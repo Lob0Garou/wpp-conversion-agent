@@ -6,6 +6,13 @@ import { findRelevantProducts } from "./products";
 import { validateStockRequest, findAlternatives, createStockUnknownResult, type StockResult } from "./stock-agent";
 import { hasActiveSnapshot, getActiveImportId } from "./inventory-snapshot";
 
+/**
+ * Check if running in CHAT_ONLY mode (for Ralph Loop testing without DB)
+ */
+function isChatOnlyMode(): boolean {
+    return process.env.CADU_MODE === "CHAT_ONLY";
+}
+
 export interface ConversationContext {
     // State
     currentState: ConversationStateType;
@@ -45,6 +52,7 @@ export async function buildContext(params: {
     currentWaMessageId?: string; // Fix 3: Exclude current message
 }): Promise<ConversationContext> {
     const { conversationId, userMessage, storeId, storeName, customerName } = params;
+    const chatOnly = isChatOnlyMode();
 
     // 1. Load current state
     const state = await loadState(conversationId);
@@ -52,14 +60,26 @@ export async function buildContext(params: {
     // 2. Fetch conversation history (last 8 messages = ~4 turnos completos)
     // 8 msgs são suficientes para SAC e vendas — reduz custo de tokens em ~33%
     const historyLimit = getSafeHistoryLimit();
-    const lastMessages = await prisma.message.findMany({
-        where: {
-            conversationId,
-            NOT: { waMessageId: params.currentWaMessageId ?? "" }, // Fix 3
-        },
-        orderBy: { timestamp: "desc" }, // Keep original orderBy
-        take: historyLimit,
-    });
+
+    // CHAT_ONLY FALLBACK: Se DB falhar, retorna histórico vazio
+    let lastMessages: any[] = [];
+    try {
+        lastMessages = await prisma.message.findMany({
+            where: {
+                conversationId,
+                NOT: { waMessageId: params.currentWaMessageId ?? "" }, // Fix 3
+            },
+            orderBy: { timestamp: "desc" }, // Keep original orderBy
+            take: historyLimit,
+        });
+    } catch (dbError: any) {
+        if (chatOnly) {
+            console.log("[CONTEXT] [CHAT_ONLY] DB unavailable, using empty history");
+            lastMessages = [];
+        } else {
+            throw dbError; // Re-throw in production
+        }
+    }
 
     // Fix 4: Return structured roles
     const conversationHistory = lastMessages.reverse().map((m) => ({
@@ -94,39 +114,82 @@ export async function buildContext(params: {
     if (shouldSkipProductSearch) {
         stockResult = createStockUnknownResult();
     } else {
-        const snapshotExists = await hasActiveSnapshot(storeId);
+        // CHAT_ONLY FALLBACK: Skip stock check if DB unavailable
+        let snapshotExists = false;
+        try {
+            snapshotExists = await hasActiveSnapshot(storeId);
+        } catch (dbError: any) {
+            if (chatOnly) {
+                console.log("[CONTEXT] [CHAT_ONLY] Snapshot check failed, using unknown result");
+                snapshotExists = false;
+            } else {
+                throw dbError;
+            }
+        }
 
         if (!snapshotExists) {
             console.log(`[CONTEXT] [WARN] Sem snapshot ativo para store ${storeId}`);
             stockResult = createStockUnknownResult();
         } else {
-            const activeImportId = await getActiveImportId(storeId);
-            availableProducts = await findRelevantProducts(
-                userMessage,
-                storeId,
-                mergedSlots,
-                activeImportId ?? undefined
-            );
+            let activeImportId: string | null = null;
+            try {
+                activeImportId = await getActiveImportId(storeId);
+            } catch (dbError: any) {
+                if (chatOnly) {
+                    console.log("[CONTEXT] [CHAT_ONLY] Import ID lookup failed");
+                    activeImportId = null;
+                } else {
+                    throw dbError;
+                }
+            }
+
+            try {
+                availableProducts = await findRelevantProducts(
+                    userMessage,
+                    storeId,
+                    mergedSlots,
+                    activeImportId ?? undefined
+                );
+            } catch (dbError: any) {
+                if (chatOnly) {
+                    availableProducts = [];
+                } else {
+                    throw dbError;
+                }
+            }
 
             stockResult = validateStockRequest(availableProducts, mergedSlots);
             if (stockResult.status === "UNAVAILABLE") {
-                const alternatives = await findAlternatives(
-                    storeId,
-                    mergedSlots,
-                    stockResult.best?.description,
-                );
-                stockResult.alternatives = alternatives;
+                try {
+                    const alternatives = await findAlternatives(
+                        storeId,
+                        mergedSlots,
+                        stockResult.best?.description,
+                    );
+                    stockResult.alternatives = alternatives;
+                } catch {
+                    // Alternatives failed - that's okay, continue without alternatives
+                }
             }
         }
     }
     // 6. Get customer name if available
     let fetchedCustomerName = customerName;
     if (!fetchedCustomerName) {
-        const conversation = await prisma.conversation.findUnique({
-            where: { id: conversationId },
-            include: { customer: { select: { name: true } } },
-        });
-        fetchedCustomerName = conversation?.customer?.name || undefined;
+        try {
+            const conversation = await prisma.conversation.findUnique({
+                where: { id: conversationId },
+                include: { customer: { select: { name: true } } },
+            });
+            fetchedCustomerName = conversation?.customer?.name || undefined;
+        } catch (dbError: any) {
+            if (chatOnly) {
+                console.log("[CONTEXT] [CHAT_ONLY] Customer lookup failed, using default");
+                fetchedCustomerName = undefined;
+            } else {
+                throw dbError;
+            }
+        }
     }
 
     return {

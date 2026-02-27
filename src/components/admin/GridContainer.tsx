@@ -17,8 +17,8 @@ export default function GridContainer({ slots, selectedId, onSelect, onCardResol
   return (
     <LayoutGroup id="grid">
       {/* Scrollable container so cards never overflow/overlap */}
-      <div className="h-full overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "#2e3440 transparent" }}>
-        <div className="grid grid-cols-3 grid-rows-3 gap-4 2xl:gap-6 p-4 2xl:p-8 h-full min-h-[640px]">
+      <div className="h-full overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "var(--border-subtle) transparent" }}>
+        <div className="grid grid-cols-3 grid-rows-3 gap-6 p-6 h-full min-h-[640px]">
           <AnimatePresence mode="popLayout">
             {slots.map((card, idx) =>
               card ? (

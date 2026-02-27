@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { isChatOnlyMode } from "@/lib/chat-mode";
+import { listOutboxEntries } from "@/lib/chat-outbox";
 
 
 export const dynamic = "force-dynamic";
@@ -22,6 +24,32 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const typeFilter = searchParams.get("type");
         const phoneFilter = searchParams.get("phone")?.trim();
+
+        if (isChatOnlyMode()) {
+            const entries = listOutboxEntries();
+            const mapped = entries
+                .filter((entry) => !phoneFilter || entry.phone === phoneFilter)
+                .map((entry) => {
+                    const state = String(entry.state || "").toLowerCase();
+                    const status = entry.status === "PENDING_HUMAN" || entry.status === "HUMAN" ? "PENDING_HUMAN" : "open";
+                    const conversationType = (state.includes("support") || status === "PENDING_HUMAN") ? "sac" : "sales";
+                    return {
+                        id: entry.conversationId,
+                        status,
+                        conversationType,
+                        frustrationLevel: status === "PENDING_HUMAN" ? 2 : 0,
+                        slots: {},
+                        customerPhone: entry.phone,
+                        customerName: null,
+                        lastMessage: entry.content || "",
+                        lastMessageAt: new Date(entry.timestamp).toISOString(),
+                        lastMessageDirection: "outbound",
+                    };
+                })
+                .filter((row) => !typeFilter || typeFilter === "all" || row.conversationType === typeFilter);
+
+            return NextResponse.json(mapped);
+        }
 
         const whereClause: any = {};
         if (typeFilter && typeFilter !== "all") {

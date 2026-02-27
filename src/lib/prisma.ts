@@ -1,14 +1,55 @@
 import type { PrismaClient } from "@prisma/client";
 
 /**
- * Retorna a classe PrismaClient correta para o ambiente atual.
- *
- * - TEST_MODE=true  → .prisma/client-sandbox  (SQLite, gerado de schema-sandbox.prisma)
- * - Produção/dev    → @prisma/client           (Postgres, gerado de schema.prisma)
- *
- * Os dois clientes vivem em diretórios separados (node_modules/.prisma/client
- * e node_modules/.prisma/client-sandbox) e nunca se sobrescrevem mutuamente.
+ * Verifica se o modo CHAT_ONLY está ativo
  */
+function isChatOnlyMode(): boolean {
+  const caduMode = process.env.CADU_MODE;
+  const chatOnly = process.env.CHAT_ONLY;
+  return (
+    caduMode === "CHAT_ONLY" ||
+    caduMode === "chat_only" ||
+    chatOnly === "true" ||
+    chatOnly === "1" ||
+    chatOnly === "yes"
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createMockPrismaClient(): any {
+  console.log("🛠️ [DB GATE] Prisma bypass ativo (CHAT_ONLY). Nenhuma query será disparada.");
+  const handler = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    get(_target: any, prop: string) {
+      if (prop === '$connect') return async () => { };
+      if (prop === '$disconnect') return async () => { };
+      if (prop === '$queryRaw') return async () => [];
+      if (prop === '$executeRaw') return async () => 0;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if (prop === '$transaction') return async (cb: any) => cb(new Proxy({}, handler));
+
+      return new Proxy(() => { }, {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        apply(_targetFn, _thisArg, _argumentsList) {
+          // Para findUnique, findFirst etc, retornar null (ou mock vazio)
+          if (['findUnique', 'findFirst'].includes(prop)) return Promise.resolve(null);
+          // Para create, update etc, retornar um objeto fake rápido
+          if (['create', 'update', 'upsert'].includes(prop)) return Promise.resolve({ id: `mock_${Date.now()}` });
+          // Para findMany etc
+          if (['findMany'].includes(prop)) return Promise.resolve([]);
+
+          return Promise.resolve(null);
+        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        get(_targetObj, childProp) {
+          return handler.get(_targetObj, childProp as string);
+        }
+      });
+    }
+  };
+  return new Proxy({}, handler);
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getPrismaClientClass(): any {
   if (process.env.TEST_MODE === "true") {
@@ -34,8 +75,11 @@ function createPrismaClient(): PrismaClient {
   });
 }
 
-export const prisma: PrismaClient =
-  process.env.NODE_ENV === "production"
+const isChatOnly = process.env.CADU_MODE === "CHAT_ONLY" || process.env.CHAT_ONLY === "true";
+
+export const prisma: PrismaClient = isChatOnly
+  ? createMockPrismaClient()
+  : process.env.NODE_ENV === "production"
     ? createPrismaClient()
     : process.env.TEST_MODE === "true"
       ? createPrismaClient()

@@ -49,12 +49,23 @@ function debugLog(msg: string) {
 
 function shouldBypassSacMinimumForPolicyInfo(intent: string, currentState: string, userMessage: string): boolean {
     if (intent === "INFO" || intent.startsWith("INFO_")) return true;
-    if (currentState !== "support_sac") return false;
 
     const normalized = userMessage
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
+
+    // Padrões de política de troca/presente - bypass independente do state
+    const presentPolicySignals = [
+        "trocar um presente", "trocar o presente", "trocar presente",
+        "troca de presente", "presente que ganhei", "ganhei de presente",
+        "so saber", "apenas saber", "somente saber",
+        "prazo pra troca", "prazo para troca", "prazo de troca",
+        "politica de troca", "como funciona a troca",
+    ];
+    if (presentPolicySignals.some((s) => normalized.includes(s))) return true;
+
+    if (currentState !== "support_sac") return false;
 
     const explicitInfoSignals = [
         "so uma informacao",
@@ -94,11 +105,92 @@ type NextStepContext = {
     missing?: string[];
 };
 
+type ClaimGuardContext = {
+    source?: string;
+    isChatOnly: boolean;
+    action?: string;
+};
+
+type ClaimGuardResult = {
+    text: string;
+    applied: boolean;
+    reasons: string[];
+};
+
 function normalizeText(text: string): string {
     return text
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
+}
+
+function isTrustedClaimSource(source?: string): boolean {
+    const normalized = normalizeText(source || "");
+    return normalized.includes("db") || normalized.includes("tool");
+}
+
+function sanitizeUnsafeClaims(replyText: string, ctx: ClaimGuardContext): ClaimGuardResult {
+    const original = (replyText || "").trim();
+    if (!original) {
+        return { text: replyText, applied: false, reasons: [] };
+    }
+
+    const untrusted = ctx.isChatOnly || !isTrustedClaimSource(ctx.source);
+    if (!untrusted) {
+        return { text: original, applied: false, reasons: [] };
+    }
+
+    const reasons: string[] = [];
+    let safeText = original;
+    const normalized = normalizeText(original);
+    const hasVerificationLanguage = /\b(verific|chec|confirm|consult|encaminh|acionar)\b/i.test(normalized);
+
+    const hasStockClaim = /\b(temos sim|tem sim|esta disponivel|disponivel em estoque|\d+\s+unidades?)\b/i.test(normalized);
+    if (hasStockClaim && !hasVerificationLanguage) {
+        safeText = "Posso confirmar no sistema pra você. Me diga o modelo, cor e tamanho para eu checar a disponibilidade.";
+        reasons.push("stock_claim_without_evidence");
+    }
+
+    const hasTrackingClaim = /\b(em rota|saiu para entrega|entregue|a caminho|pedido faturado|pedido aprovado)\b/i.test(normalized);
+    if (hasTrackingClaim && !hasVerificationLanguage) {
+        safeText = "Preciso confirmar o status no sistema antes de te dar esse retorno. Me informe o CPF e o número do pedido para eu verificar.";
+        reasons.push("tracking_claim_without_evidence");
+    }
+
+    const hasActionClaim = /\b(ja gerei|ja cancelei|ja solicitei|ja finalizei|ja resolvi|acabei de gerar|acabei de cancelar)\b/i.test(normalized);
+    if (hasActionClaim && !hasVerificationLanguage) {
+        safeText = "Ainda preciso confirmar essa ação no sistema. Me passe os dados do pedido para eu encaminhar a checagem.";
+        reasons.push("action_claim_without_evidence");
+    }
+
+    // Prevent temporal claims that trigger F001 when no explicit verification exists.
+    const temporalClaimPattern = /\b(hoje|amanha|\d{1,2}\/\d{1,2}|\d{1,2}\s+de\s+[a-z]+)/i;
+    if (temporalClaimPattern.test(normalizeText(safeText)) && !hasVerificationLanguage) {
+        let rewritten = safeText
+            .replace(/\bcomo posso te ajudar hoje\??/gi, "como posso te ajudar?")
+            .replace(/\best[aá]\s+procurando hoje\??/gi, "esta procurando?")
+            .replace(/\bprocurando hoje\??/gi, "procurando?")
+            .replace(/\bhoje\b/gi, "agora")
+            .replace(/\bamanha\b/gi, "nos proximos passos");
+
+        // Remove date-like commitments in untrusted paths.
+        rewritten = rewritten
+            .replace(/\b\d{1,2}\/\d{1,2}\b/g, "")
+            .replace(/\b\d{1,2}\s+de\s+[a-z]+\b/gi, "")
+            .replace(/\s{2,}/g, " ")
+            .trim();
+
+        if (rewritten !== safeText) {
+            safeText = rewritten;
+            reasons.push("temporal_claim_without_evidence");
+        }
+    }
+
+    return {
+        text: safeText,
+        applied: reasons.length > 0,
+        reasons,
+    };
 }
 
 function ensureNextStep(replyText: string, ctx: NextStepContext): string {
@@ -165,9 +257,9 @@ function ensureNextStep(replyText: string, ctx: NextStepContext): string {
     let nextStep = "";
 
     if (action === "ESCALATE") {
-        nextStep = "PrÃ³ximo passo: posso encaminhar para atendente humano agora, se vocÃª confirmar.";
+        nextStep = "Posso encaminhar para um atendente humano agora, se você confirmar.";
     } else if (intent === "ORDER_STATUS" || intent === "TRACKING" || intent === "SAC_ATRASO") {
-        nextStep = "PrÃ³ximo passo: me confirme o CPF e o nÃºmero do pedido para eu verificar o status aqui.";
+        nextStep = "Me confirme o CPF e o número do pedido para eu verificar o status aqui.";
     } else if (
         intent === "EXCHANGE_REQUEST" ||
         intent === "REFUND_REQUEST" ||
@@ -175,7 +267,7 @@ function ensureNextStep(replyText: string, ctx: NextStepContext): string {
         intent === "SAC_REEMBOLSO" ||
         intent === "SAC_RETIRADA"
     ) {
-        nextStep = "PrÃ³ximo passo: me envie CPF + nÃºmero do pedido. Se estiver na loja, leve NF e documento com foto.";
+        nextStep = "Me envie o CPF e o número do pedido. Se estiver na loja, leve NF e documento com foto.";
     } else if (
         intent === "STOCK_AVAILABILITY" ||
         intent === "SALES" ||
@@ -183,7 +275,7 @@ function ensureNextStep(replyText: string, ctx: NextStepContext): string {
         intent === "CLOSING_SALE" ||
         intent === "STOCK"
     ) {
-        nextStep = "PrÃ³ximo passo: me diga o tamanho e a cor/modelo para eu consultar disponibilidade no sistema.";
+        nextStep = "Me diga o tamanho e a cor/modelo para eu consultar a disponibilidade no sistema.";
     }
 
     if (!nextStep) {
@@ -277,6 +369,28 @@ function inferSlotProfileIntent(
     return rawIntent || "UNKNOWN";
 }
 
+function isExchangePolicyQuestion(text: string): boolean {
+    const normalized = normalizeText(text || "");
+    if (!normalized) return false;
+
+    const hasExchangeSignal = /\b(troca|trocar|devolucao|devolver|vale troca|presente|politica)\b/.test(normalized);
+    if (!hasExchangeSignal) return false;
+
+    const hasPolicyIntent =
+        /\b(prazo|como funciona|politica|so saber|apenas saber|somente saber|duvida|informacao)\b/.test(normalized) ||
+        /\b(nao e pedido|sem pedido|nao foi pedido)\b/.test(normalized) ||
+        /\b(troca de presente|presente)\b/.test(normalized);
+
+    const hasTransactionalSignal =
+        /\b(cpf|numero do pedido|n do pedido|rastreio|tracking|protocolo|ticket|pedido \d{6,})\b/.test(normalized);
+
+    return hasPolicyIntent && !hasTransactionalSignal;
+}
+
+function buildExchangePolicyFastPathReply(): string {
+    return "Política de troca (resumo):\n1) Prazo: em geral, até 30 dias corridos.\n2) Condições: produto sem uso, com etiqueta e comprovante (NF/cupom).\n3) Presente: seguimos a mesma regra, validando o canal da compra.\nPara eu te orientar com as regras corretas, me confirme se a compra foi na loja física ou no site/app.";
+}
+
 function buildLowContextTriageQuestion(known: KnownEntities, isChatOnly: boolean): string {
     const needOrder = !known.orderId;
     const needCpf = !known.cpf;
@@ -287,16 +401,16 @@ function buildLowContextTriageQuestion(known: KnownEntities, isChatOnly: boolean
     if (needCpf) requestedSac.push("CPF do titular");
 
     const sacClause = requestedSac.length > 0
-        ? `me passe ${requestedSac.join(" e ")}`
-        : "confirme os dados do pedido";
+        ? `preciso que me passe ${requestedSac.join(" e ")}`
+        : "preciso que confirme os dados do pedido";
     const stockClause = needSize
-        ? " Se for consulta de produto/estoque, me diga tambem o tamanho."
+        ? " Se for consulta de produto/estoque, me diga também o tamanho."
         : "";
     const handoffClause = isChatOnly
-        ? " Com isso, eu encaminho para checagem humana quando necessario."
+        ? " Com isso, eu encaminho para checagem humana se necessário."
         : "";
 
-    return `Proximo passo: vou seguir sem erro, e para isso ${sacClause}.${stockClause}${handoffClause}`;
+    return `Para eu conseguir te ajudar, ${sacClause}.${stockClause}${handoffClause}`;
 }
 
 function maskCpfForTelemetry(cpf?: string): string | undefined {
@@ -332,6 +446,21 @@ function maybeCollectMissingSlot(params: {
     const slotSource = extraction.slotSource;
     const profileIntent = inferSlotProfileIntent(params.intent, params.userMessage, params.replyText, known);
 
+    if (
+        (profileIntent === "EXCHANGE_REQUEST" || profileIntent === "SAC_TROCA") &&
+        isExchangePolicyQuestion(params.userMessage)
+    ) {
+        return {
+            shouldCollect: false,
+            text: buildExchangePolicyFastPathReply(),
+            missingSlots: [],
+            known,
+            slotSource,
+            profileIntent,
+            reason: "policy_fast_path",
+        };
+    }
+
     if (profileIntent === "LOW_CONTEXT_UNCERTAIN") {
         const missingSlots: Slot[] = [];
         if (!known.orderId) missingSlots.push("orderId");
@@ -362,14 +491,11 @@ function maybeCollectMissingSlot(params: {
                 "RETURN_PROCESS",
                 "VOUCHER_GENERATION",
                 "SAC_ATRASO",
-                "SAC_TROCA",
-                "SAC_REEMBOLSO",
-                "SAC_RETIRADA",
             ].includes(profileIntent) &&
             missingSlots.includes("orderId") &&
             missingSlots.includes("cpf");
         const text = requiresSacPair
-            ? "Proximo passo: vou seguir com a verificacao assim que voce me informar o numero do pedido e o CPF do titular. Com esses dados, eu encaminho para checagem humana quando necessario."
+            ? "Vou seguir com a verificação assim que você me informar o número do pedido e o CPF do titular. Com esses dados, eu encaminho para checagem humana quando necessário."
             : buildSlotQuestion(missingSlots[0], profileIntent, known, { isChatOnly: params.isChatOnly });
         return {
             shouldCollect: true,
@@ -628,11 +754,18 @@ export async function POST(request: NextRequest) {
                 if (process.env.CADU_DEBUG === "1") {
                     console.log(`[SLOT_COLLECTOR] active=true intent=${slotDecision.profileIntent} missing=${slotDecision.missingSlots.join(",")}`);
                 }
+            } else if (slotDecision.reason === "policy_fast_path") {
+                ingestionContext.responseText = slotDecision.text;
+                ingestionContext.action = "POLICY_INFO";
+                ingestionContext.source = "policy_fast_path";
+                if (process.env.CADU_DEBUG === "1") {
+                    console.log(`[SLOT_COLLECTOR] active=false reason=policy_fast_path intent=${slotDecision.profileIntent}`);
+                }
             } else if (process.env.CADU_DEBUG === "1") {
                 console.log(`[SLOT_COLLECTOR] active=false reason=${slotDecision.reason}`);
             }
 
-            let finalReplyText = slotDecision.shouldCollect
+            let finalReplyText = (slotDecision.shouldCollect || slotDecision.reason === "policy_fast_path")
                 ? (ingestionContext.responseText || "")
                 : ensureNextStep(ingestionContext.responseText || "", {
                     intent: ingestionContext.detectedIntent,
@@ -641,11 +774,31 @@ export async function POST(request: NextRequest) {
                     action: ingestionContext.action ?? "respond",
                     is_chat_only: true,
                 });
-            if (!/\b(vou|irei|aguarde|verificando|consultando|te aviso|te informo)\b/i.test(normalizeText(finalReplyText))) {
-                finalReplyText = `${finalReplyText} Vou seguir com isso agora.`;
+            const claimGuard = sanitizeUnsafeClaims(finalReplyText, {
+                source: ingestionContext.source,
+                isChatOnly: true,
+                action: ingestionContext.action,
+            });
+            finalReplyText = claimGuard.text;
+            if (process.env.CADU_DEBUG === "1") {
+                console.log(`[CLAIM_GUARD] applied=${claimGuard.applied} source=${ingestionContext.source || "unknown"} reasons=${claimGuard.reasons.join(",") || "none"}`);
             }
+            // Removed automatic "Vou seguir com isso agora" suffix unconditionally here.
             ingestionContext.responseText = finalReplyText;
             responseData.replyText = finalReplyText;
+            const phone = ingestionContext.msg?.from;
+            if (phone) {
+                const action = String(ingestionContext.action || "").toUpperCase();
+                const isHuman = action === "ESCALATE" || action === "ESCALATE_HUMAN";
+                saveToOutbox(phone, {
+                    conversationId: conv?.id ?? `chatonly_conv_${phone}`,
+                    content: finalReplyText,
+                    timestamp: Date.now(),
+                    id: `chatonly_out_${Date.now()}`,
+                    status: isHuman ? "PENDING_HUMAN" : "BOT",
+                    state: (conv != null ? (conv as any).currentState : null) ?? "unknown",
+                });
+            }
             responseData.telemetry = {
                 conversationId: conv?.id ?? "unknown",
                 customerPhone: ingestionContext.msg?.from ?? "unknown",
@@ -662,6 +815,8 @@ export async function POST(request: NextRequest) {
             responseData.telemetry.knownEntities = maskKnownEntitiesForTelemetry(slotDecision.known);
             responseData.telemetry.slotSource = slotDecision.slotSource;
             responseData.telemetry.slotReason = slotDecision.reason;
+            responseData.telemetry.claimGuardApplied = claimGuard.applied;
+            responseData.telemetry.claimGuardReasons = claimGuard.reasons;
         }
         console.log(`[WEBHOOK] [CHAT_ONLY] Returning telemetry in response`);
     }
@@ -1632,13 +1787,13 @@ async function processAI(ctx: any) {
 
             // Atualizar Conversation (skip in CHAT_ONLY)
             if (!chatOnly) {
-            await prisma.conversation.update({
-                where: { id: conversation.id },
-                data: {
-                    status: "PENDING_HUMAN",
-                    currentQueue: handoff.queue,
-                },
-            });
+                await prisma.conversation.update({
+                    where: { id: conversation.id },
+                    data: {
+                        status: "PENDING_HUMAN",
+                        currentQueue: handoff.queue,
+                    },
+                });
             }
 
             // Log estruturado

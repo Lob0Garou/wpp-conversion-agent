@@ -13,7 +13,9 @@ const GUARDRAIL_CHECK_NAMES = [
     "checkEngagement",
     "checkFrustrationEscalation",
     "checkStockHallucination",
+    "checkFalseStockConfirmation",
     "checkPolicyInvention",
+    "checkPolicyPromise",
     "checkCTAMissing",
     "loopDetection",
 ];
@@ -77,7 +79,9 @@ export function validateResponse(
         checkFrustrationEscalation(context.frustrationLevel, aiResponse),
         // Novas validações
         checkStockHallucination(aiResponse.reply_text, context.availableProducts, context.productCatalog),
+        checkFalseStockConfirmation(aiResponse.reply_text, context.availableProducts, context.productCatalog),
         checkPolicyInvention(aiResponse.reply_text, context.policyPatterns),
+        checkPolicyPromise(aiResponse.reply_text),
         checkCTAMissing(aiResponse.reply_text, context.currentState, context.intentType),
         loopDetection(context.conversationHistory),
     ];
@@ -519,6 +523,34 @@ function checkStockHallucination(
 }
 
 /**
+ * Bloqueia confirmacoes de estoque/prazo de entrega quando nao ha evidencia de catalogo.
+ */
+function checkFalseStockConfirmation(
+    reply: string,
+    availableProducts: Array<{ description: string; quantity: number }>,
+    productCatalog?: string[]
+): GuardrailsResult {
+    const hasCatalogEvidence =
+        (Array.isArray(productCatalog) && productCatalog.length > 0) ||
+        (Array.isArray(availableProducts) && availableProducts.length > 0);
+
+    if (hasCatalogEvidence) return { approved: true };
+
+    const confirmsStockPattern = /\b(temos( sim)?|tem sim|esta disponivel|disponivel em estoque|produto em estoque|confirmado em estoque)\b/i;
+    const promisesDeliveryPattern = /\b(chega|entrega)\s+(hoje|amanha|amanhã|em\s+\d+\s+dias?)\b/i;
+
+    if (confirmsStockPattern.test(reply) || promisesDeliveryPattern.test(reply)) {
+        return {
+            approved: false,
+            reason: "False stock confirmation: resposta confirmou estoque/prazo sem base",
+            modifiedReply: "Posso confirmar no estoque agora e te retorno por aqui. Me passa modelo e tamanho?",
+        };
+    }
+
+    return { approved: true };
+}
+
+/**
  * Extrai menções de produtos de um texto
  */
 function extractProductMentions(text: string): string[] {
@@ -610,6 +642,24 @@ function checkPolicyInvention(
                 }
             }
         }
+    }
+
+    return { approved: true };
+}
+
+/**
+ * Bloqueia promessas fortes sobre politica/prazo sem validacao explicita.
+ */
+function checkPolicyPromise(reply: string): GuardrailsResult {
+    const strongPromisePattern = /\b(garanto|com certeza|sem falta|confirmado|pode ficar tranquilo que)\b/i;
+    const policyContextPattern = /\b(troca|reembolso|estorno|devolucao|devolução|prazo|dias uteis|dias corridos|entrega)\b/i;
+
+    if (strongPromisePattern.test(reply) && policyContextPattern.test(reply)) {
+        return {
+            approved: false,
+            reason: "Policy promise: promessa forte de prazo/politica sem verificacao",
+            modifiedReply: "Posso confirmar o prazo oficial para o seu caso agora e te retorno por aqui.",
+        };
     }
 
     return { approved: true };

@@ -55,41 +55,13 @@ process.env.NEXT_TURBOPACK = "0";
 
 const port = process.env.PORT || "8081";
 
-// 🏗️ Força o caminho ABSOLUTO para o SQLite do Sandbox
+// 🏗️ Força o caminho ABSOLUTO para o SQLite do Sandbox (Apesar de CHAT_ONLY ignorar)
 const dbAbsolutePath = path.resolve(projectRoot, "tests_harness", "test_harness.db");
 process.env.DATABASE_URL = `file:${dbAbsolutePath}`;
 process.env.SANDBOX_DATABASE_URL = `file:${dbAbsolutePath}`;
 
-// Garante que o Prisma Client SQLite está gerado
-if (skipPrismaGenerate) {
-    console.log("⏩ Pulando prisma generate (--skip-prisma)");
-} else {
-    console.log("🔄 Gerando Prisma Client SQLite (schema-sandbox)...");
-    execSync("npx prisma generate --schema=prisma/schema-sandbox.prisma", {
-        stdio: "inherit",
-        cwd: projectRoot,
-    });
-}
-
-// Garante que o Schema do banco está sincronizado
-// Isso evita erros como "column stores.address_text does not exist"
-if (!skipDbPush) {
-    console.log("🔄 Sincronizando schema do banco SQLite...");
-    try {
-        execSync("npx prisma db push --schema=prisma/schema-sandbox.prisma --skip-generate", {
-            stdio: "inherit",
-            cwd: projectRoot,
-        });
-        console.log("✅ Schema do banco sincronizado!");
-    } catch (err) {
-        console.error("❌ ERRO: Falha ao sincronizar schema do banco.");
-        console.error("   Rode manualmente: npm run prisma:sandbox:push");
-        console.error("   Ou: npx prisma db push --schema=prisma/schema-sandbox.prisma");
-        process.exit(1);
-    }
-} else {
-    console.log("⏩ Pulando db push (--skip-db-push) - ATENÇÃO: schema pode estar desatualizado!");
-}
+console.log("⏩ [CHAT_ONLY] Banco de dados totalmente ignorado. Prisma não será inicializado.");
+console.log("⏩ Pulando prisma generate e db push (desnecessário para CHAT_ONLY).");
 
 console.log("📁  DATABASE_URL:", process.env.DATABASE_URL);
 console.log("🌍 ENV:", process.env.ENV);

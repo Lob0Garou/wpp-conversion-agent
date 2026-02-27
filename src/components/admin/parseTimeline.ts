@@ -73,6 +73,13 @@ export interface InferredSlots {
     categoria?: string;
     uso?: string;
     intent?: string;
+    // API-level fields stored by the state machine
+    product?: string;
+    orderId?: string;
+    motivoTroca?: string;
+    statusPedido?: string;
+    infoTopic?: string;
+    customerName?: string;
 }
 
 export function inferSlotsFromMessages(messages: RawMessage[]): InferredSlots {

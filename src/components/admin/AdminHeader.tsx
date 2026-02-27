@@ -6,15 +6,15 @@ export default function AdminHeader() {
     const { activeTab, setActiveTab } = useAdminTab();
 
     return (
-        <header className="h-16 w-full bg-[#0f1117] border-b border-[#2e3440] flex items-center justify-between px-6 z-50 shrink-0 shadow-2xl">
+        <header className="h-16 w-full bg-[var(--bg-deep)] border-b border-[var(--border-subtle)] flex items-center justify-between px-6 z-50 shrink-0 shadow-2xl">
 
             {/* ── Left: Logo + Tabs ───────────────────────────────── */}
             <div className="flex items-center space-x-8">
                 <div className="flex items-center space-x-3">
-                    <div className="w-9 h-9 bg-[#E3000F] rounded flex items-center justify-center font-black text-white text-xl shadow-lg shadow-[#E3000F]/20">C</div>
+                    <div className="w-9 h-9 bg-[var(--color-brand)] rounded flex items-center justify-center font-black text-white text-xl shadow-lg shadow-[var(--color-brand)]/20">C</div>
                     <div className="flex flex-col">
                         <h1 className="font-black text-sm tracking-tighter leading-none text-white">CENTAURO</h1>
-                        <p className="text-[9px] uppercase font-bold text-[#E3000F] tracking-[0.2em] leading-none mt-1">ÁGUIAS DE ELITE</p>
+                        <p className="text-[var(--text-xs)] uppercase font-bold text-[var(--color-brand)] tracking-[0.2em] leading-none mt-1">ÁGUIAS DE ELITE</p>
                     </div>
                 </div>
 
@@ -43,7 +43,7 @@ export default function AdminHeader() {
             <div className="hidden xl:flex items-center space-x-10 ml-10">
 
                 <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-0.5">Leads Quentes</span>
+                    <span className="text-[var(--text-xs)] uppercase font-bold text-slate-500 tracking-widest mb-0.5">Leads Quentes</span>
                     <div className="flex items-baseline space-x-2">
                         <span className="text-2xl font-black text-white">15</span>
                         <span className="material-symbols-rounded text-emerald-500 text-sm">trending_up</span>
@@ -51,14 +51,14 @@ export default function AdminHeader() {
                 </div>
 
                 <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-0.5">Taxa de Conversão</span>
+                    <span className="text-[var(--text-xs)] uppercase font-bold text-slate-500 tracking-widest mb-0.5">Taxa de Conversão</span>
                     <span className="text-2xl font-black text-white">
                         64<span className="text-lg font-bold">%</span>
                     </span>
                 </div>
 
                 <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-0.5">Tempo Médio (SLA)</span>
+                    <span className="text-[var(--text-xs)] uppercase font-bold text-slate-500 tracking-widest mb-0.5">Tempo Médio (SLA)</span>
                     <div className="flex items-center space-x-2">
                         <span className="material-symbols-rounded text-amber-500 text-lg">bolt</span>
                         <span className="text-2xl font-black text-white font-mono">02:45</span>
@@ -66,7 +66,7 @@ export default function AdminHeader() {
                 </div>
 
                 <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-0.5">Bot Ativo</span>
+                    <span className="text-[var(--text-xs)] uppercase font-bold text-slate-500 tracking-widest mb-0.5">Bot Ativo</span>
                     <div className="flex items-center space-x-2 mt-1">
                         <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full">
                             <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />

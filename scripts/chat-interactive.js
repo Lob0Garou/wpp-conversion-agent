@@ -5,7 +5,16 @@ const path = require('path');
 const fs = require('fs');
 const { URL } = require('url');
 
-// Load .env.sandbox manually to get secrets if needed
+// ==============================================================================
+// 📄 DOCUMENTAÇÃO DE .ENV LOADING:
+// 1. O Next.js (via `dev-sandbox-chat.js`) carrega EXCLUSIVAMENTE `.env.sandbox`.
+// 2. Este script (`chat-interactive.js`) tenta carregar `.env.sandbox` PRIMEIRO, 
+//    e usa `.env` como FALLBACK para chaves que faltam.
+// 
+// Isso garante que segredos (como WHATSAPP_APP_SECRET) e configurações 
+// batam perfeitamente entre os dois processos durante o desenvolvimento.
+// DATABASE_URL carregado aqui é irrelevante, pois CHAT_ONLY ignora o db.
+// ==============================================================================
 const envPaths = [
     path.resolve(__dirname, '../.env.sandbox'),
     path.resolve(__dirname, '../.env')
@@ -198,22 +207,40 @@ function sendMessage(text) {
         };
 
         const req = http.request(options, (res) => {
-            if (res.statusCode >= 200 && res.statusCode < 300) {
-                console.log('\x1b[90m[DEBUG] Mensagem entregue ao webhook. Aguardando processamento do Cadu...\x1b[0m');
-                resolve();
-            } else {
-                let data = '';
-                res.on('data', chunk => data += chunk);
-                res.on('end', () => {
-                    console.error(`\x1b[31m❌ Erro ao enviar para o webhook (Status ${res.statusCode}):\x1b[0m`, data);
-                    resolve(); // Resolve anyway to continue prompt
+            let data = '';
+            res.on('data', chunk => data += chunk);
+            res.on('end', () => {
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                    console.log('\x1b[90m[DEBUG] Mensagem entregue ao webhook. Aguardando processamento do Cadu...\x1b[0m');
+                    try {
+                        const parsed = data ? JSON.parse(data) : {};
+                        resolve({
+                            ok: true,
+                            immediateReply: parsed?.replyText || parsed?.response || null,
+                            raw: parsed
+                        });
+                    } catch {
+                        resolve({ ok: true, immediateReply: null, raw: null });
+                    }
+                    return;
+                }
+
+                console.error(`\x1b[31m??? Erro ao enviar para o webhook (Status ${res.statusCode}):\x1b[0m`, data);
+                resolve({
+                    ok: false,
+                    immediateReply: null,
+                    raw: data
                 });
-            }
+            });
         });
 
         req.on('error', (e) => {
-            console.error(`\x1b[31m❌ Erro de conexão:\x1b[0m ${e.message}`);
-            resolve();
+            console.error(`\x1b[31mErro de conexao:\x1b[0m ${e.message}`);
+            resolve({
+                ok: false,
+                immediateReply: null,
+                raw: null
+            });
         });
 
         req.write(payload);
@@ -229,6 +256,32 @@ console.log('Comandos: "sair", "/novo" (gera novo telefone/zera contexto), "/cle
 console.log(`Telefone atual do simulador: ${CUSTOMER_PHONE}${env.SIM_CUSTOMER_PHONE ? ' (fixo por env)' : ' (novo por sessao)'}`);
 console.log('------------------------------------------------------------');
 rl.prompt();
+
+// ==============================================================================
+// 📄 SESSION LOGGING PARA CALIBRAÇÃO (SPRINT 3.4)
+// ==============================================================================
+function getSessionLogPath() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const dir = path.resolve(__dirname, '../../ralph/input/chat_sessions', `${yyyy}-${mm}-${dd}`);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return path.join(dir, `session_${CUSTOMER_PHONE}.jsonl`);
+}
+
+function logTurn(role, text) {
+    if (!text) return;
+    const logPath = getSessionLogPath();
+    const entry = {
+        sessionId: CUSTOMER_PHONE,
+        phone: CUSTOMER_PHONE,
+        ts: new Date().toISOString(),
+        role,
+        text
+    };
+    fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf8');
+}
 
 rl.on('line', async (line) => {
     const text = line.trim();
@@ -252,18 +305,29 @@ rl.on('line', async (line) => {
         rl.prompt();
         return;
     }
+
+    logTurn('user', text);
     try {
         const previous = await getLatestCaduReply().catch(() => null);
         lastSeenOutboundSignature = previous?.signature || lastSeenOutboundSignature;
     } catch { }
 
-    await sendMessage(text);
+    const sendResult = await sendMessage(text);
+
+    if (sendResult?.immediateReply) {
+        console.log(`\x1b[36mCadu>\x1b[0m ${sendResult.immediateReply}`);
+        logTurn('assistant', sendResult.immediateReply);
+        rl.prompt();
+        return;
+    }
 
     const caduReply = await waitForCaduReply();
     if (caduReply?.blocked && caduReply.reason === 'human_pending') {
         console.log(`\x1b[33m[WARN]\x1b[0m Conversa em humano pendente para ${CUSTOMER_PHONE}. Use "/novo" para iniciar contexto limpo.`);
+        logTurn('assistant', '[ESCALATION TRIGGERED]');
     } else if (caduReply) {
         console.log(`\x1b[36mCadu>\x1b[0m ${caduReply.content}`);
+        logTurn('assistant', caduReply.content);
     } else {
         console.log(`\x1b[33m[WARN] Sem resposta do Cadu em ${Math.round(CADU_REPLY_TIMEOUT_MS / 1000)}s (telefone ${CUSTOMER_PHONE}). Veja o terminal do sandbox/log.\x1b[0m`);
     }

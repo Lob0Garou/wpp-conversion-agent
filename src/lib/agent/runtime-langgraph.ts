@@ -120,6 +120,9 @@ export class LangGraphRuntime implements AgentRuntime {
             };
         } catch (error) {
             console.error("[LangGraphRuntime] Erro fatal no processamento do agente:", error);
+            if (error instanceof Error) {
+                console.error(error.stack);
+            }
             return {
                 reply: "Desculpe, enfrentei uma instabilidade técnica. Pode repetir?",
                 requiresHuman: true, // Força handoff safe em caso de erro da LLM

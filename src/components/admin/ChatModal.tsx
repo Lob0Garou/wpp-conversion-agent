@@ -36,7 +36,7 @@ export default function ChatModal({
                 {/* Close button — top-left, absolute */}
                 <button
                     onClick={onClose}
-                    className="absolute top-6 left-6 z-50 p-2 text-slate-400 hover:text-[#E3000F] transition-colors"
+                    className="absolute top-6 left-6 z-50 p-2 text-slate-400 hover:text-[var(--color-brand)] transition-colors"
                 >
                     <span className="material-symbols-rounded text-3xl">close</span>
                 </button>
@@ -79,57 +79,94 @@ export default function ChatModal({
                 </div>
 
                 {/* ── RIGHT: Product focus panel (35%) ──────────────────── */}
-                <div className="flex-[0.35] bg-slate-50 dark:bg-slate-800/30 border-l border-slate-100 dark:border-slate-800/50 flex flex-col p-12">
-                    <div className="flex-1 flex flex-col items-center">
+                <div className="flex-[0.35] bg-slate-50 dark:bg-slate-800/30 border-l border-slate-100 dark:border-slate-800/50 flex flex-col p-8">
+                    <div className="flex-1 flex flex-col items-center justify-center">
 
-                        {/* Product image placeholder */}
-                        <div className="w-full aspect-square bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-sm overflow-hidden flex items-center justify-center p-8 group mb-8 border border-slate-100 dark:border-slate-800/50">
-                            <span className="material-symbols-rounded text-[100px] text-slate-200 dark:text-slate-700 group-hover:scale-110 transition-transform duration-700">
-                                inventory_2
-                            </span>
+                        {/* ── Product visual ─────────────────────────────── */}
+                        <div className="w-full aspect-[4/3] bg-white dark:bg-slate-900 rounded-3xl shadow-sm overflow-hidden flex flex-col items-center justify-center p-6 mb-6 border border-slate-100 dark:border-slate-800/50">
+                            {productTitle ? (
+                                <>
+                                    <span className="material-symbols-rounded text-6xl text-slate-300 dark:text-slate-600 mb-3">
+                                        shopping_bag
+                                    </span>
+                                    <span className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-slate-400">
+                                        Produto Identificado
+                                    </span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="material-symbols-rounded text-5xl text-slate-200 dark:text-slate-700 mb-3">
+                                        help_center
+                                    </span>
+                                    <span className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600">
+                                        Aguardando Dados
+                                    </span>
+                                </>
+                            )}
                         </div>
 
-                        {/* Product title */}
-                        <div className="text-center space-y-4 mb-12">
-                            <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">
-                                {productTitle || "Produto"}
+                        {/* ── Product details ────────────────────────────── */}
+                        <div className="text-center space-y-3 mb-8 w-full">
+                            {/* Label tier */}
+                            <p className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-slate-400 mb-1">
+                                {productTitle ? "Produto" : "Informações"}
+                            </p>
+
+                            {/* Title tier */}
+                            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
+                                {productTitle || "Produto não identificado"}
                             </h1>
-                            {slots?.size && (
-                                <div className="flex items-center justify-center gap-2 text-slate-400">
-                                    <span className="material-symbols-rounded text-lg">straighten</span>
-                                    <span className="text-sm font-bold uppercase tracking-widest">
-                                        Tamanho {slots.size}
-                                    </span>
+
+                            {/* Detail rows — only when we have product data */}
+                            {productTitle && (
+                                <div className="space-y-2 pt-2">
+                                    {slots?.size && (
+                                        <div className="flex items-center justify-center gap-2 text-slate-400">
+                                            <span className="material-symbols-rounded text-base">straighten</span>
+                                            <span className="text-[var(--text-sm)] font-bold uppercase tracking-widest">
+                                                Tam. {slots.size}
+                                            </span>
+                                        </div>
+                                    )}
+                                    <div className="flex items-center justify-center gap-2 text-slate-400">
+                                        <span className="material-symbols-rounded text-base">location_on</span>
+                                        <span className="text-[var(--text-sm)] font-bold uppercase tracking-widest">
+                                            Reserva na Loja
+                                        </span>
+                                    </div>
                                 </div>
                             )}
-                            <div className="flex items-center justify-center gap-2 text-slate-400">
-                                <span className="material-symbols-rounded text-lg">location_on</span>
-                                <span className="text-sm font-bold uppercase tracking-widest">
-                                    Loja Ibirapuera
-                                </span>
-                            </div>
+
+                            {/* Empty state helper — when no product data */}
+                            {!productTitle && (
+                                <p className="text-[var(--text-sm)] text-slate-400 leading-relaxed mt-2">
+                                    O produto será identificado conforme a conversa avança.
+                                </p>
+                            )}
                         </div>
                     </div>
 
-                    {/* ── CTA Buttons (Stitch: 3 buttons) ───────────────── */}
-                    <div className="space-y-4 w-full">
-                        {/* Primary CTA */}
-                        <button className="w-full bg-[#E3000F] hover:bg-red-700 text-white font-black py-6 rounded-2xl shadow-2xl shadow-red-500/30 transition-all flex items-center justify-center gap-3 text-lg uppercase tracking-widest active:scale-95">
-                            <span className="material-symbols-rounded">task_alt</span>
-                            Confirmar Reserva
-                        </button>
+                    {/* ── CTA Buttons ────────────────────────────────────── */}
+                    <div className="space-y-3 w-full">
+                        {/* Primary CTA — only if product exists */}
+                        {productTitle && (
+                            <button className="w-full bg-[var(--color-brand)] hover:brightness-110 text-white font-black py-4 rounded-2xl shadow-2xl shadow-red-500/30 transition-all flex items-center justify-center gap-3 text-sm uppercase tracking-widest active:scale-95">
+                                <span className="material-symbols-rounded text-xl">task_alt</span>
+                                Confirmar Reserva
+                            </button>
+                        )}
 
                         {/* Success CTA */}
                         <button
                             onClick={() => { onResolve?.(); onClose(); }}
-                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-6 rounded-2xl transition-all flex items-center justify-center gap-3 text-lg uppercase tracking-widest active:scale-95"
+                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 text-sm uppercase tracking-widest active:scale-95"
                         >
-                            <span className="material-symbols-rounded">check_circle</span>
-                            ✓ Resolvido
+                            <span className="material-symbols-rounded text-xl">check_circle</span>
+                            Resolvido
                         </button>
 
                         {/* Ghost CTA */}
-                        <button className="w-full py-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold text-xs uppercase tracking-[0.2em] transition-colors">
+                        <button className="w-full py-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold text-[var(--text-xs)] uppercase tracking-[0.2em] transition-colors">
                             Consultar Outra Unidade
                         </button>
                     </div>

@@ -46,6 +46,17 @@ const SAC_ATRASO_KEYWORDS = ["atraso", "demora", "nao chegou", "nÃ£o chegou", 
 const SAC_RETIRADA_KEYWORDS = ["retirada", "retirar na loja", "buscar", "ja posso buscar", "jÃ¡ posso buscar"];
 const SAC_REEMBOLSO_KEYWORDS = ["devolucao", "devoluÃ§Ã£o", "reembolso", "cancelar", "estorno", "cancelamento", "dinheiro de volta"];
 const GENERIC_SUPPORT_KEYWORDS = ["problema", "reclamacao", "reclamaÃ§Ã£o", "reclamar", "pedido", "encomenda"];
+const SAC_TRACKING_KEYWORDS = [
+    "rastreio",
+    "rastreio",
+    "rastreamento",
+    "codigo de rastreio",
+    "codigo do rastreio",
+    "codigo de rastreamento",
+    "status do pedido",
+    "onde meu pedido",
+    "pedido parado",
+];
 
 const INFO_HOURS_KEYWORDS = [
     "horario", "horÃ¡rio", "funcionamento", "que horas", "que horas abre", "que horas fecha", "abre que horas", "fecha que horas",
@@ -179,9 +190,16 @@ const GREETING_ONLY_PATTERNS = [
     /^oi+e+\s*!*$/i,
 ];
 
-export function hasNegationPrefix(msg: string, keyword: string): boolean {
+function normalizeForMatch(text: string): string {
+    return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+function hasNegationPrefixNormalized(msg: string, keyword: string): boolean {
     const NEGATION_WORDS = [
-        "nao ", "nÃ£o ", "nunca ", "jamais ", "sem ", "nenhum ",
+        "nao ", "nunca ", "jamais ", "sem ", "nenhum ",
         "nenhuma ", "nem ", "tampouco ", "sequer ",
     ];
 
@@ -193,8 +211,21 @@ export function hasNegationPrefix(msg: string, keyword: string): boolean {
     return NEGATION_WORDS.some((neg) => prefix.includes(neg));
 }
 
+export function hasNegationPrefix(msg: string, keyword: string): boolean {
+    return hasNegationPrefixNormalized(
+        normalizeForMatch(msg),
+        normalizeForMatch(keyword)
+    );
+}
+
 function matchesAnyWithNegation(text: string, keywords: string[]): boolean {
-    return keywords.some((k) => text.includes(k) && !hasNegationPrefix(text, k));
+    const normalizedText = normalizeForMatch(text);
+    return keywords.some((k) => {
+        const normalizedKeyword = normalizeForMatch(k);
+        if (!normalizedKeyword) return false;
+        return normalizedText.includes(normalizedKeyword) &&
+            !hasNegationPrefixNormalized(normalizedText, normalizedKeyword);
+    });
 }
 
 export function classifyIntent(
@@ -212,7 +243,16 @@ export function classifyIntent(
     // "fiz um estorno e ainda não caiu" = pergunta sobre política
     // ESTA VERIFICAÇÃO DEVE SER A PRIMEIRA PARA EVITAR CLASSIFICAÇÃO ERRADA
     const hasPrazoQuestion = /quantos\s+dias|quantas\s+dias|qual\s+o\s+prazo|qual\s+e\s+o\s+prazo|tenho\s+quanto\s+tempo|sao\s+quantos\s+dias/i.test(normalizedMsg);
-    const hasRefundQuestion = /estorno|estorn|reembolso|reembols|refund|dinheiro.*volta|dinheiro.*cai|dinheiro.*cair/i.test(normalizedMsg);
+    const mentionsRefund = /estorno|estorn|reembolso|reembols|refund|devolucao|dinheiro.*volta|dinheiro.*cai|dinheiro.*cair/i.test(normalizedMsg);
+    const hasRefundQuestionSignal = /\?|quando|qual|quanto|quantos|prazo|tempo|como funciona/i.test(normalizedMsg);
+    const hasRefundQuestion = mentionsRefund && hasRefundQuestionSignal;
+    const hasOrderId = /\b\d{6,}\b/.test(normalizedMsg);
+    const isStandaloneOrderNumber = /^\d{6,10}$/.test(normalizedMsg);
+    const asksTracking = matchesAnyWithNegation(msg, SAC_TRACKING_KEYWORDS);
+    const hasOrderIssueSignal = /pedido.*(nao chegou|atras|cancelad|parado|status|rastre)|onde.*pedido|compra.*nao foi confirmada|compra nao foi confirmada|pedido foi cancelado|preciso saber onde/i.test(normalizedMsg);
+    const wantsExchangeAction = /(quero|preciso|gostaria|fazer|realizar).*(troca|trocar)|nao serviu|tamanho errado|produto veio errado/i.test(normalizedMsg);
+    const wantsRefundAction = /(quero|preciso|gostaria|solicitar).*(reembolso|estorno|devolucao|devolver)|quero a dinheiro/i.test(normalizedMsg);
+    const hasTechSupportSignal = /app|login|nao ta deixando|nao consigo|erro/i.test(normalizedMsg);
 
     if (hasPrazoQuestion || hasRefundQuestion) {
         return "INFO_SAC_POLICY";
@@ -226,21 +266,25 @@ export function classifyIntent(
         normalizedMsg.includes("quando abre") ||
         normalizedMsg.includes("horario da loja") ||
         normalizedMsg.includes("funcionamento da loja") ||
-        /^abre\s+que\s+hor/i.test(normalizedMsg) ||      // "abre que horas" / "abre que horaas"
-        /^fecha\s+que\s+hor/i.test(normalizedMsg) ||      // "fecha que horas"
-        /\bhor[aá]r[iio]/i.test(normalizedMsg) ||         // "horario", "horário"
-        /\bfuncionamento\b/i.test(normalizedMsg) ||       // "funcionamento"
-        /que\s*horas?\s*(abre|fecha|abrimos|fechamos)/i.test(normalizedMsg); // "que horas abre"
+        /^abre\s+que\s+hor/i.test(normalizedMsg) ||
+        /^fecha\s+que\s+hor/i.test(normalizedMsg) ||
+        /\bhor[aá]r[iio]/i.test(normalizedMsg) ||
+        /\bfuncionamento\b/i.test(normalizedMsg) ||
+        /que\s*horas?\s*(abre|fecha|abrimos|fechamos)/i.test(normalizedMsg) ||
+        matchesAnyWithNegation(msg, INFO_HOURS_KEYWORDS);
 
-    if (asksAboutHours) {
-        return "INFO_HOURS";
-    }
-    if (
+    const asksAboutAddress =
         normalizedMsg.includes("endereco da loja") ||
         normalizedMsg.includes("qual o endereco") ||
         normalizedMsg.includes("onde a loja fica") ||
-        normalizedMsg.includes("onde fica a loja")
-    ) {
+        normalizedMsg.includes("onde fica a loja") ||
+        matchesAnyWithNegation(msg, INFO_ADDRESS_KEYWORDS);
+
+    if (asksAboutHours && asksAboutAddress) {
+        return "INFO";
+    } else if (asksAboutHours) {
+        return "INFO_HOURS";
+    } else if (asksAboutAddress) {
         return "INFO_ADDRESS";
     }
     if (
@@ -286,6 +330,26 @@ export function classifyIntent(
 
     if (GREETING_ONLY_PATTERNS.some((p) => p.test(msg))) return "CLARIFICATION";
 
+    // Fast-path SAC/SUPPORT (antes de cair em SALES ou CLARIFICATION)
+    if (isStandaloneOrderNumber) return "SAC_ATRASO";
+    // Policy gate: verificar se a mensagem contém frases informativas de troca/reembolso
+    // ANTES de classificar como ação transacional (SAC_TROCA)
+    if (matchesAnyWithNegation(msg, SAC_INFO_PATTERNS)) return "INFO_SAC_POLICY";
+    if (wantsExchangeAction) return "SAC_TROCA";
+    if (wantsRefundAction) return "SAC_REEMBOLSO";
+    if (asksTracking || hasOrderIssueSignal || (hasOrderId && normalizedMsg.includes("pedido"))) return "SAC_ATRASO";
+    if (hasTechSupportSignal || matchesAnyWithNegation(msg, GENERIC_SUPPORT_KEYWORDS)) {
+        if (
+            normalizedMsg.includes("pedido") ||
+            normalizedMsg.includes("encomenda") ||
+            normalizedMsg.includes("compra") ||
+            normalizedMsg.includes("app") ||
+            normalizedMsg.includes("login")
+        ) {
+            return "SUPPORT";
+        }
+    }
+
     // Fast-path: cliente dizendo explicitamente que quer informação
     if (
         msg.includes("informacao") ||
@@ -300,16 +364,24 @@ export function classifyIntent(
         msg.includes("gostaria de saber") ||
         msg.includes("preciso saber")
     ) {
+        const hasSacContext =
+            normalizedMsg.includes("pedido") ||
+            normalizedMsg.includes("rastreio") ||
+            normalizedMsg.includes("rastreamento") ||
+            normalizedMsg.includes("troca") ||
+            normalizedMsg.includes("devolucao") ||
+            normalizedMsg.includes("reembolso");
+
         // Verificar se não tem produto específico
         const hasProductContext = msg.includes("tenis") || msg.includes("tênis") ||
             msg.includes("camisa") || msg.includes("shorts") || msg.includes("chuteira");
 
         // Se a mensagem mencionar "troca", é INFO_SAC_POLICY (informação de troca)
-        if (msg.includes("troca")) {
+        if (msg.includes("troca") && !wantsExchangeAction) {
             return "INFO_SAC_POLICY";
         }
 
-        if (!hasProductContext) {
+        if (!hasProductContext && !hasSacContext) {
             return "CLARIFICATION"; // Vai para LLM que pergunta qual é a dúvida
         }
     }
@@ -329,9 +401,6 @@ export function classifyIntent(
 
     if (matchesAnyWithNegation(msg, SAC_INFO_PATTERNS)) return "INFO_SAC_POLICY";
     if (matchesAnyWithNegation(msg, INFO_PICKUP_POLICY_KEYWORDS)) return "INFO_PICKUP_POLICY";
-    if (matchesAnyWithNegation(msg, INFO_HOURS_KEYWORDS)) return "INFO_HOURS";
-    if (matchesAnyWithNegation(msg, INFO_ADDRESS_KEYWORDS)) return "INFO_ADDRESS";
-    if (matchesAnyWithNegation(msg, INFO_KEYWORDS)) return "INFO";
 
     // ========== AÇÕES/CHAMADOS SAC - VERIFICAR DEPOIS DE INFO ==========
     if (matchesAnyWithNegation(msg, SAC_TROCA_KEYWORDS)) return "SAC_TROCA";

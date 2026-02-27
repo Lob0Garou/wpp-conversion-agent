@@ -115,3 +115,28 @@ export function clearAllOutbox(): void {
 export function getOutboxSize(): number {
     return outbox.size;
 }
+
+/**
+ * Lista entradas atuais da outbox (mais recentes primeiro)
+ */
+export function listOutboxEntries(): OutboxEntry[] {
+    if (!isChatOnlyMode()) {
+        return [];
+    }
+    return Array.from(outbox.values()).sort((a, b) => b.timestamp - a.timestamp);
+}
+
+/**
+ * Busca entrada por conversationId
+ */
+export function getOutboxEntryByConversationId(conversationId: string): OutboxEntry | null {
+    if (!isChatOnlyMode()) {
+        return null;
+    }
+    for (const entry of outbox.values()) {
+        if (entry.conversationId === conversationId) {
+            return entry;
+        }
+    }
+    return null;
+}

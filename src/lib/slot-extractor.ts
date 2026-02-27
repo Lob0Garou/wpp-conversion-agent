@@ -642,8 +642,8 @@ const SLOT_REQUIREMENTS: Record<string, Slot[]> = {
     ORDER_STATUS: ["orderId", "cpf"],
     TRACKING: ["orderId", "cpf"],
     DELIVERY_DELAY: ["orderId", "cpf"],
-    EXCHANGE_REQUEST: ["orderId", "cpf"],
-    REFUND_REQUEST: ["orderId", "cpf"],
+    EXCHANGE_REQUEST: [],
+    REFUND_REQUEST: [],
     RETURN_PROCESS: ["orderId", "cpf"],
     VOUCHER_GENERATION: ["orderId", "cpf"],
     STOCK_AVAILABILITY: ["size"],
@@ -651,9 +651,9 @@ const SLOT_REQUIREMENTS: Record<string, Slot[]> = {
     RESERVATION: ["size"],
     // Mapeamento para intents internas do Cadu
     SAC_ATRASO: ["orderId", "cpf"],
-    SAC_TROCA: ["orderId", "cpf"],
-    SAC_REEMBOLSO: ["orderId", "cpf"],
-    SAC_RETIRADA: ["orderId", "cpf"],
+    SAC_TROCA: [], // Let LLM handle context gathering
+    SAC_REEMBOLSO: [], // Let LLM provide policy before escalating
+    SAC_RETIRADA: [], // Order number + Name is better than CPF, LLM handles it
     SUPPORT: [],
     INFO: [],
     INFO_ADDRESS: [],
@@ -813,24 +813,24 @@ export function buildSlotQuestion(
         const tail = isChatOnly && isSacIntent
             ? " Com isso, eu já encaminho para checagem humana sem te fazer repetir tudo."
             : "";
-        return `Próximo passo: vou seguir com a verificação assim que você me informar o número do pedido.${tail}`;
+        return `Vou seguir com a verificação assim que você me informar o número do pedido.${tail}`;
     }
 
     if (slot === "cpf") {
         const preface = known.orderId || known.ticketId
             ? "Perfeito, já tenho a referência do pedido."
-            : "Próximo passo:";
+            : "Certo!";
         const tail = isChatOnly && isSacIntent
             ? " Com esses dados, eu encaminho para checagem humana quando necessário."
             : "";
-        return `${preface} agora me confirme o CPF do titular e eu vou continuar.${tail}`;
+        return `${preface} Agora me confirme o CPF do titular e eu vou continuar.${tail}`;
     }
 
     if (slot === "size") {
-        return "Próximo passo: me diga o tamanho/número (ex.: 38, 40 ou 42) e eu vou continuar.";
+        return "Me diga o tamanho ou numeração (ex.: P, M, 40) e eu vou continuar.";
     }
 
-    return "Próximo passo: me informe o número do ticket para eu continuar.";
+    return "Me informe o número do ticket para eu continuar.";
 }
 
 /**

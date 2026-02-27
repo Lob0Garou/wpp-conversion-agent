@@ -26,13 +26,13 @@ function ConfidenceBadge({ confidence }: { confidence: number }) {
 
   const IconComponent =
     icon === "high" ? CheckCircle2 :
-    icon === "medium" ? AlertTriangle :
-    XCircle;
+      icon === "medium" ? AlertTriangle :
+        XCircle;
 
   return (
     <div className={`flex items-center gap-1 ${color}`}>
       <IconComponent size={12} />
-      <span className="text-[10px] font-medium">{Math.round(confidence * 100)}%</span>
+      <span className="text-[var(--text-xs)] font-medium">{Math.round(confidence * 100)}%</span>
     </div>
   );
 }
@@ -61,7 +61,7 @@ function DataFieldInput({
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label className="text-[10px] font-bold text-[#6b7280] uppercase tracking-wider flex items-center gap-1.5">
+        <label className="text-[var(--text-xs)] font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
           <Icon size={11} />
           {label}
           {required && <span className="text-rose-400">*</span>}
@@ -75,7 +75,7 @@ function DataFieldInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-[#1a1d23] border border-[#2e3440] rounded-lg px-3 py-2 text-sm text-white placeholder-[#6b7280] focus:outline-none focus:border-[#25D366]/50 focus:ring-1 focus:ring-[#25D366]/30 transition-all"
+        className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-sm text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--color-brand-green)]/50 focus:ring-1 focus:ring-[var(--color-brand-green)]/30 transition-all"
       />
     </div>
   );
@@ -109,7 +109,7 @@ function StatusSelector({ value, onChange }: StatusSelectorProps) {
 
   return (
     <div className="space-y-2">
-      <label className="text-[10px] font-bold text-[#6b7280] uppercase tracking-wider">
+      <label className="text-[var(--text-xs)] font-bold text-[var(--text-muted)] uppercase tracking-wider">
         Status do Ticket
       </label>
       <div className="grid grid-cols-3 gap-2">
@@ -123,11 +123,10 @@ function StatusSelector({ value, onChange }: StatusSelectorProps) {
               key={status}
               type="button"
               onClick={() => onChange(status)}
-              className={`flex flex-col items-center gap-1.5 px-2 py-2.5 rounded-lg border text-xs font-medium transition-all ${
-                isSelected
+              className={`flex flex-col items-center gap-1.5 px-2 py-2.5 rounded-lg border text-xs font-medium transition-all ${isSelected
                   ? config.colorClass
-                  : "bg-[#1a1d23] border-[#2e3440] text-[#6b7280] hover:border-[#374151]"
-              }`}
+                  : "bg-[var(--bg-surface)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:border-[var(--border-default)]"
+                }`}
             >
               <Icon size={16} className={isSelected ? "" : "opacity-60"} />
               <span>{config.label}</span>
@@ -149,21 +148,21 @@ function MissingFieldsChecklist({ missingFields }: MissingFieldsChecklistProps) 
   if (missingFields.length === 0) return null;
 
   return (
-    <div className="px-5 py-4 border-b border-[#2e3440] bg-amber-500/5">
+    <div className="px-5 py-4 border-b border-[var(--border-subtle)] bg-amber-500/5">
       <div className="flex items-start gap-2">
         <AlertTriangle size={16} className="text-amber-400 flex-shrink-0 mt-0.5" />
         <div className="flex-1">
           <h4 className="text-xs font-bold text-amber-400 mb-2">Dados Pendentes</h4>
           <ul className="space-y-1">
             {missingFields.map(({ key, label, required }) => (
-              <li key={key} className="flex items-center gap-2 text-xs text-[#9ca3af]">
+              <li key={key} className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                 <span className={`w-1.5 h-1.5 rounded-full ${required ? "bg-rose-400" : "bg-amber-400"}`} />
                 {label}
-                {required && <span className="text-[10px] text-rose-400">(obrigatório)</span>}
+                {required && <span className="text-[var(--text-xs)] text-rose-400">(obrigatório)</span>}
               </li>
             ))}
           </ul>
-          <p className="text-[10px] text-[#6b7280] mt-2 italic">
+          <p className="text-[var(--text-xs)] text-[var(--text-muted)] mt-2 italic">
             Preencha os campos abaixo para completar o cadastro
           </p>
         </div>
@@ -262,18 +261,18 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
 
   if (created) {
     return (
-      <div className="flex flex-col h-full bg-[#0f1117] border-l border-[#2e3440]">
+      <div className="flex flex-col h-full bg-[var(--bg-deep)] border-l border-[var(--border-subtle)]">
         <div className="flex-1 flex items-center justify-center px-6">
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-4">
               <CheckCheck size={32} className="text-emerald-400" />
             </div>
             <h3 className="text-sm font-bold text-white mb-2">Ticket Criado com Sucesso</h3>
-            <p className="text-xs text-[#6b7280] mb-4">
-              Número do ticket: <span className="font-mono text-[#25D366]">{formData.ticketNumber}</span>
+            <p className="text-xs text-[var(--text-muted)] mb-4">
+              Número do ticket: <span className="font-mono text-[var(--color-brand-green)]">{formData.ticketNumber}</span>
             </p>
-            <div className="px-4 py-2 bg-[#1a1d23] rounded-lg border border-[#2e3440]">
-              <p className="text-xs text-[#9ca3af]">Status: <span className="font-medium text-amber-400">{formData.status === "in_progress" ? "Em Andamento" : formData.status === "critical" ? "Crítico" : "Resolvido"}</span></p>
+            <div className="px-4 py-2 bg-[var(--bg-surface)] rounded-lg border border-[var(--border-subtle)]">
+              <p className="text-xs text-[var(--text-secondary)]">Status: <span className="font-medium text-amber-400">{formData.status === "in_progress" ? "Em Andamento" : formData.status === "critical" ? "Crítico" : "Resolvido"}</span></p>
             </div>
           </div>
         </div>
@@ -282,14 +281,14 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#0f1117] border-l border-[#2e3440]">
+    <div className="flex flex-col h-full bg-[var(--bg-deep)] border-l border-[var(--border-subtle)]">
       {/* Header */}
-      <div className="px-5 pt-6 pb-4 border-b border-[#2e3440]">
+      <div className="px-5 pt-6 pb-4 border-b border-[var(--border-subtle)]">
         <div className="flex items-center gap-2 mb-1">
           <Shield size={16} className="text-amber-400" />
           <h2 className="text-sm font-bold text-white">Ticket SAC</h2>
         </div>
-        <p className="text-xs text-[#6b7280]">Cadastre um ticket de atendimento</p>
+        <p className="text-xs text-[var(--text-muted)]">Cadastre um ticket de atendimento</p>
       </div>
 
       {/* Missing Fields Checklist */}
@@ -300,7 +299,7 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
         <div className="px-5 py-5 space-y-5">
           {/* Customer Data Section */}
           <div>
-            <h3 className="text-[10px] font-bold text-[#6b7280] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <h3 className="text-[var(--text-xs)] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4 flex items-center gap-2">
               <User size={12} />
               Dados do Cliente
             </h3>
@@ -343,18 +342,18 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
           </div>
 
           {/* Divider */}
-          <div className="border-t border-[#2e3440]" />
+          <div className="border-t border-[var(--border-subtle)]" />
 
           {/* Ticket Data Section */}
           <div>
-            <h3 className="text-[10px] font-bold text-[#6b7280] uppercase tracking-wider mb-4 flex items-center gap-2">
+            <h3 className="text-[var(--text-xs)] font-bold text-[var(--text-muted)] uppercase tracking-wider mb-4 flex items-center gap-2">
               <FileText size={12} />
               Dados do Ticket
             </h3>
             <div className="space-y-4">
               {/* Ticket Number */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-[#6b7280] uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-[var(--text-xs)] font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
                   <Hash size={11} />
                   Número do Ticket
                 </label>
@@ -364,12 +363,12 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
                     value={formData.ticketNumber}
                     onChange={(e) => updateField("ticketNumber")(e.target.value)}
                     placeholder="SAC-XXXX-XXXX"
-                    className="flex-1 bg-[#1a1d23] border border-[#2e3440] rounded-lg px-3 py-2 text-sm text-white font-mono placeholder-[#6b7280] focus:outline-none focus:border-[#25D366]/50 focus:ring-1 focus:ring-[#25D366]/30 transition-all"
+                    className="flex-1 bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-sm text-white font-mono placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--color-brand-green)]/50 focus:ring-1 focus:ring-[var(--color-brand-green)]/30 transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => updateField("ticketNumber")(generateTicketNumber())}
-                    className="px-3 py-2 bg-[#22262f] border border-[#2e3440] rounded-lg text-xs font-medium text-[#9ca3af] hover:bg-[#2e3440] hover:text-white transition-all"
+                    className="px-3 py-2 bg-[var(--bg-elevated)] border border-[var(--border-subtle)] rounded-lg text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--border-subtle)] hover:text-white transition-all"
                   >
                     Gerar
                   </button>
@@ -378,7 +377,7 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
 
               {/* Description */}
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-[#6b7280] uppercase tracking-wider flex items-center gap-1.5">
+                <label className="text-[var(--text-xs)] font-bold text-[var(--text-muted)] uppercase tracking-wider flex items-center gap-1.5">
                   <FileText size={11} />
                   Descrição
                 </label>
@@ -387,7 +386,7 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
                   onChange={(e) => updateField("description")(e.target.value)}
                   placeholder="Descreva o problema ou solicitação do cliente..."
                   rows={4}
-                  className="w-full bg-[#1a1d23] border border-[#2e3440] rounded-lg px-3 py-2 text-sm text-white placeholder-[#6b7280] focus:outline-none focus:border-[#25D366]/50 focus:ring-1 focus:ring-[#25D366]/30 transition-all resize-none"
+                  className="w-full bg-[var(--bg-surface)] border border-[var(--border-subtle)] rounded-lg px-3 py-2 text-sm text-white placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--color-brand-green)]/50 focus:ring-1 focus:ring-[var(--color-brand-green)]/30 transition-all resize-none"
                 />
               </div>
 
@@ -399,11 +398,11 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
       </div>
 
       {/* Footer with Create Button */}
-      <div className="px-5 py-4 border-t border-[#2e3440] bg-[#0f1117]">
+      <div className="px-5 py-4 border-t border-[var(--border-subtle)] bg-[var(--bg-deep)]">
         <button
           onClick={handleCreateTicket}
           disabled={isCreating || !formData.customerName || !formData.customerCpf || !formData.description}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#005c4b] border border-[#005c4b] rounded-xl text-sm font-bold text-white hover:bg-[#006f5b] hover:border-[#006f5b] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-900/20"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[var(--color-brand-green-dark)] border border-[var(--color-brand-green-dark)] rounded-xl text-sm font-bold text-white hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-emerald-900/20"
         >
           {isCreating ? (
             <>
@@ -418,7 +417,7 @@ export default function SACTicketForm({ conversationId, messages, onTicketCreate
           )}
         </button>
         {(!formData.customerName || !formData.customerCpf || !formData.description) && (
-          <p className="text-[10px] text-rose-400 text-center mt-2">
+          <p className="text-[var(--text-xs)] text-rose-400 text-center mt-2">
             Preencha os campos obrigatórios (*)
           </p>
         )}

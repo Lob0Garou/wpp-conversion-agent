@@ -425,37 +425,37 @@ export default function VendasTab() {
 
   // ─────────────────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-[#0f1117]">
+    <div className="flex flex-col h-full overflow-hidden bg-[var(--bg-deep)]">
 
       {/* ── Top bar ─────────────────────────────────────────────────────────── */}
-      <div className="px-6 py-4 flex items-center gap-4 border-b border-[#2e3440] shrink-0">
+      <div className="px-6 py-4 flex items-center gap-4 border-b border-[var(--border-subtle)] shrink-0">
         {/* Stats pills */}
         <div className="flex items-center gap-3">
           {/* Leads Quentes */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[#E31D1A]/25 bg-[#E31D1A]/10">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#E31D1A] shrink-0">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[var(--color-brand)]/25 bg-[var(--color-brand)]/10">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--color-brand)] shrink-0">
               <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
             </svg>
             <div className="flex flex-col leading-none">
-              <span className="text-[9px] uppercase font-black tracking-widest text-[#E31D1A]/80">Leads</span>
+              <span className="text-[var(--text-xs)] uppercase font-black tracking-widest text-[var(--color-brand)]/80">Leads</span>
               <span className="text-base font-black text-white">{leadsCount}</span>
             </div>
           </div>
 
           {/* Conversas */}
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[#2e3440] bg-[#1a1d23]">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#8892a0] shrink-0">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-[var(--text-muted)] shrink-0">
               <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z" />
               <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
             </svg>
             <div className="flex flex-col leading-none">
-              <span className="text-[9px] uppercase font-black tracking-widest text-[#8892a0]/80">Conversas</span>
+              <span className="text-[var(--text-xs)] uppercase font-black tracking-widest text-[var(--text-muted)]/80">Conversas</span>
               <span className="text-base font-black text-white">{ativasCount}</span>
             </div>
           </div>
         </div>
 
-        <div className="h-8 w-px bg-[#2e3440]" />
+        <div className="h-8 w-px bg-[var(--border-subtle)]" />
 
         {/* Filter pills */}
         <div className="flex items-center gap-2">
@@ -463,14 +463,14 @@ export default function VendasTab() {
             { id: "todos", label: "Todos", active: "bg-white/10 text-white border-white/20" },
             { id: "vendas", label: "Vendas", active: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30" },
             { id: "duvidas", label: "Dúvidas", active: "bg-blue-500/15 text-blue-400 border-blue-500/30" },
-            { id: "sac", label: "SAC", active: "bg-[#E31D1A]/15 text-[#E31D1A] border-[#E31D1A]/30" },
+            { id: "sac", label: "SAC", active: "bg-[var(--color-brand)]/15 text-[var(--color-brand)] border-[var(--color-brand)]/30" },
           ] as const).map(f => (
             <button
               key={f.id}
               onClick={() => setActiveFilter(f.id)}
-              className={`px-3 py-1.5 rounded-full text-[11px] font-bold border transition-all outline-none ${activeFilter === f.id
+              className={`px-3 py-1.5 rounded-full text-[var(--text-xs)] font-bold border transition-all outline-none ${activeFilter === f.id
                 ? f.active
-                : "bg-transparent border-transparent text-[#8892a0] hover:text-white hover:bg-white/5"
+                : "bg-transparent border-transparent text-[var(--text-muted)] hover:text-white hover:bg-white/5"
                 }`}
             >
               {f.label}
@@ -483,11 +483,11 @@ export default function VendasTab() {
           {queuedChats.length > 0 && (
             <button
               onClick={() => setShowHistory(v => !v)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#2e3440] bg-[#1a1d23] hover:bg-[#242830] text-[11px] font-bold text-[#8892a0] hover:text-white transition-all"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] hover:bg-[var(--bg-elevated)] text-[var(--text-xs)] font-bold text-[var(--text-muted)] hover:text-white transition-all"
             >
               <History className="w-3.5 h-3.5" />
               Fila
-              <span className="px-1.5 py-0.5 rounded-full bg-[#E31D1A] text-white text-[9px] font-black leading-none">
+              <span className="px-1.5 py-0.5 rounded-full bg-[var(--color-brand)] text-white text-[var(--text-xs)] font-black leading-none">
                 {queuedChats.length}
               </span>
             </button>
@@ -495,9 +495,9 @@ export default function VendasTab() {
           <button
             onClick={() => { loadConversations(); if (selectedId) loadMessages(selectedId); }}
             disabled={convLoading}
-            className="p-1.5 rounded-lg bg-[#1a1d23] border border-[#2e3440] hover:bg-[#242830] opacity-70 hover:opacity-100 transition-all"
+            className="p-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:bg-[var(--bg-elevated)] opacity-70 hover:opacity-100 transition-all"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-[#8892a0] ${convLoading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-3.5 h-3.5 text-[var(--text-muted)] ${convLoading ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>

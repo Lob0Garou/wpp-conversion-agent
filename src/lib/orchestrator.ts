@@ -18,6 +18,7 @@ import {
     logGuardrailIntervention,
     logActionDecision,
 } from './telemetry';
+import { extractKnownEntitiesFromHistory, getMissingData, getFirstMissingQuestion, type KnownEntities } from './slot-extractor';
 
 /**
  * Resultado do orchestrator
@@ -397,6 +398,33 @@ function buildSystemPrompt(action: AgentAction, context: ConversationContext): s
             role: m.direction === 'inbound' ? 'user' as const : 'assistant' as const,
             content: m.content,
         }));
+
+        // F002 SLOT AWARE: Extrai entidades do histórico antes de chamar response-controller
+        const intent = context.intent || context.lastIntent || 'SALES';
+        const knownEntities = extractKnownEntitiesFromHistory(history);
+        const missingFields = getMissingData(intent, knownEntities);
+
+        // Log para debug (apenas se CADU_DEBUG=1)
+        if (process.env.CADU_DEBUG === '1') {
+            console.log(`[F002 SLOT AWARE] Intent: ${intent}, Known: ${JSON.stringify(knownEntities)}, Missing: ${missingFields.join(', ')}`);
+        }
+
+        // Se há campos faltantes e a ação é REQUEST_ORDER_DATA, pergunta apenas o primeiro
+        if (missingFields.length > 0 && action === 'REQUEST_ORDER_DATA') {
+            const firstMissing = missingFields[0];
+            const question = getFirstMissingQuestion(firstMissing);
+
+            // Retorna um prompt específico para perguntar apenas o primeiro campo
+            return `Você está no fluxo de SAC.
+DADOS JÁ COLETADOS DO HISTÓRICO: ${Object.entries(knownEntities).filter(([_, v]) => v).map(([k, v]) => `${k}=${v}`).join(', ') || 'nenhum'}
+
+FALTANDO: ${missingFields.join(', ')}
+
+AÇÃO: Faça APENAS uma pergunta: "${question}"
+
+Responda de forma direta e amigável, pedindo apenas esse dado.`;
+        }
+
         return buildStrictSystemPrompt(action, context.slots as Slots, context.intent || 'SALES', history);
     } catch (e) {
         // Fallback to simple prompts if response-controller fails
