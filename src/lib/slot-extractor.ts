@@ -1,4 +1,4 @@
-﻿import type { Slots } from "./state-manager";
+import type { Slots } from "./state-manager";
 
 export interface SlotExtractionResult {
     extracted: Partial<Slots>;
