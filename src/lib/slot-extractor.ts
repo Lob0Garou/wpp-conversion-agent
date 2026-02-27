@@ -618,3 +618,239 @@ function extractGenero(msg: string): string | undefined {
     }
     return undefined;
 }
+
+// ============================================================
+// F002 SLOT AWARE - Extrai entidades do histórico de conversa
+// ============================================================
+
+export type Slot = "orderId" | "cpf" | "size" | "ticketId";
+
+export interface KnownEntities {
+    orderId?: string;
+    ticketId?: string;
+    cpf?: string;
+    size?: string;
+    customerPhone?: string;
+}
+
+export interface KnownEntitiesExtraction {
+    known: KnownEntities;
+    slotSource: Partial<Record<Slot, string>>;
+}
+
+const SLOT_REQUIREMENTS: Record<string, Slot[]> = {
+    ORDER_STATUS: ["orderId", "cpf"],
+    TRACKING: ["orderId", "cpf"],
+    DELIVERY_DELAY: ["orderId", "cpf"],
+    EXCHANGE_REQUEST: ["orderId", "cpf"],
+    REFUND_REQUEST: ["orderId", "cpf"],
+    RETURN_PROCESS: ["orderId", "cpf"],
+    VOUCHER_GENERATION: ["orderId", "cpf"],
+    STOCK_AVAILABILITY: ["size"],
+    STORE_RESERVATION: ["size"],
+    RESERVATION: ["size"],
+    // Mapeamento para intents internas do Cadu
+    SAC_ATRASO: ["orderId", "cpf"],
+    SAC_TROCA: ["orderId", "cpf"],
+    SAC_REEMBOLSO: ["orderId", "cpf"],
+    SAC_RETIRADA: ["orderId", "cpf"],
+    SUPPORT: [],
+    INFO: [],
+    INFO_ADDRESS: [],
+    INFO_HOURS: [],
+    INFO_SAC_POLICY: [],
+};
+
+function normalizeIntent(intent: string): string {
+    return String(intent || "").toUpperCase().trim();
+}
+
+function toHistoryText(input: string | Array<{ role?: string; content: string }>): string {
+    if (typeof input === "string") {
+        return input;
+    }
+    return input
+        .filter((msg) => !msg.role || msg.role === "user")
+        .map((msg) => msg.content || "")
+        .join(" \n ");
+}
+
+function isLikelyCpf(value: string): boolean {
+    const digits = value.replace(/[^\d]/g, "");
+    if (digits.length !== 11) return false;
+    // Evita CPFs triviais 00000000000 etc.
+    if (/^(\d)\1{10}$/.test(digits)) return false;
+    return true;
+}
+
+function maskNonDigits(value: string): string {
+    return value.replace(/[^\d]/g, "");
+}
+
+/**
+ * Extrai entidades conhecidas do histórico ou de uma única mensagem.
+ * Retorna também a origem de cada slot (slotSource) para auditoria.
+ */
+export function extractKnownEntities(
+    historyTextOrMessages: string | Array<{ role?: string; content: string }>,
+    opts?: { customerPhone?: string }
+): KnownEntitiesExtraction {
+    const known: KnownEntities = {};
+    const slotSource: Partial<Record<Slot, string>> = {};
+
+    const text = toHistoryText(historyTextOrMessages);
+    const normalizedPhone = opts?.customerPhone ? maskNonDigits(opts.customerPhone) : "";
+    if (normalizedPhone) {
+        known.customerPhone = normalizedPhone;
+    }
+
+    // Ticket: "Ticket #12345" / "#12345"
+    const ticketMatch = text.match(/(?:ticket\s*#?\s*|#)\s*(\d{5,})/i);
+    if (ticketMatch?.[1]) {
+        known.ticketId = ticketMatch[1];
+        slotSource.ticketId = "regex_ticket";
+    }
+
+    // CPF: 11 dígitos com ou sem máscara
+    const cpfMatch = text.match(/\b\d{3}[\.\s]?\d{3}[\.\s]?\d{3}[-\.\s]?\d{2}\b/);
+    if (cpfMatch?.[0]) {
+        const cpfDigits = maskNonDigits(cpfMatch[0]);
+        if (isLikelyCpf(cpfDigits)) {
+            known.cpf = cpfDigits;
+            slotSource.cpf = "regex_cpf";
+        }
+    }
+
+    // Pedido explícito com contexto lexical
+    const explicitOrderMatch = text.match(/\b(?:pedido|compra)\s*(?:n[uú]mero|n[oº]?|#|:)?\s*(\d{5,14})\b/i);
+    if (explicitOrderMatch?.[1]) {
+        known.orderId = explicitOrderMatch[1];
+        slotSource.orderId = "regex_order_context";
+    }
+
+    // Fallback: número isolado 8-14 (evita CPF e ticket)
+    if (!known.orderId) {
+        const numberMatches = [...text.matchAll(/\b(\d{8,14})\b/g)];
+        for (const match of numberMatches) {
+            const candidate = match[1];
+            if (!candidate) continue;
+            if (known.cpf && candidate === known.cpf) continue;
+            if (known.ticketId && candidate === known.ticketId) continue;
+            // Evita confundir com telefone do cliente quando disponível
+            if (normalizedPhone && candidate.endsWith(normalizedPhone.slice(-8))) continue;
+            known.orderId = candidate;
+            slotSource.orderId = "regex_order_numeric";
+            break;
+        }
+    }
+
+    // Tamanho com contexto (tam 42 / tamanho 42 / número 42 / 42BR / calço 42)
+    const sizeMatch =
+        text.match(/\b(?:tam(?:anho)?|numera(?:ção|cao)|n(?:[º°]|úmero)?|cal[cç]o)\s*[:#-]?\s*(3[3-9]|4[0-8])\b/i) ||
+        text.match(/\b(3[3-9]|4[0-8])\s*br\b/i);
+    if (sizeMatch?.[1]) {
+        known.size = sizeMatch[1];
+        slotSource.size = "regex_size_context";
+    }
+
+    return { known, slotSource };
+}
+
+/**
+ * Extrai entidades conhecidas do histórico de conversa.
+ * Retorna orderId, ticketId, cpf e size encontrados em mensagens anteriores.
+ */
+export function extractKnownEntitiesFromHistory(
+    history: Array<{ role: string; content: string }>
+): KnownEntities {
+    return extractKnownEntities(history).known;
+}
+
+/**
+ * Mapeamento de campos obrigatórios por intent (F002).
+ * Retorna array de campos necessários para cada intent.
+ */
+function getRequiredFieldsForIntent(intent: string): string[] {
+    return SLOT_REQUIREMENTS[normalizeIntent(intent)] || [];
+}
+
+/**
+ * Retorna slots faltantes para um intent/estado.
+ */
+export function getMissingSlots(intent: string, known: KnownEntities): Slot[] {
+    const required = getRequiredFieldsForIntent(intent) as Slot[];
+    return required.filter((field) => {
+        if (field === "orderId") {
+            return !(known.orderId || known.ticketId);
+        }
+        return !known[field];
+    });
+}
+
+/**
+ * Pergunta determinística para coleta de slot.
+ * Pede apenas o slot prioritário (1 por turno).
+ */
+export function buildSlotQuestion(
+    slot: Slot,
+    intent: string,
+    known: KnownEntities,
+    opts?: { isChatOnly?: boolean }
+): string {
+    const isChatOnly = Boolean(opts?.isChatOnly);
+    const normalizedIntent = normalizeIntent(intent);
+    const isSacIntent =
+        normalizedIntent === "ORDER_STATUS" ||
+        normalizedIntent === "TRACKING" ||
+        normalizedIntent === "DELIVERY_DELAY" ||
+        normalizedIntent === "EXCHANGE_REQUEST" ||
+        normalizedIntent === "REFUND_REQUEST" ||
+        normalizedIntent === "RETURN_PROCESS" ||
+        normalizedIntent === "VOUCHER_GENERATION" ||
+        normalizedIntent.startsWith("SAC_");
+
+    if (slot === "orderId") {
+        const tail = isChatOnly && isSacIntent
+            ? " Com isso, eu já encaminho para checagem humana sem te fazer repetir tudo."
+            : "";
+        return `Próximo passo: vou seguir com a verificação assim que você me informar o número do pedido.${tail}`;
+    }
+
+    if (slot === "cpf") {
+        const preface = known.orderId || known.ticketId
+            ? "Perfeito, já tenho a referência do pedido."
+            : "Próximo passo:";
+        const tail = isChatOnly && isSacIntent
+            ? " Com esses dados, eu encaminho para checagem humana quando necessário."
+            : "";
+        return `${preface} agora me confirme o CPF do titular e eu vou continuar.${tail}`;
+    }
+
+    if (slot === "size") {
+        return "Próximo passo: me diga o tamanho/número (ex.: 38, 40 ou 42) e eu vou continuar.";
+    }
+
+    return "Próximo passo: me informe o número do ticket para eu continuar.";
+}
+
+/**
+ * Retorna os campos faltantes para o intent atual.
+ * Compara as entidades conhecidas (do histórico) com os campos necessários.
+ */
+export function getMissingData(
+    intent: string,
+    known: KnownEntities
+): string[] {
+    return getMissingSlots(intent, known);
+}
+
+/**
+ * Gera a pergunta para o primeiro campo faltante.
+ * Retorna a pergunta apropriada para o campo.
+ */
+export function getFirstMissingQuestion(field: string): string {
+    if (field === "orderId" || field === "cpf" || field === "size" || field === "ticketId") {
+        return buildSlotQuestion(field, "UNKNOWN", {});
+    }
+    return `Qual é o ${field}?`;
+}
