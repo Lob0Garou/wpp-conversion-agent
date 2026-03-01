@@ -31,7 +31,8 @@ export function determineNextState(
         return { nextState: "support", reason: "handoff_requested", shouldEscalate: true };
     }
 
-    if (intent.startsWith("SAC_") || intent === "SUPPORT") {
+    const softSacIntents: string[] = [];
+    if ((intent.startsWith("SAC_") || intent === "SUPPORT") && !softSacIntents.includes(intent)) {
         return {
             nextState: "support_sac",
             reason: `sac_intent_detected_${intent}`,

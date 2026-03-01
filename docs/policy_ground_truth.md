@@ -24,6 +24,7 @@
 | Fechamento | Sempre confirmar se cliente quer algo mais: "Algo mais?" |
 
 **Fluxo ideal (3-5 mensagens):**
+
 ```
 [1] Cliente: pergunta produto
 [2] Agent: qual numeração?
@@ -46,17 +47,28 @@
 | MARCHA 1: Troca/Devolução | Oferecer Vale-Troca imediato |
 | MARCHA 2: Atraso/Problema | Verificar status, abrir chamado, informar prazo 72h |
 
-**Prazos Oficiais:**
+**Prazos Oficiais de Estorno:**
+
+| Meio de Pagamento | Prazo | Observação |
+|---|---|---|
+| **Cartão de Crédito** | 1 a 2 faturas | Dependente da administradora |
+| **PIX (≤ 90 dias)** | Até 72 horas úteis | Mesma chave de origem |
+| **PIX (> 90 dias)** | Variável | Via transferência bancária (mesmo CPF) |
+| **Cartão de Débito** | 1 a 7 dias úteis | Crédito direto no extrato |
+| **Vale-Trocas** | Até 10 dias úteis | Válido por 12 meses |
+
+**Prazos de Atendimento:**
 
 | Situação | Prazo |
-|----------|-------|
+| --- | --- |
 | Troca tamanho | 30 dias |
 | Defeito | 90 dias |
-| Devolução | 7-30 dias |
 | Retirada | 7 dias |
+| Resolução Chamado | 48h - 72h úteis |
 
 **Fluxo SAC ideal:**
-```
+
+```markdown
 [1] Cliente: problema
 [2] Agent: qual seu CPF? (se não tiver pedido)
 [3] Cliente: CPF
@@ -86,12 +98,14 @@
 | Conversa estagnada por 3+ mensagens | Escalar |
 
 **Frases para Escalação:**
+
 - "Vou escalar para nosso time specialist"
 - "Passando para alguém que pode resolver"
 - "Um momento, vou chamar um supervisor"
 - "Vou te passar pro time resolver isso rapidinho"
 
 **NÃO ESCALAR PRECOCEMENTO:**
+
 - O agente deve TENTAR resolver antes de escalar: trocas simples, dúvidas de produto, informações básicas
 
 ---
@@ -124,16 +138,19 @@
 ### 3.1 No Estilo/Tom (style_whatsapp.md, soul.md)
 
 **EVITAR - Frases Longas/Formais:**
+
 - "Olá! Seja muito bem-vindo(a)..."
 - "Para que eu possa ajudá-lo melhor..."
 - "Poxa, que pena! Entendo sua frustração"
 - "Sinto muito por isso"
 
 **EVITAR - Excesso de Empatia:**
+
 - "Poxa, que pena!"
 - "Sinto muito por isso"
 
 **EVITAR - Perguntas Longas:**
+
 - "Para me ajudar melhor, poderia me informar..."
 
 ### 3.2 Regras Rígidas (soul.md - 4 Regras de Ouro)
@@ -147,11 +164,13 @@
 ### 3.3 No SAC (sac_rules.md)
 
 **NUNCA DIZER:**
+
 - "Não posso fazer nada"
 - "Tem que ir na loja"
 - "Isso não é comigo"
 
 **PROIBIDO NO SAC:**
+
 - Prometer prazos sem sistema confirmar
 - Autorizar trocas/devoluções (só humano pode)
 - Discutir com cliente
@@ -161,6 +180,7 @@
 ### 3.4 No Avaliador (evaluator.ts)
 
 **Avaliação de Regras (0-30 pontos):**
+
 - ZERO descontos ou abatimentos não autorizados
 - ZERO alucinações de estoque, datas ou informações inventadas
 - ZERO reembolso imediato em dinheiro (Vale Troca sempre primeiro)

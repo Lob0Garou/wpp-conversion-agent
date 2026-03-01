@@ -104,6 +104,9 @@ function decideSalesAction(context: ActionDecisionContext): AgentAction {
     // mesmo que tenha produto (ex: "Boa noite, tem camisa do brasil?")
     // O template de saudação será selecionado pelo state="greeting"
     if (state === "greeting") {
+        if (slots.product && slots.size) return "OFFER_RESERVATION";
+        if (slots.product && !slots.size) return "ASK_SIZE";
+        if (slots.timeFutebol && !slots.size) return "ASK_SIZE";
         return "ASK_PRODUCT";
     }
 
@@ -172,11 +175,12 @@ function decideSacAction(context: ActionDecisionContext): AgentAction {
     switch (intent) {
         case "SAC_TROCA":
             return needsOrderData ? "REQUEST_ORDER_DATA" : "PROVIDE_POLICY";
+        case "SAC_REEMBOLSO":
+            // Provide refund policy first. Only request data after giving the policy or if they explicitly ask for status.
+            return "PROVIDE_POLICY";
         case "SAC_ATRASO":
             return needsOrderData ? "REQUEST_ORDER_DATA" : "PROVIDE_POLICY";
         case "SAC_RETIRADA":
-            return needsOrderData ? "REQUEST_ORDER_DATA" : "PROVIDE_POLICY";
-        case "SAC_REEMBOLSO":
             return needsOrderData ? "REQUEST_ORDER_DATA" : "PROVIDE_POLICY";
         default:
             return "LLM_FALLBACK";

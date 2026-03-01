@@ -14,12 +14,29 @@ export default function EmptySlotCard({ index }: EmptySlotCardProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="rounded-2xl border-2 border-dashed border-[var(--border-subtle)] bg-[var(--bg-surface)]/50 flex flex-col items-center justify-center gap-2 min-h-[160px] select-none"
+      className={[
+        // Layout
+        "flex min-h-[180px] flex-col items-center justify-center",
+        // Shape
+        "rounded-xl border border-dashed border-[var(--border-subtle)]",
+        // Surface
+        "bg-[var(--bg-surface)]/20",
+        // Interaction
+        "cursor-pointer group transition-colors duration-200",
+        "hover:border-[var(--border-default)] hover:bg-[var(--bg-surface)]/50",
+      ].join(" ")}
     >
-      <div className="w-8 h-8 rounded-full border border-[var(--border-subtle)] flex items-center justify-center">
-        <Plus className="w-4 h-4 text-[var(--border-subtle)]" />
+      <div className={[
+        "flex h-10 w-10 items-center justify-center rounded-full",
+        "bg-[var(--bg-overlay)]/50 text-[var(--text-muted)]",
+        "transition-colors group-hover:bg-[var(--bg-overlay)] group-hover:text-[var(--text-secondary)]",
+      ].join(" ")}>
+        <Plus className="w-5 h-5" />
       </div>
-      <span className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-[var(--border-subtle)]">
+      <span className={[
+        "mt-3 text-[var(--text-xs)] font-bold tracking-widest uppercase",
+        "text-[var(--text-muted)] group-hover:text-[var(--text-secondary)] transition-colors",
+      ].join(" ")}>
         Slot Livre
       </span>
     </motion.div>

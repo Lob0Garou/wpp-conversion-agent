@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { InferredSlots } from "./parseTimeline";
-import ProductSummary from "./ProductSummary";
+import { extractProductSummary } from "./ProductSummaryBlock";
 import CardShell from "./CardShell";
 import type { CardVariant } from "./CardShell";
 
@@ -15,6 +15,7 @@ export interface ConversationCardData {
     id: string;
     customerName: string | null;
     customerPhone: string;
+    conversationType?: string;
     lastMessage?: string;
     lastMessageAt?: string;
     status: string;
@@ -73,44 +74,286 @@ function slaTimer(dateIso?: string, slaMinutes = 30): string {
     return `${sign}${mm}:${ss}`;
 }
 
-function formatPhone(raw: string): string {
-    // "558578747045" → "+55 85 78747045"
-    const digits = raw.replace(/\D/g, "");
-    if (digits.startsWith("55") && digits.length >= 12) {
-        const ddd = digits.slice(2, 4);
-        const num = digits.slice(4);
-        return `+55 ${ddd} ${num}`;
-    }
-    return `+${digits}`;
+function asText(value: unknown): string | undefined {
+    if (typeof value !== "string") return undefined;
+    const trimmed = value.trim();
+    return trimmed.length ? trimmed : undefined;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Variant detection
-// ─────────────────────────────────────────────────────────────────────────────
+function titleize(raw?: string): string | undefined {
+    const text = asText(raw);
+    if (!text) return undefined;
+    const cleaned = text.replace(/[_-]+/g, " ");
+    return cleaned
+        .split(/\s+/)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(" ");
+}
+
+function truncateText(text: string | undefined, max = 56): string | undefined {
+    if (!text) return undefined;
+    return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+function extractOrderId(text?: string): string | undefined {
+    if (!text) return undefined;
+    const match = text.match(/\b(?:pedido|order|#)\s*:?\s*([A-Z0-9-]{5,})\b/i);
+    return match?.[1]?.toUpperCase();
+}
+
+function extractEmail(text?: string): string | undefined {
+    if (!text) return undefined;
+    const match = text.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
+    return match?.[0]?.toLowerCase();
+}
+
+interface SummaryField {
+    label: string;
+    value: string;
+}
+
+function getSalesSummaryFields(data: ConversationCardData): { description: string; fields: SummaryField[] } {
+    const slots = (data.slots ?? {}) as InferredSlots & Record<string, unknown>;
+    const summary = extractProductSummary(data);
+    const categoria = titleize(asText(slots.categoria) ?? summary?.category);
+    const model = asText(slots.product) ?? asText(summary?.model);
+
+    const description = truncateText(
+        categoria ??
+        (model && model.toLowerCase() !== (summary?.brand ?? "").toLowerCase() ? model : undefined) ??
+        [summary?.category, summary?.brand].filter(Boolean).join(" ")
+    ) ?? "Produto em negociacao";
+
+    const brand = titleize(summary?.brand ?? asText(slots.marca));
+    const size = asText(summary?.size ?? asText(slots.size));
+    const color = titleize(summary?.color ?? asText(slots.color) ?? asText(slots.cor));
+
+    const fields: SummaryField[] = [
+        { label: "Marca", value: brand ?? "Nao informado" },
+        { label: "Tamanho", value: size ?? "Nao informado" },
+    ];
+    if (color) {
+        fields.push({ label: "Cor", value: color });
+    }
+
+    return {
+        description,
+        fields,
+    };
+}
+
+function hasRequiredSalesData(data: ConversationCardData): boolean {
+    const slots = (data.slots ?? {}) as InferredSlots & Record<string, unknown>;
+    const summary = extractProductSummary(data);
+
+    const item = asText(slots.categoria) ?? asText(slots.product) ?? asText(summary?.category) ?? asText(summary?.model);
+    const size = asText(slots.size) ?? asText(summary?.size);
+
+    return Boolean(item && size);
+}
+
+function hasRequiredSacData(data: ConversationCardData): boolean {
+    const summary = getSacSummaryFields(data);
+    const hasName = summary.name !== "Cliente nao identificado";
+    const hasOrder = summary.orderId !== "Nao informado";
+    const hasEmail = summary.email !== "Nao informado";
+    return hasName || hasOrder || hasEmail;
+}
+
+function loud(value: string): string {
+    return value.toUpperCase();
+}
+
+function contourStyle(strength: "soft" | "strong" = "soft"): CSSProperties {
+    if (strength === "strong") {
+        return {
+            textShadow:
+                "0 1px 0 rgba(0,0,0,0.9), 0 2px 6px rgba(0,0,0,0.5), 0 0 14px rgba(0,0,0,0.34)",
+            letterSpacing: "0.02em",
+        };
+    }
+    return {
+        textShadow:
+            "0 1px 0 rgba(0,0,0,0.78), 0 1px 4px rgba(0,0,0,0.4), 0 0 10px rgba(0,0,0,0.28)",
+        letterSpacing: "0.012em",
+    };
+}
+
+function getSacSummaryFields(data: ConversationCardData): { name: string; orderId: string; email: string } {
+    const slots = (data.slots ?? {}) as InferredSlots & Record<string, unknown>;
+    const name = asText(data.customerName) ?? asText(slots.customerName) ?? "Cliente nao identificado";
+    const orderId = asText(slots.orderId) ?? extractOrderId(data.lastMessage) ?? "Nao informado";
+    const email = asText(slots.email) ?? extractEmail(data.lastMessage) ?? "Nao informado";
+    return { name, orderId, email };
+}
+
+function SalesHandoffSummary({ data }: { data: ConversationCardData }) {
+    const { description, fields } = getSalesSummaryFields(data);
+    const slots = (data.slots ?? {}) as InferredSlots & Record<string, unknown>;
+    const valueByLabel = new Map(fields.map(field => [field.label, field.value]));
+    const model = loud(asText(slots.product) ?? description);
+    const color = loud(valueByLabel.get("Cor") ?? "A definir");
+    const size = loud(valueByLabel.get("Tamanho") ?? "A definir");
+    const status = loud(titleize(asText(slots.statusPedido)) ?? (data.status === "PENDING_HUMAN" ? "Aguardando" : "Em atendimento"));
+    const cells = [
+        { label: "Modelo", value: model },
+        { label: "Cor", value: color },
+        { label: "Tamanho", value: size },
+        { label: "Status", value: status },
+    ];
+
+    return (
+        <div
+            className="rounded-xl border px-3 py-3 h-full flex flex-col gap-2"
+            style={{ background: "var(--color-ai-sales-bg)", borderColor: "var(--color-ai-sales-border)" }}
+        >
+            <p className="text-center text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: "var(--color-ai-sales)" }}>
+                Venda
+            </p>
+            <h3 className="text-center text-[clamp(1.9rem,4.6vw,2.55rem)] font-black leading-[0.9] uppercase break-words" style={{ color: "var(--text-primary)", ...contourStyle("strong") }}>
+                {loud(description)}
+            </h3>
+            <div className="grid grid-cols-2 auto-rows-fr gap-2 flex-1">
+                {cells.map((cell, idx) => (
+                    <div
+                        key={`${cell.label}-${idx}`}
+                        className="rounded-xl border p-2.5 min-w-0 flex flex-col items-center justify-center text-center gap-1"
+                        style={{
+                            borderColor: "color-mix(in srgb, var(--color-ai-sales-border) 60%, transparent)",
+                            background: "color-mix(in srgb, var(--color-ai-sales-bg) 80%, transparent)",
+                        }}
+                    >
+                        <p className="text-[11px] font-black uppercase tracking-[0.12em] text-center" style={{ color: "var(--text-muted)" }}>
+                            {cell.label}
+                        </p>
+                        <p
+                            className="text-[clamp(1.22rem,2.7vw,1.72rem)] font-black leading-[0.9] uppercase break-words text-center"
+                            style={{ color: cell.value.includes("NAO INFORMADO") || cell.value.includes("A DEFINIR") ? "var(--text-secondary)" : "var(--text-primary)", ...contourStyle("strong") }}
+                            title={cell.value}
+                        >
+                            {cell.value}
+                        </p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+type SacSummaryMode = "sac" | "critical";
+
+function SacHandoffSummary({
+    data,
+    mode = "sac",
+}: {
+    data: ConversationCardData;
+    mode?: SacSummaryMode;
+}) {
+    const summary = getSacSummaryFields(data);
+    const isCritical = mode === "critical";
+    const accent = isCritical ? "var(--color-danger)" : "var(--color-warning)";
+    const background = `color-mix(in srgb, ${accent} 14%, transparent)`;
+    const borderColor = `color-mix(in srgb, ${accent} 42%, transparent)`;
+    const title = loud(asText(data.slots?.motivoTroca) ?? asText(data.lastMessage) ?? "Atendimento em andamento");
+
+    return (
+        <div
+            className="rounded-xl border px-3 py-3 h-full flex flex-col gap-2"
+            style={{ background, borderColor }}
+        >
+            <p className="text-center text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: accent }}>
+                {isCritical ? "Chamado SAC" : "SAC"}
+            </p>
+            <h3 className="text-center text-[clamp(1.45rem,3.9vw,2.2rem)] font-black leading-[0.9] uppercase break-words line-clamp-2" style={{ color: "var(--text-primary)", ...contourStyle("strong") }}>
+                {title}
+            </h3>
+            <div className="grid grid-rows-3 flex-1 rounded-xl border overflow-hidden" style={{ borderColor: "color-mix(in srgb, var(--border-subtle) 72%, transparent)" }}>
+                <div className="px-2.5 py-2 text-center flex flex-col items-center justify-center gap-1" style={{ background: "color-mix(in srgb, var(--bg-elevated) 68%, transparent)" }}>
+                    <span className="text-[11px] font-black uppercase tracking-[0.12em] block text-center" style={{ color: "var(--text-muted)" }}>
+                        Nome
+                    </span>
+                    <p className="text-[clamp(1.16rem,2.55vw,1.66rem)] font-black leading-[0.9] uppercase break-words text-center" style={{ color: accent, ...contourStyle("strong") }}>
+                        {loud(summary.name)}
+                    </p>
+                </div>
+                <div className="px-2.5 py-2 border-t border-[var(--border-subtle)] text-center flex flex-col items-center justify-center gap-1" style={{ background: "color-mix(in srgb, var(--bg-elevated) 58%, transparent)" }}>
+                    <span className="text-[11px] font-black uppercase tracking-[0.12em] block text-center" style={{ color: "var(--text-muted)" }}>
+                        Pedido
+                    </span>
+                    <p className="text-[clamp(1.16rem,2.55vw,1.66rem)] font-black leading-[0.9] uppercase break-words text-center" style={{ color: "var(--text-primary)", ...contourStyle("strong") }}>
+                        {loud(summary.orderId)}
+                    </p>
+                </div>
+                <div className="px-2.5 py-2 border-t border-[var(--border-subtle)] text-center flex flex-col items-center justify-center gap-1" style={{ background: "color-mix(in srgb, var(--bg-elevated) 48%, transparent)" }}>
+                    <span className="text-[11px] font-black uppercase tracking-[0.12em] block text-center" style={{ color: "var(--text-muted)" }}>
+                        E-mail
+                    </span>
+                    <p className="text-[clamp(0.95rem,2.15vw,1.18rem)] font-black leading-[0.9] uppercase break-all text-center" style={{ color: "var(--text-secondary)", ...contourStyle() }}>
+                        {loud(summary.email)}
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+function getBaseVariant(data: ConversationCardData): Exclude<CardVariant, "CRITICAL"> {
+    const { slots, intent, status } = data;
+    const intentStr = (intent || "").toUpperCase();
+    const conversationType = (data.conversationType || "").toLowerCase();
+    const lastMessageLower = (data.lastMessage || "").toLowerCase();
+    const summary = extractProductSummary(data);
+    const hasSalesSignals = Boolean(
+        slots?.product ||
+        slots?.marca ||
+        slots?.categoria ||
+        slots?.size ||
+        slots?.color ||
+        slots?.cor ||
+        summary?.brand ||
+        summary?.category ||
+        summary?.size ||
+        summary?.model
+    );
+    const hasSacSignals = Boolean(slots?.motivoTroca || slots?.orderId || slots?.statusPedido || slots?.email);
+    const hasSalesHandoffLanguage = Boolean(
+        lastMessageLower.includes("vendedor") ||
+        lastMessageLower.includes("time de vendas") ||
+        lastMessageLower.includes("consultor") ||
+        lastMessageLower.includes("te direcionar para um vendedor")
+    );
+    const isInfoIntent = intentStr.startsWith("INFO") || intentStr === "CLARIFICATION";
+    const isSalesIntent = intentStr === "SALES" || intentStr === "NEGOTIATION" || intentStr === "PURCHASE" || intentStr === "CLOSING_SALE";
+
+    // Backend type should guide, but not force a false sales card when there's no product signal.
+    if (conversationType === "sac") {
+        if (!hasSacSignals && hasSalesHandoffLanguage) return "VENDAS";
+        return "SAC";
+    }
+    if (conversationType === "sales") {
+        if (hasSalesSignals || isSalesIntent || hasSalesHandoffLanguage) return "VENDAS";
+        if (isInfoIntent || !hasSacSignals) return "GERAL";
+    }
+
+    // Strong SAC signals first
+    if (hasSacSignals || intentStr === "SUPPORT") return "SAC";
+    // HANDOFF without product context behaves as SAC
+    if (intentStr === "HANDOFF" && !hasSalesSignals) return "SAC";
+
+    // Sales signals: product context from slots or inferred summary
+    if (hasSalesSignals) return "VENDAS";
+    // VENDAS: known categories that imply purchase intent
+    if (slots?.categoria === "tenis" || slots?.categoria === "chuteira" || slots?.categoria === "sandalia") return "VENDAS";
+    // Sales-oriented intents
+    if (isSalesIntent) return "VENDAS";
+    // Escalations without context default to SAC
+    if (status === "PENDING_HUMAN" || status === "escalated") return "SAC";
+
+    // Default
+    return "GERAL";
+}
 
 function getVariant(data: ConversationCardData, isCritical: boolean): CardVariant {
     if (isCritical) return "CRITICAL";
-
-    const { slots, intent, status } = data;
-    const intentStr = (intent || "").toUpperCase();
-
-    // Explicit SAC status
-    if (status === "PENDING_HUMAN" || status === "escalated") return "SAC";
-
-    // SAC signals from slots
-    if (slots?.motivoTroca || slots?.orderId || slots?.statusPedido) return "SAC";
-
-    // SAC signals from intent
-    if (intentStr === "SUPPORT" || intentStr === "HANDOFF") return "SAC";
-
-    // VENDAS signals: has product brand or explicit product
-    if (slots?.marca || slots?.product) return "VENDAS";
-
-    // VENDAS: has product category that implies a purchase intent
-    if (slots?.categoria === "tenis" || slots?.categoria === "chuteira" || slots?.categoria === "sandalia") return "VENDAS";
-
-    // Default: GERAL (info requests, general queries, etc.)
-    return "GERAL";
+    return getBaseVariant(data);
 }
 
 // ───────────────────────────────────────────────────────────────────────────────
@@ -207,10 +450,14 @@ function ResolveBtn({ onClick }: { onClick?: () => void }) {
     return (
         <button
             onClick={e => { e.stopPropagation(); onClick?.(); }}
-            className="material-symbols-rounded text-emerald-400 hover:text-emerald-300 text-2xl active:scale-90 transition-all"
+            className="px-3 py-1.5 rounded-lg text-[var(--text-xs)] font-bold uppercase tracking-widest text-white transition-all hover:brightness-110 active:scale-95 shadow-lg"
+            style={{
+                background: "var(--color-success)",
+                boxShadow: "0 10px 18px rgba(22, 163, 74, 0.30)",
+            }}
             title="Resolvido"
         >
-            check_circle
+            Resolver
         </button>
     );
 }
@@ -220,6 +467,7 @@ function PrioritizeBtn({ onClick }: { onClick?: () => void }) {
         <button
             onClick={e => { e.stopPropagation(); onClick?.(); }}
             className="bg-[var(--color-danger)] hover:brightness-110 active:scale-95 text-white px-4 py-2 rounded-xl text-[var(--text-xs)] font-bold uppercase tracking-widest transition-all"
+            style={{ boxShadow: "0 10px 18px rgba(220, 38, 38, 0.30)" }}
         >
             Priorizar
         </button>
@@ -248,6 +496,7 @@ export default function ConversationCard({
     const isHighFrustration = (data.frustrationLevel ?? 0) >= 2;
     const isCritical = isExplicitEscalated || (isPendingHuman && isHighFrustration);
 
+    const baseVariant = getBaseVariant(data);
     const variant = getVariant(data, isCritical);
     const isClosed = status === "closed";
 
@@ -267,6 +516,17 @@ export default function ConversationCard({
     if (variant === "CRITICAL") {
         const timer = slaTimer(lastMessageAt, 30);
         const summary = intentSummaryFor(data);
+        const criticalAsSales = baseVariant === "VENDAS";
+        const criticalAsSac = baseVariant === "SAC";
+        const salesReady = criticalAsSales && hasRequiredSalesData(data);
+        const sacReady = criticalAsSac && hasRequiredSacData(data);
+        const criticalTone = criticalAsSales ? "var(--color-ai-sales)" : criticalAsSac ? "var(--color-warning)" : "var(--color-danger)";
+        const criticalGlowStrength = salesReady || sacReady ? 52 : 30;
+        const criticalSurfaceStyle = {
+            borderColor: criticalTone,
+            boxShadow: `0 0 0 1px color-mix(in srgb, ${criticalTone} 88%, transparent), 0 0 36px color-mix(in srgb, ${criticalTone} ${criticalGlowStrength}%, transparent)`,
+        };
+
         return (
             <CardShell
                 variant="CRITICAL"
@@ -275,49 +535,35 @@ export default function ConversationCard({
                 isClosed={isClosed}
                 onClick={onClick}
                 innerRef={cardRef}
-                extraClassName="animate-pulse-red"
-                categoryLabel="Chamado SAC"
+                extraClassName=""
+                surfaceStyle={criticalSurfaceStyle}
+                categoryLabel={criticalAsSales ? "Chamado Vendas" : "Chamado SAC"}
                 displayName={displayName}
                 timeAgo={timeAgo(lastMessageAt)}
                 intentSummary={summary}
                 avatar={{ initials }}
                 badge={
                     <div className="flex gap-1.5 shrink-0">
-                        <span className="bg-[var(--color-danger)] text-white text-[var(--text-xs)] font-black px-2 py-0.5 rounded flex items-center gap-1 font-mono">
+                        <span
+                            className="text-white text-[var(--text-xs)] font-black px-2 py-0.5 rounded flex items-center gap-1 font-mono"
+                            style={{ background: criticalTone }}
+                        >
                             <span className="material-symbols-rounded text-[11px]">timer</span>
                             {timer}
                         </span>
-                        <span className="bg-red-500/20 text-[var(--color-danger)] text-[var(--text-xs)] font-black px-2 py-0.5 rounded border border-red-500/30 uppercase animate-pulse">
+                        <span
+                            className="text-[var(--text-xs)] font-black px-2 py-0.5 rounded border uppercase"
+                            style={{
+                                color: criticalTone,
+                                borderColor: `color-mix(in srgb, ${criticalTone} 52%, transparent)`,
+                                background: `color-mix(in srgb, ${criticalTone} 18%, transparent)`,
+                            }}
+                        >
                             Crítico
                         </span>
                     </div>
                 }
-                metadata={
-                    <div className="space-y-0">
-                        <div className="flex justify-between items-center py-1.5 border-b border-[var(--border-subtle)]">
-                            <span className="text-[var(--text-xs)] text-[var(--text-secondary)]">Telefone</span>
-                            <span className="text-[var(--text-xs)] font-semibold text-[var(--text-primary)]">{formatPhone(customerPhone)}</span>
-                        </div>
-                        {slots?.orderId ? (
-                            <div className="flex justify-between items-center py-1.5">
-                                <span className="text-[var(--text-xs)] text-[var(--text-secondary)]">Pedido</span>
-                                <span className="text-[var(--text-xs)] font-mono font-bold text-[var(--color-danger)]"># {slots.orderId}</span>
-                            </div>
-                        ) : (
-                            <div className="flex justify-between items-center py-1.5">
-                                <span className="text-[var(--text-xs)] text-[var(--text-secondary)]">Motivo</span>
-                                <span className="text-[var(--text-xs)] font-semibold text-[var(--text-primary)] truncate max-w-[140px]">
-                                    {slots?.motivoTroca || "Escalado"}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                }
-                quote={
-                    lastMessage ? (
-                        <span className="italic">&ldquo;{lastMessage}&rdquo;</span>
-                    ) : undefined
-                }
+                metadata={criticalAsSales ? <SalesHandoffSummary data={data} /> : <SacHandoffSummary data={data} mode="critical" />}
                 footerCta={footerCtaFor(variant, isClosed, onResolve)}
             />
         );
@@ -328,6 +574,13 @@ export default function ConversationCard({
         const statusPedido = slots?.statusPedido;
         const summary = intentSummaryFor(data);
         const leadTemp = getLeadTemp(data, variant);
+        const salesReady = hasRequiredSalesData(data);
+        const salesSurfaceStyle = {
+            borderColor: "var(--color-ai-sales)",
+            boxShadow: salesReady
+                ? "0 0 0 1px color-mix(in srgb, var(--color-ai-sales) 78%, transparent), 0 0 30px color-mix(in srgb, var(--color-ai-sales) 45%, transparent)"
+                : "0 0 0 1px color-mix(in srgb, var(--color-ai-sales) 46%, transparent), 0 0 18px color-mix(in srgb, var(--color-ai-sales) 24%, transparent)",
+        };
         return (
             <CardShell
                 variant="VENDAS"
@@ -336,6 +589,7 @@ export default function ConversationCard({
                 isClosed={isClosed}
                 onClick={onClick}
                 innerRef={cardRef}
+                surfaceStyle={salesSurfaceStyle}
                 categoryLabel="Nova Venda"
                 displayName={displayName}
                 timeAgo={timeAgo(lastMessageAt)}
@@ -351,7 +605,7 @@ export default function ConversationCard({
                         )}
                     </div>
                 }
-                metadata={<ProductSummary data={data} />}
+                metadata={<SalesHandoffSummary data={data} />}
                 footerCta={footerCtaFor(variant, isClosed, onResolve)}
             />
         );
@@ -361,6 +615,13 @@ export default function ConversationCard({
     if (variant === "SAC") {
         const summary = intentSummaryFor(data);
         const leadTemp = getLeadTemp(data, variant);
+        const sacReady = hasRequiredSacData(data);
+        const sacSurfaceStyle = {
+            borderColor: "var(--color-warning)",
+            boxShadow: sacReady
+                ? "0 0 0 1px color-mix(in srgb, var(--color-warning) 76%, transparent), 0 0 30px color-mix(in srgb, var(--color-warning) 42%, transparent)"
+                : "0 0 0 1px color-mix(in srgb, var(--color-warning) 48%, transparent), 0 0 18px color-mix(in srgb, var(--color-warning) 26%, transparent)",
+        };
         return (
             <CardShell
                 variant="SAC"
@@ -369,38 +630,14 @@ export default function ConversationCard({
                 isClosed={isClosed}
                 onClick={onClick}
                 innerRef={cardRef}
+                surfaceStyle={sacSurfaceStyle}
                 categoryLabel="SAC"
                 displayName={displayName}
                 timeAgo={timeAgo(lastMessageAt)}
                 intentSummary={summary}
                 avatar={{ initials }}
                 badge={<LeadBadge temp={leadTemp} />}
-                metadata={
-                    <div className="space-y-0">
-                        <div className="flex justify-between items-center py-1.5 border-b border-[var(--border-subtle)]">
-                            <span className="text-[var(--text-xs)] text-[var(--text-secondary)]">Telefone</span>
-                            <span className="text-[var(--text-xs)] font-semibold text-[var(--text-primary)]">{formatPhone(customerPhone)}</span>
-                        </div>
-                        {slots?.orderId ? (
-                            <div className="flex justify-between items-center py-1.5">
-                                <span className="text-[var(--text-xs)] text-[var(--text-secondary)]">Pedido</span>
-                                <span className="text-[var(--text-xs)] font-mono font-bold text-[var(--text-secondary)]"># {slots.orderId}</span>
-                            </div>
-                        ) : slots?.motivoTroca ? (
-                            <div className="flex justify-between items-center py-1.5">
-                                <span className="text-[var(--text-xs)] text-[var(--text-secondary)]">Motivo</span>
-                                <span className="text-[var(--text-xs)] font-semibold text-[var(--text-primary)] truncate max-w-[140px]">{slots.motivoTroca}</span>
-                            </div>
-                        ) : null}
-                    </div>
-                }
-                quote={
-                    lastMessage && data.lastMessageDirection !== "outbound" ? (
-                        <div className="bg-[var(--bg-elevated)] p-2 rounded-lg border-l-2 border-[var(--color-brand)]/50 italic">
-                            &ldquo;{lastMessage}&rdquo;
-                        </div>
-                    ) : undefined
-                }
+                metadata={<SacHandoffSummary data={data} />}
                 footerCta={footerCtaFor(variant, isClosed, onResolve)}
             />
         );
@@ -432,3 +669,5 @@ export default function ConversationCard({
         />
     );
 }
+
+

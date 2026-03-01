@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isChatOnlyMode } from "@/lib/chat-mode";
-import { listOutboxEntries } from "@/lib/chat-outbox";
+import { getTranscriptByConversationId, listOutboxEntries } from "@/lib/chat-outbox";
+import { inferSlotsFromMessages, type RawMessage } from "@/components/admin/parseTimeline";
 
 
 export const dynamic = "force-dynamic";
@@ -32,13 +33,18 @@ export async function GET(request: NextRequest) {
                 .map((entry) => {
                     const state = String(entry.state || "").toLowerCase();
                     const status = entry.status === "PENDING_HUMAN" || entry.status === "HUMAN" ? "PENDING_HUMAN" : "open";
-                    const conversationType = (state.includes("support") || status === "PENDING_HUMAN") ? "sac" : "sales";
+                    // Keep sales/sac origin even when status escalates to PENDING_HUMAN.
+                    // Ex.: handoff_sales must stay sales, handoff_sac/support_sac stays sac.
+                    const isSacState = state.includes("sac") || state.includes("support");
+                    const conversationType = isSacState ? "sac" : "sales";
+                    const transcript = getTranscriptByConversationId(entry.conversationId) as RawMessage[];
+                    const inferredSlots = transcript.length > 0 ? inferSlotsFromMessages(transcript) : {};
                     return {
                         id: entry.conversationId,
                         status,
                         conversationType,
                         frustrationLevel: status === "PENDING_HUMAN" ? 2 : 0,
-                        slots: {},
+                        slots: inferredSlots,
                         customerPhone: entry.phone,
                         customerName: null,
                         lastMessage: entry.content || "",

@@ -1,4 +1,4 @@
-import type { Slots } from '../lib/state-manager';
+﻿import type { Slots } from '../lib/state-manager';
 import type { HandoffReason } from './humanLoopEngine';
 
 /**
@@ -6,21 +6,21 @@ import type { HandoffReason } from './humanLoopEngine';
  *
  * Formato com reason tag:
  * - RESERVA_CONFIRMADA: cliente quer reservar/comprar agora
- * - SEM_ESTOQUE_CONVERTER: estoque indisponível mas cliente quer converter
+ * - SEM_ESTOQUE_CONVERTER: estoque indisponÃ­vel mas cliente quer converter
  *
  * Exemplos:
  *
- * "🟢 CLIENTE PARA ATENDER (RESERVA)
+ * "ðŸŸ¢ CLIENTE PARA ATENDER (RESERVA)
  * Produto: *{product.name}*
  * Tamanho: {size}
- * Ação: finalizar RESERVA e fechar venda."
+ * AÃ§Ã£o: finalizar RESERVA e fechar venda."
  *
  * ou
  *
- * "🔴 CLIENTE PARA ATENDER (SEM ESTOQUE)
+ * "ðŸ”´ CLIENTE PARA ATENDER (SEM ESTOQUE)
  * Produto: *{product.name}*
  * Tamanho: {size}
- * Ação: oferecer SIMILAR ou ENCOMENDA e fechar venda."
+ * AÃ§Ã£o: oferecer SIMILAR ou ENCOMENDA e fechar venda."
  */
 export function buildSaleAlertMessage(
     slots: Slots,
@@ -29,10 +29,11 @@ export function buildSaleAlertMessage(
 ): string {
     const lines: string[] = [];
 
-    // Define emoji e título baseado na reason
+    // Define emoji e tÃ­tulo baseado na reason
     const isReserva = reason === 'RESERVA_CONFIRMADA';
-    const emoji = isReserva ? '🟢' : '🔴';
-    const title = isReserva ? 'RESERVA' : 'SEM ESTOQUE';
+    const isDadosCompletos = reason === 'DADOS_VENDA_COLETADOS';
+    const emoji = isReserva ? '🟢' : isDadosCompletos ? '🟡' : '🔴';
+    const title = isReserva ? 'RESERVA' : isDadosCompletos ? 'DADOS COLETADOS' : 'SEM ESTOQUE';
 
     lines.push(`${emoji} CLIENTE PARA ATENDER (${title})`);
     lines.push('');
@@ -50,7 +51,7 @@ export function buildSaleAlertMessage(
         lines.push(`Tamanho: ${slots.size}`);
     }
 
-    // Gênero (usado como proxy para cor/estilo)
+    // GÃªnero (usado como proxy para cor/estilo)
     if (slots.genero) {
         lines.push(`Estilo: ${slots.genero}`);
     }
@@ -60,7 +61,7 @@ export function buildSaleAlertMessage(
         lines.push(`Uso: ${slots.usage}`);
     }
 
-    // Phone do cliente (últimos dígitos para identificação)
+    // Phone do cliente (Ãºltimos dÃ­gitos para identificaÃ§Ã£o)
     if (customerPhone) {
         const lastDigits = customerPhone.slice(-4);
         lines.push(`Cliente: ...${lastDigits}`);
@@ -68,9 +69,11 @@ export function buildSaleAlertMessage(
 
     lines.push('');
 
-    // Ação baseada na reason
+    // AÃ§Ã£o baseada na reason
     if (isReserva) {
         lines.push('Ação: finalizar RESERVA e fechar venda.');
+    } else if (isDadosCompletos) {
+        lines.push('Ação: atender cliente com prioridade e fechar venda.');
     } else {
         lines.push('Ação: oferecer SIMILAR ou ENCOMENDA e fechar venda.');
     }
@@ -79,12 +82,12 @@ export function buildSaleAlertMessage(
 }
 
 /**
- * buildHandoffMessage: mensagem curta para o cliente quando há transferência
+ * buildHandoffMessage: mensagem curta para o cliente quando hÃ¡ transferÃªncia
  *
- * IMPORTANTE: Sem explicação de processo, apenas redirecionamento.
+ * IMPORTANTE: Sem explicaÃ§Ã£o de processo, apenas redirecionamento.
  */
 export function buildHandoffMessage(): string {
-    return 'Vou te direcionar para um vendedor da loja te atender por aqui. ✅';
+    return 'Vou te direcionar para um vendedor da loja te atender por aqui.';
 }
 
 /**
@@ -92,7 +95,7 @@ export function buildHandoffMessage(): string {
  *
  * Formato curto e estruturado:
  *
- * "🔴 SAC PARA ATENDER
+ * "ðŸ”´ SAC PARA ATENDER
  *
  * Cliente: *{name}*
  * Pedido: #{orderId} (omit if missing)
@@ -100,7 +103,7 @@ export function buildHandoffMessage(): string {
  *
  * Problema: *{problem}*
  *
- * Ação: abrir chamado e tratar com o cliente no WhatsApp."
+ * AÃ§Ã£o: abrir chamado e tratar com o cliente no WhatsApp."
  */
 export function buildSACAlertMessage(
     slots: Slots,
@@ -111,10 +114,10 @@ export function buildSACAlertMessage(
 ): string {
     const lines: string[] = [];
 
-    lines.push('🔴 SAC PARA ATENDER');
+    lines.push('ðŸ”´ SAC PARA ATENDER');
     lines.push('');
 
-    // Cliente (nome ou últimos dígitos do telefone)
+    // Cliente (nome ou Ãºltimos dÃ­gitos do telefone)
     if (customerName && customerName.trim().length > 2) {
         lines.push(`Cliente: *${customerName}*`);
     } else if (customerPhone) {
@@ -140,7 +143,8 @@ export function buildSACAlertMessage(
     }
 
     lines.push('');
-    lines.push('Ação: abrir chamado e tratar com o cliente no WhatsApp.');
+    lines.push('AÃ§Ã£o: abrir chamado e tratar com o cliente no WhatsApp.');
 
     return lines.join('\n');
 }
+

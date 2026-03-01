@@ -44,6 +44,7 @@ export interface Slots {
     marca?: string;     // ex: "nike" | "new_balance"
     categoria?: string; // ex: "tenis" | "chuteira" | "sandalia" | "mochila" | "vestuario"
     genero?: string;    // ex: "masculino" | "feminino" | "unissex" | "infantil"
+    timeFutebol?: string; // ex: "Flamengo" | "Corinthians"
     // SAC context
     canalVenda?: string; // "loja_fisica" | "site_app" - para diferenciar requisitos de dados
 }

@@ -5,7 +5,6 @@ import VendasTab from "@/app/admin/tabs/VendasTab";
 import EstoqueTab from "@/app/admin/tabs/EstoqueTab";
 import PerdidosTab from "@/app/admin/tabs/PerdidosTab";
 import LangGraphAuditTab from "@/app/admin/tabs/LangGraphAuditTab";
-
 export default function AdminPage() {
     const { activeTab } = useAdminTab();
 

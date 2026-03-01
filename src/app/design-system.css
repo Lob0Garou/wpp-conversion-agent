@@ -60,6 +60,8 @@
   --color-stock-bg: rgba(217, 119, 6, 0.08);
 
   /* ── Light Theme Surfaces ───────────────────────────────────── */
+  --bg-deep: #F1F5F9;
+  /* Page / tab background (darkest layer)   */
   --bg-base: #F8FAFC;
   /* Fundo global */
   --bg-surface: #FFFFFF;
@@ -83,6 +85,7 @@
   --text-muted: #9CA3AF;
   --text-disabled: #D1D5DB;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
   /* Type scale */
   --text-xs: 0.6875rem;
@@ -141,29 +144,46 @@
 
 .dark {
 
-  /* ── Dark Surfaces (Figma: bg-main / bg-card) ───────────────── */
-  --bg-base: #0f1117;
-  /* Deep dark — page background         */
-  --bg-surface: #1a1d23;
-  /* Cards, panels, columns              */
-  --bg-elevated: #15171c;
-  /* Hover states, inputs, slightly diff */
-  --bg-overlay: #2e3440;
-  /* Dividers, separators, overlays      */
-  --bg-input: #0f1117;
-  /* Input backgrounds                   */
+  /* ── Dark Surfaces (aligned with Tailwind zinc-*) ────────────── */
+  --bg-deep: #09090b;
+  /* zinc-950 — page & header bg                */
+  --bg-base: #09090b;
+  /* zinc-950 — unified with --bg-deep          */
+  --bg-surface: #18181b;
+  /* zinc-900 — cards, panels, columns          */
+  --bg-elevated: #27272a;
+  /* zinc-800 — hover states, inputs            */
+  --bg-overlay: #27272a;
+  /* zinc-800 — dividers, separators, overlays  */
+  --bg-input: #09090b;
+  /* zinc-950 — input backgrounds               */
 
-  /* ── Borders (dark) ─────────────────────────────────────────── */
-  --border-subtle: #1f2430;
-  --border-default: #2e3440;
-  --border-strong: #3d4a5c;
+  /* ── Borders (dark — aligned with zinc-*) ────────────────────── */
+  --border-subtle: #27272a;
+  /* zinc-800 */
+  --border-default: #3f3f46;
+  /* zinc-700 */
+  --border-strong: #52525b;
+  /* zinc-600 */
   --border-focus: #E3000F;
 
-  /* ── Typography (dark) ──────────────────────────────────────── */
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-disabled: #475569;
+  /* ── Typography (dark — aligned with zinc-*) ─────────────────── */
+  --text-primary: #fafafa;
+  /* zinc-50  */
+  --text-secondary: #a1a1aa;
+  /* zinc-400 */
+  --text-muted: #71717a;
+  /* zinc-500 */
+  --text-disabled: #52525b;
+  /* zinc-600 */
+
+  /* ── Metric Accent Colors ─────────────────────────────────── */
+  --color-metric-amber: #fbbf24;
+  /* amber-400 — leads quentes */
+  --color-metric-emerald: #34d399;
+  /* emerald-400 — trends positivos */
+  --color-metric-blue: #60a5fa;
+  /* blue-400 — SLA timer */
 
   /* ── Semantic Role Colors (dark — lighter/brighter) ─────────── */
 
@@ -203,7 +223,8 @@
   --color-stock-bg: rgba(245, 158, 11, 0.12);
 
   /* ── Backgrounds for Rings/Dots (dark) ──────────────────────── */
-  --bg-ring: #1a1d23;
+  --bg-ring: #18181b;
+  /* zinc-900 */
 
   /* ── Shadows (more pronounced on dark bg) ───────────────────── */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.40), 0 1px 2px rgba(0, 0, 0, 0.30);
@@ -500,7 +521,7 @@
 /* Client bubble - white bg, left-aligned */
 .bubble-client {
   background: var(--bg-surface);
-  border: 1px solid #E0E0E0;
+  border: 1px solid var(--border-default);
   border-radius: 4px 16px 16px 16px;
   align-self: flex-start;
   color: var(--text-primary);
@@ -637,7 +658,7 @@
 /* ── Sidebar Section Styles ───────────────────────────────────── */
 .sidebar-section {
   padding: var(--space-4);
-  border-bottom: 1px solid #E0E0E0;
+  border-bottom: 1px solid var(--border-default);
 }
 
 .sidebar-section:last-child {

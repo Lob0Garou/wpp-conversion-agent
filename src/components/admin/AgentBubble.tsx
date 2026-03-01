@@ -40,28 +40,28 @@ export default function AgentBubble({ message, type = "ai_sales" }: AgentBubbleP
     const time = fmtTime(message.timestamp);
     const style = BUBBLE_STYLES[type];
     return (
-        <div className="flex flex-col items-end mb-6 group animate-in fade-in slide-in-from-right-4 duration-300">
-            <div className="flex gap-2 max-w-[85%] items-start">
+        <div className="flex flex-col items-end mb-4 group animate-in fade-in slide-in-from-right-4 duration-300">
+            <div className="flex gap-3 max-w-[88%] md:max-w-[76%] items-end">
+                {/* Agent Avatar Icon */}
+                <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-sm"
+                    style={{ background: style.avatarBg }}>
+                    {style.AvatarInitial}
+                </div>
+
                 {/* Bubble Container */}
                 <div className="flex flex-col items-end">
                     <div
-                        className="relative p-3.5 text-[14px] leading-relaxed shadow-md border rounded-[20px] rounded-tr-md"
+                        className="px-4 py-2.5 text-sm leading-relaxed border rounded-2xl rounded-br-sm max-w-full"
                         style={{ ...style.bubbleStyle, color: "var(--text-primary)" }}
                     >
-                        <p className="whitespace-pre-wrap">{message.content}</p>
+                        <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                            {message.content}
+                        </p>
                     </div>
                     {/* Time Label (below bubble) */}
-                    <div className="flex items-center gap-1 mt-1 opacity-50">
-                        <span className="text-[10px] font-bold tracking-widest text-[var(--text-muted)]">
-                            {style.labelText} • {time}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Agent Avatar Icon */}
-                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-md text-white font-black text-sm mt-1"
-                    style={{ background: style.avatarBg }}>
-                    {style.AvatarInitial}
+                    <span className="text-[9px] font-bold tracking-widest text-[var(--text-muted)] mt-1.5 mr-2 opacity-60">
+                        {style.labelText} • {time}
+                    </span>
                 </div>
             </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -52,6 +52,7 @@ export interface CardShellProps {
     // ── Extras ──────────────────────────────────────────
     extraClassName?: string;          // e.g. "animate-pulse-red" for CRITICAL
     innerRef?: React.Ref<HTMLDivElement>;
+    surfaceStyle?: CSSProperties;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -81,9 +82,9 @@ const VARIANT_STYLES: Record<CardVariant, {
     },
     SAC: {
         borderClass: "border border-[var(--border-subtle)]",
-        labelColor: "text-[var(--color-brand)]",
-        avatarBg: "bg-[rgba(227,0,15,0.2)]",
-        avatarText: "text-[var(--color-brand)]",
+        labelColor: "text-[var(--color-warning)]",
+        avatarBg: "bg-[rgba(217,119,6,0.2)]",
+        avatarText: "text-[var(--color-warning)]",
         shadowClass: "shadow-lg",
     },
     GERAL: {
@@ -126,6 +127,7 @@ export default function CardShell({
     footerCta,
     extraClassName,
     innerRef,
+    surfaceStyle,
 }: CardShellProps) {
     const styles = VARIANT_STYLES[variant];
 
@@ -138,20 +140,21 @@ export default function CardShell({
         styles.shadowClass,
         // Interaction
         "cursor-pointer transition-all duration-200",
+        "hover:shadow-xl hover:scale-[1.015] hover:z-10",
         // State
-        isActive ? "scale-[1.01] ring-1 ring-white/15 z-20" : "",
+        isActive ? "scale-[1.02] ring-1 ring-white/15 z-20" : "",
         isDimmed
-            ? "opacity-40 grayscale-[0.5] hover:opacity-80 hover:grayscale-0"
+            ? "opacity-40 grayscale-[0.5] hover:opacity-80 hover:grayscale-0 hover:scale-100"
             : "hover:border-[var(--border-strong)]",
         // Variant extras (e.g. animate-pulse-red)
         extraClassName ?? "",
     ].filter(Boolean).join(" ");
 
     return (
-        <div ref={innerRef} onClick={onClick} className={wrapperClasses}>
+        <div ref={innerRef} onClick={onClick} className={wrapperClasses} style={surfaceStyle}>
 
             {/* ── HEADER ──────────────────────────────────────── */}
-            <div className="flex justify-between items-start mb-3">
+            <div className="flex justify-between items-start mb-2">
                 <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
                         <p className={`text-[var(--text-xs)] font-bold uppercase tracking-widest ${styles.labelColor}`}>
@@ -174,7 +177,7 @@ export default function CardShell({
             </div>
 
             {/* ── BODY ────────────────────────────────────────── */}
-            <div className="flex flex-col gap-2 mb-3 flex-1 overflow-hidden">
+            <div className="flex flex-col gap-1 mb-2 flex-1 overflow-hidden">
                 {metadata}
                 {quote && (
                     <div className="text-[var(--text-sm)] text-[var(--text-secondary)] leading-relaxed line-clamp-2">
@@ -184,7 +187,7 @@ export default function CardShell({
             </div>
 
             {/* ── FOOTER ──────────────────────────────────────── */}
-            <div className="flex items-center justify-between mt-auto pt-3 border-t border-[var(--border-subtle)]">
+            <div className="flex items-center justify-between mt-auto pt-2 border-t border-[var(--border-subtle)]">
                 <div className="flex items-center gap-2 min-w-0">
                     <div className={`w-8 h-8 rounded-full ${styles.avatarBg} flex items-center justify-center text-[var(--text-xs)] font-bold ${styles.avatarText} shrink-0`}>
                         {avatar.initials}

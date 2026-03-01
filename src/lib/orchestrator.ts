@@ -92,12 +92,12 @@ function buildGuardrailContext(context: ConversationContext, action: AgentAction
 
     // Políticas conhecidas da empresa (podem vir de config)
     const policyPatterns = [
-        'troca em até 7 dias',
-        'reembolso em até 5 dias úteis',
+        'troca em até 30 dias',
+        'atendimento em até 48h úteis',
         'frete gratis',
         'frete grátis',
-        'entrega em 5 dias úteis',
-        'retirada em loja',
+        'entrega conforme o cep',
+        'retirada em loja em até 7 dias',
         'pagamento via pix',
         'parcelamento em até 12x',
     ];
@@ -322,7 +322,7 @@ export async function orchestrate(
             storeId,
             action: actionResult,
             reason: "guardrail_rejection",
-            model: "moonshotai/kimi-k2.5",
+            model: process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
             result: "success",
         });
 
@@ -359,7 +359,7 @@ export async function orchestrate(
         storeId,
         action: actionResult,
         reason: "success" as "no_template" | "slots_missing" | "template_disabled" | "guardrail_rejection" | "success" | "error",
-        model: "moonshotai/kimi-k2.5",
+        model: process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
         result: "success",
     });
 
@@ -369,7 +369,7 @@ export async function orchestrate(
         storeId,
         action: actionResult,
         source: "llm",
-        llmModel: "moonshotai/kimi-k2.5",
+        llmModel: process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
         processingTimeMs: Date.now() - startTime,
         result: "success",
     });
@@ -380,7 +380,7 @@ export async function orchestrate(
         action: actionResult,
         text: llmResult.reply_text,
         metadata: {
-            llmModel: 'moonshotai/kimi-k2.5', // Configurável via env
+            llmModel: process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
             tokensUsed: 0, // OpenRouter não retorna tokens por padrão
         },
     };
@@ -400,7 +400,15 @@ function buildSystemPrompt(action: AgentAction, context: ConversationContext): s
         }));
 
         // F002 SLOT AWARE: Extrai entidades do histórico antes de chamar response-controller
-        const intent = context.intent || context.lastIntent || 'SALES';
+        let intent = context.intent || context.lastIntent || 'SALES';
+
+        // Se a ação é pedir dados, mas o intent é genérico (SUPPORT/CLARIFICATION),
+        // forçamos um intent de SAC que exige dados (SAC_ATRASO) para que o getMissingData
+        // retorne os campos faltantes corretamente e ative a pergunta de triagem.
+        if (action === 'REQUEST_ORDER_DATA' && (intent === 'SUPPORT' || intent === 'CLARIFICATION')) {
+            intent = 'SAC_ATRASO';
+        }
+
         const knownEntities = extractKnownEntitiesFromHistory(history);
         const missingFields = getMissingData(intent, knownEntities);
 
@@ -412,7 +420,7 @@ function buildSystemPrompt(action: AgentAction, context: ConversationContext): s
         // Se há campos faltantes e a ação é REQUEST_ORDER_DATA, pergunta apenas o primeiro
         if (missingFields.length > 0 && action === 'REQUEST_ORDER_DATA') {
             const firstMissing = missingFields[0];
-            const question = getFirstMissingQuestion(firstMissing);
+            const question = getFirstMissingQuestion(firstMissing, knownEntities);
 
             // Retorna um prompt específico para perguntar apenas o primeiro campo
             return `Você está no fluxo de SAC.
@@ -619,7 +627,7 @@ export async function orchestrateWithEngine(
         action: actionResult,
         text: llmResult.reply_text,
         metadata: {
-            llmModel: 'moonshotai/kimi-k2.5',
+            llmModel: process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
             tokensUsed: 0,
         },
     };

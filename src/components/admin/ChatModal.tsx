@@ -1,5 +1,6 @@
 "use client";
 
+import { X, Search, CheckCircle2, ShoppingBag } from "lucide-react";
 import ChatTimeline from "./ChatTimeline";
 import type { RawMessage, InferredSlots } from "./parseTimeline";
 
@@ -19,49 +20,58 @@ interface ChatModalProps {
 }
 
 export default function ChatModal({
-    conversationId, customerName, customerPhone, status, messages, intent, frustrationLevel, slots, ticketNumber, onReplySent, onClose, onResolve
+    conversationId,
+    customerName,
+    customerPhone,
+    status,
+    messages,
+    intent,
+    frustrationLevel,
+    slots,
+    ticketNumber,
+    onReplySent,
+    onClose,
+    onResolve,
 }: ChatModalProps) {
-
     const displayName = customerName || `Cliente ...${customerPhone.slice(-4)}`;
-    const initials = displayName.split(" ").slice(0, 2).map(p => p[0]).join("").toUpperCase();
+    const initials = displayName
+        .split(" ")
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase();
+
     const productTitle = slots?.marca ? `${slots.marca} ${slots.categoria || ""}`.trim() : null;
 
     return (
-        /* ── Backdrop ─────────────────────────────────────────────────── */
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/40 backdrop-blur-xl p-0 md:p-12 overflow-hidden">
-
-            {/* ── Modal shell — matches Stitch: white bg + rounded-[2.5rem] ── */}
-            <div className="bg-white dark:bg-slate-900 w-full max-w-[1400px] h-full md:h-[90vh] rounded-none md:rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
-
-                {/* Close button — top-left, absolute */}
-                <button
-                    onClick={onClose}
-                    className="absolute top-6 left-6 z-50 p-2 text-slate-400 hover:text-[var(--color-brand)] transition-colors"
-                >
-                    <span className="material-symbols-rounded text-3xl">close</span>
-                </button>
-
-                {/* ── LEFT: Chat panel (65%) ─────────────────────────────── */}
-                <div className="flex-[0.65] flex flex-col h-full bg-white dark:bg-slate-900 relative">
-
-                    {/* Chat Header */}
-                    <div className="h-24 px-12 flex items-center border-b border-slate-50 dark:border-slate-800/50 shrink-0">
-                        <div className="flex items-center gap-4 ml-12">
-                            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 text-base">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 md:p-6 overflow-hidden">
+            <div className="bg-[var(--bg-deep)] w-full max-w-[1320px] h-[95vh] md:h-[92vh] rounded-xl md:rounded-2xl border border-[var(--border-subtle)] shadow-2xl overflow-hidden flex flex-col md:flex-row">
+                <div className="flex-1 flex flex-col h-full bg-[var(--bg-deep)] min-w-0">
+                    <div className="h-16 px-4 md:px-6 flex items-center justify-between border-b border-[var(--border-subtle)] bg-[var(--bg-surface)]/55 shrink-0">
+                        <div className="flex items-center gap-3 min-w-0 pr-3">
+                            <div className="w-10 h-10 rounded-full bg-[var(--bg-overlay)] flex items-center justify-center font-bold text-[var(--text-secondary)] text-sm shrink-0">
                                 {initials}
                             </div>
-                            <div>
-                                <h2 className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">
+                            <div className="min-w-0">
+                                <h2 className="font-semibold text-[var(--text-primary)] leading-tight truncate">
                                     {displayName}
                                 </h2>
-                                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
-                                    {status === "PENDING_HUMAN" ? "Aguardando Atendimento" : "Cliente"} • +{customerPhone}
+                                <p className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-[var(--text-muted)] truncate">
+                                    {status === "PENDING_HUMAN" ? "Aguardando Atendimento" : "Cliente"} - +{customerPhone}
                                 </p>
                             </div>
                         </div>
+
+                        <button
+                            onClick={onClose}
+                            className="h-9 w-9 rounded-lg border border-[var(--border-default)] flex items-center justify-center transition-all hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]"
+                            style={{ color: "var(--text-muted)" }}
+                            aria-label="Fechar chat"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
                     </div>
 
-                    {/* Chat Timeline (scrollable) */}
                     <div className="flex-1 relative overflow-hidden">
                         <ChatTimeline
                             conversationId={conversationId}
@@ -74,104 +84,90 @@ export default function ChatModal({
                             slots={slots}
                             ticketNumber={ticketNumber}
                             onReplySent={onReplySent}
+                            onSaleClosed={onReplySent}
                         />
                     </div>
                 </div>
 
-                {/* ── RIGHT: Product focus panel (35%) ──────────────────── */}
-                <div className="flex-[0.35] bg-slate-50 dark:bg-slate-800/30 border-l border-slate-100 dark:border-slate-800/50 flex flex-col p-8">
-                    <div className="flex-1 flex flex-col items-center justify-center">
-
-                        {/* ── Product visual ─────────────────────────────── */}
-                        <div className="w-full aspect-[4/3] bg-white dark:bg-slate-900 rounded-3xl shadow-sm overflow-hidden flex flex-col items-center justify-center p-6 mb-6 border border-slate-100 dark:border-slate-800/50">
+                <aside className="flex w-full md:w-80 shrink-0 flex-col border-t md:border-t-0 md:border-l border-[var(--border-subtle)] bg-[var(--bg-surface)]/30">
+                    <div className="flex-1 p-6">
+                        <div className="flex h-full min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-[var(--border-subtle)] bg-[var(--bg-overlay)]/20 text-[var(--text-muted)] text-center px-4">
                             {productTitle ? (
                                 <>
-                                    <span className="material-symbols-rounded text-6xl text-slate-300 dark:text-slate-600 mb-3">
-                                        shopping_bag
-                                    </span>
-                                    <span className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-slate-400">
+                                    <ShoppingBag className="w-12 h-12 mb-4 opacity-70" />
+                                    <span className="text-[var(--text-xs)] font-bold uppercase tracking-widest">
                                         Produto Identificado
                                     </span>
                                 </>
                             ) : (
                                 <>
-                                    <span className="material-symbols-rounded text-5xl text-slate-200 dark:text-slate-700 mb-3">
-                                        help_center
-                                    </span>
-                                    <span className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600">
+                                    <Search className="w-12 h-12 mb-4 opacity-50" />
+                                    <span className="text-[var(--text-xs)] font-bold uppercase tracking-widest">
                                         Aguardando Dados
                                     </span>
                                 </>
                             )}
                         </div>
+                    </div>
 
-                        {/* ── Product details ────────────────────────────── */}
-                        <div className="text-center space-y-3 mb-8 w-full">
-                            {/* Label tier */}
-                            <p className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-slate-400 mb-1">
-                                {productTitle ? "Produto" : "Informações"}
+                    <div className="border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]/55 p-6">
+                        <div className="mb-6 text-center">
+                            <p className="text-[var(--text-xs)] font-bold uppercase tracking-widest text-[var(--text-muted)] mb-2">
+                                {productTitle ? "Produto" : "Informacoes"}
                             </p>
-
-                            {/* Title tier */}
-                            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
-                                {productTitle || "Produto não identificado"}
-                            </h1>
-
-                            {/* Detail rows — only when we have product data */}
-                            {productTitle && (
-                                <div className="space-y-2 pt-2">
-                                    {slots?.size && (
-                                        <div className="flex items-center justify-center gap-2 text-slate-400">
-                                            <span className="material-symbols-rounded text-base">straighten</span>
-                                            <span className="text-[var(--text-sm)] font-bold uppercase tracking-widest">
-                                                Tam. {slots.size}
-                                            </span>
-                                        </div>
-                                    )}
-                                    <div className="flex items-center justify-center gap-2 text-slate-400">
-                                        <span className="material-symbols-rounded text-base">location_on</span>
-                                        <span className="text-[var(--text-sm)] font-bold uppercase tracking-widest">
-                                            Reserva na Loja
-                                        </span>
-                                    </div>
+                            <h3 className="text-lg font-bold text-[var(--text-primary)] tracking-tight leading-tight">
+                                {productTitle || "Produto nao identificado"}
+                            </h3>
+                            {slots?.size && productTitle && (
+                                <div className="flex items-center justify-center gap-1.5 mt-2 text-[var(--text-muted)]">
+                                    <span className="text-[var(--text-xs)] font-bold uppercase tracking-widest">Tam. {slots.size}</span>
                                 </div>
                             )}
-
-                            {/* Empty state helper — when no product data */}
                             {!productTitle && (
-                                <p className="text-[var(--text-sm)] text-slate-400 leading-relaxed mt-2">
-                                    O produto será identificado conforme a conversa avança.
+                                <p className="text-[var(--text-sm)] text-[var(--text-muted)] leading-relaxed mt-2">
+                                    O produto sera identificado conforme a conversa avanca.
                                 </p>
                             )}
                         </div>
-                    </div>
 
-                    {/* ── CTA Buttons ────────────────────────────────────── */}
-                    <div className="space-y-3 w-full">
-                        {/* Primary CTA — only if product exists */}
-                        {productTitle && (
-                            <button className="w-full bg-[var(--color-brand)] hover:brightness-110 text-white font-black py-4 rounded-2xl shadow-2xl shadow-red-500/30 transition-all flex items-center justify-center gap-3 text-sm uppercase tracking-widest active:scale-95">
-                                <span className="material-symbols-rounded text-xl">task_alt</span>
-                                Confirmar Reserva
+                        <div className="flex flex-col gap-3 w-full">
+                            {productTitle && (
+                                <button
+                                    className="flex w-full items-center justify-center gap-2 rounded-xl text-white font-bold py-3 text-[var(--text-xs)] uppercase tracking-widest transition-all active:scale-95 hover:brightness-110 shadow-lg"
+                                    style={{
+                                        background: "var(--color-brand)",
+                                        boxShadow: "0 12px 22px rgba(227, 0, 15, 0.30)",
+                                    }}
+                                >
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    Confirmar Reserva
+                                </button>
+                            )}
+
+                            <button
+                                onClick={() => {
+                                    onResolve?.();
+                                    onClose();
+                                }}
+                                className="flex w-full items-center justify-center gap-2 rounded-xl text-white font-bold py-3 text-[var(--text-xs)] uppercase tracking-widest transition-all active:scale-95 hover:brightness-110 shadow-lg"
+                                style={{
+                                    background: "var(--color-success)",
+                                    boxShadow: "0 12px 22px rgba(22, 163, 74, 0.30)",
+                                }}
+                            >
+                                <CheckCircle2 className="w-4 h-4" />
+                                Resolvido
                             </button>
-                        )}
 
-                        {/* Success CTA */}
-                        <button
-                            onClick={() => { onResolve?.(); onClose(); }}
-                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 text-sm uppercase tracking-widest active:scale-95"
-                        >
-                            <span className="material-symbols-rounded text-xl">check_circle</span>
-                            Resolvido
-                        </button>
-
-                        {/* Ghost CTA */}
-                        <button className="w-full py-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold text-[var(--text-xs)] uppercase tracking-[0.2em] transition-colors">
-                            Consultar Outra Unidade
-                        </button>
+                            <button
+                                className="w-full py-2.5 rounded-xl border text-[var(--text-xs)] font-bold uppercase tracking-[0.2em] transition-colors hover:bg-[var(--bg-elevated)]"
+                                style={{ borderColor: "var(--border-default)", color: "var(--text-secondary)" }}
+                            >
+                                Consultar Outra Unidade
+                            </button>
+                        </div>
                     </div>
-                </div>
-
+                </aside>
             </div>
         </div>
     );

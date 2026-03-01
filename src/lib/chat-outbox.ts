@@ -1,13 +1,9 @@
 /**
- * Chat Outbox - Armazenamento in-memory da última resposta por phone
+ * Chat Outbox - in-memory storage for CHAT_ONLY mode.
  *
- * Usado pelo modo CHAT_ONLY para resposta rápida no terminal:
- * - Armazena última resposta outbound por phone
- * - Rápido: O(1) para lookup
- * - Logs com tag [OUTBOX]
- *
- * Este módulo é importado pelo webhook para salvar respostas
- * e pelo last-reply route para consultas rápidas.
+ * Keeps:
+ * - latest outbound reply per phone (for list/quick checks)
+ * - transcript per conversation (for full chat timeline in admin)
  */
 
 import { isChatOnlyMode } from "./chat-mode";
@@ -22,24 +18,69 @@ export interface OutboxEntry {
     state?: string;
 }
 
-// In-memory store: phone -> OutboxEntry
+export interface ChatTranscriptMessage {
+    id: string;
+    direction: "inbound" | "outbound";
+    content: string;
+    timestamp: string;
+    metadata?: Record<string, unknown>;
+}
+
+// In-memory store: phone -> latest outbox entry
 const outbox = new Map<string, OutboxEntry>();
+// In-memory store: conversationId -> full transcript
+const transcripts = new Map<string, ChatTranscriptMessage[]>();
 
-const MAX_OUTBOX_SIZE = 10000; // Limite para evitar vazamento de memória
+const MAX_OUTBOX_SIZE = 10000;
+const MAX_TRANSCRIPT_MESSAGES = 120;
 
-/**
- * Salva uma resposta na outbox
- * @param phone - Número do cliente
- * @param entry - Dados da resposta
- */
-export function saveToOutbox(phone: string, entry: Omit<OutboxEntry, "phone">): void {
-    if (!isChatOnlyMode()) {
-        return; // Só salva em modo CHAT_ONLY
+function normalizeTimestamp(input: number | string): string {
+    if (typeof input === "number") {
+        return new Date(input).toISOString();
+    }
+    const parsed = new Date(input);
+    if (!Number.isNaN(parsed.getTime())) {
+        return parsed.toISOString();
+    }
+    return new Date().toISOString();
+}
+
+function appendTranscriptMessage(params: {
+    conversationId: string;
+    id: string;
+    direction: "inbound" | "outbound";
+    content: string;
+    timestamp: number | string;
+    metadata?: Record<string, unknown>;
+}): void {
+    const { conversationId, id, direction, content, timestamp, metadata } = params;
+    const list = transcripts.get(conversationId) ?? [];
+
+    if (list.some((item) => item.id === id)) {
+        return;
     }
 
-    // Limita tamanho da outbox
+    list.push({
+        id,
+        direction,
+        content,
+        timestamp: normalizeTimestamp(timestamp),
+        metadata,
+    });
+
+    if (list.length > MAX_TRANSCRIPT_MESSAGES) {
+        list.splice(0, list.length - MAX_TRANSCRIPT_MESSAGES);
+    }
+
+    transcripts.set(conversationId, list);
+}
+
+export function saveToOutbox(phone: string, entry: Omit<OutboxEntry, "phone">): void {
+    if (!isChatOnlyMode()) {
+        return;
+    }
+
     if (outbox.size >= MAX_OUTBOX_SIZE) {
-        // Remove entrada mais antiga
         const firstKey = outbox.keys().next().value;
         if (firstKey) {
             outbox.delete(firstKey);
@@ -53,14 +94,35 @@ export function saveToOutbox(phone: string, entry: Omit<OutboxEntry, "phone">): 
 
     outbox.set(phone, fullEntry);
 
+    appendTranscriptMessage({
+        conversationId: entry.conversationId,
+        id: entry.id,
+        direction: "outbound",
+        content: entry.content,
+        timestamp: entry.timestamp,
+        metadata: {
+            source: "chat_outbox",
+            state: entry.state ?? "unknown",
+        },
+    });
+
     console.log(`[OUTBOX] save phone=${phone} conv=${entry.conversationId} id=${entry.id}`);
 }
 
-/**
- * Recupera a última resposta para um phone
- * @param phone - Número do cliente
- * @returns Entry ou null se não existir
- */
+export function saveTranscriptMessage(params: {
+    conversationId: string;
+    id: string;
+    direction: "inbound" | "outbound";
+    content: string;
+    timestamp: number | string;
+    metadata?: Record<string, unknown>;
+}): void {
+    if (!isChatOnlyMode()) {
+        return;
+    }
+    appendTranscriptMessage(params);
+}
+
 export function getLastReply(phone: string): OutboxEntry | null {
     if (!isChatOnlyMode()) {
         return null;
@@ -77,9 +139,6 @@ export function getLastReply(phone: string): OutboxEntry | null {
     return entry || null;
 }
 
-/**
- * Verifica se existe entrada para um phone
- */
 export function hasOutboxEntry(phone: string): boolean {
     if (!isChatOnlyMode()) {
         return false;
@@ -87,38 +146,31 @@ export function hasOutboxEntry(phone: string): boolean {
     return outbox.has(phone);
 }
 
-/**
- * Remove entrada da outbox (para testing/debug)
- */
 export function clearOutboxEntry(phone: string): void {
     if (!isChatOnlyMode()) {
         return;
     }
+    const existing = outbox.get(phone);
     outbox.delete(phone);
+    if (existing?.conversationId) {
+        transcripts.delete(existing.conversationId);
+    }
     console.log(`[OUTBOX] clear phone=${phone}`);
 }
 
-/**
- * Limpa toda a outbox
- */
 export function clearAllOutbox(): void {
     if (!isChatOnlyMode()) {
         return;
     }
     outbox.clear();
+    transcripts.clear();
     console.log("[OUTBOX] clear all");
 }
 
-/**
- * Retorna tamanho atual da outbox (para debugging)
- */
 export function getOutboxSize(): number {
     return outbox.size;
 }
 
-/**
- * Lista entradas atuais da outbox (mais recentes primeiro)
- */
 export function listOutboxEntries(): OutboxEntry[] {
     if (!isChatOnlyMode()) {
         return [];
@@ -126,9 +178,6 @@ export function listOutboxEntries(): OutboxEntry[] {
     return Array.from(outbox.values()).sort((a, b) => b.timestamp - a.timestamp);
 }
 
-/**
- * Busca entrada por conversationId
- */
 export function getOutboxEntryByConversationId(conversationId: string): OutboxEntry | null {
     if (!isChatOnlyMode()) {
         return null;
@@ -139,4 +188,14 @@ export function getOutboxEntryByConversationId(conversationId: string): OutboxEn
         }
     }
     return null;
+}
+
+export function getTranscriptByConversationId(conversationId: string): ChatTranscriptMessage[] {
+    if (!isChatOnlyMode()) {
+        return [];
+    }
+    const list = transcripts.get(conversationId) ?? [];
+    return [...list].sort(
+        (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
 }

@@ -70,6 +70,8 @@ const USO_MAP: Record<string, string[]> = {
 export interface InferredSlots {
     marca?: string;
     size?: string;
+    color?: string;
+    cor?: string;
     categoria?: string;
     uso?: string;
     intent?: string;
@@ -80,6 +82,7 @@ export interface InferredSlots {
     statusPedido?: string;
     infoTopic?: string;
     customerName?: string;
+    email?: string;
 }
 
 export function inferSlotsFromMessages(messages: RawMessage[]): InferredSlots {

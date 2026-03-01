@@ -67,9 +67,9 @@ function LostCard({ conv, type }: LostCardProps) {
     const initials = (conv.customerName ?? "WA").slice(0, 2).toUpperCase();
     const isPending = conv.status === "PENDING_HUMAN" || conv.status === "escalated";
 
-    const accentColor = type === "sac" ? "#E31D1A" : "#f59e0b";
-    const accentBg = type === "sac" ? "bg-[#E31D1A]/8" : "bg-amber-500/8";
-    const borderColor = type === "sac" ? "border-[#E31D1A]/30" : "border-amber-500/30";
+    const accentColor = type === "sac" ? "var(--color-brand)" : "var(--color-warning)";
+    const accentBg = type === "sac" ? "bg-[var(--color-brand)]/10" : "bg-[var(--color-warning)]/10";
+    const borderColor = type === "sac" ? "border-[var(--color-brand)]/30" : "border-[var(--color-warning)]/30";
 
     return (
         <motion.div
@@ -83,13 +83,13 @@ function LostCard({ conv, type }: LostCardProps) {
             {/* Top row */}
             <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-7 h-7 rounded-full bg-[#2e3440] flex items-center justify-center text-[10px] font-bold text-[#8892a0] shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-[var(--bg-overlay)] flex items-center justify-center text-[10px] font-bold text-[var(--text-muted)] shrink-0">
                         {initials}
                     </div>
                     <div className="min-w-0">
-                        <p className="text-[12px] font-bold text-white truncate">{title}</p>
+                        <p className="text-[12px] font-bold text-[var(--text-primary)] truncate">{title}</p>
                         {isPending && (
-                            <span className="text-[9px] font-black uppercase border border-[#E31D1A]/40 text-[#E31D1A] px-1 rounded">
+                            <span className="text-[9px] font-black uppercase border border-[var(--color-brand)]/40 text-[var(--color-brand)] px-1 rounded">
                                 ESCALADO
                             </span>
                         )}
@@ -102,13 +102,13 @@ function LostCard({ conv, type }: LostCardProps) {
             </div>
 
             {/* Last message */}
-            <p className="text-[11px] text-[#8892a0] line-clamp-2 leading-relaxed">
+            <p className="text-[11px] text-[var(--text-muted)] line-clamp-2 leading-relaxed">
                 &ldquo;{conv.lastMessage || "Nenhuma mensagem"}&rdquo;
             </p>
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-1 border-t border-[#2e3440]">
-                <span className="text-[10px] text-[#8892a0] font-mono">
+            <div className="flex items-center justify-between pt-1 border-t border-[var(--border-default)]">
+                <span className="text-[10px] text-[var(--text-muted)] font-mono">
                     +{conv.customerPhone.slice(0, 2)} {conv.customerPhone.slice(2, 4)} {conv.customerPhone.slice(4, 9)}...
                 </span>
                 {(conv.frustrationLevel ?? 0) >= 2 && (
@@ -133,15 +133,15 @@ interface ColumnProps {
 function LostColumn({ type, convs }: ColumnProps) {
     const isVendas = type === "vendas";
     const Icon = isVendas ? ShoppingBag : Headphones;
-    const accentColor = isVendas ? "text-amber-400" : "text-[#E31D1A]";
-    const badgeBg = isVendas ? "bg-amber-500/15 text-amber-400 border-amber-500/30" : "bg-[#E31D1A]/15 text-[#E31D1A] border-[#E31D1A]/30";
+    const accentColor = isVendas ? "text-[var(--color-warning)]" : "text-[var(--color-brand)]";
+    const badgeBg = isVendas ? "bg-[var(--color-warning)]/15 text-[var(--color-warning)] border-[var(--color-warning)]/30" : "bg-[var(--color-brand)]/15 text-[var(--color-brand)] border-[var(--color-brand)]/30";
     const label = isVendas ? "Vendas" : "SAC";
-    const borderLine = isVendas ? "border-amber-500/20" : "border-[#E31D1A]/20";
+    const borderLine = isVendas ? "border-[var(--color-warning)]/20" : "border-[var(--color-brand)]/20";
 
     return (
         <div className={`flex-1 flex flex-col min-w-0 border-r last:border-r-0 ${borderLine}`}>
             {/* Column header */}
-            <div className="px-5 py-4 flex items-center gap-3 border-b border-[#2e3440] shrink-0">
+            <div className="px-5 py-4 flex items-center gap-3 border-b border-[var(--border-default)] shrink-0">
                 <Icon className={`w-4 h-4 ${accentColor}`} />
                 <h2 className={`text-xs font-black uppercase tracking-widest ${accentColor}`}>
                     {label}
@@ -154,7 +154,7 @@ function LostColumn({ type, convs }: ColumnProps) {
             {/* Cards */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ scrollbarWidth: "thin" }}>
                 {convs.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-48 gap-3 text-[#2e3440]">
+                    <div className="flex flex-col items-center justify-center h-48 gap-3 text-[var(--border-default)]">
                         <Icon className="w-8 h-8 opacity-40" />
                         <p className="text-[11px] font-bold uppercase tracking-wider opacity-60">
                             Nenhuma conversa perdida
@@ -216,43 +216,43 @@ export default function PerdidosTab() {
     const totalLost = expired.length;
 
     return (
-        <div className="flex flex-col h-full overflow-hidden bg-[#0f1117]">
+        <div className="flex flex-col h-full overflow-hidden bg-[var(--bg-deep)]">
 
             {/* ── Top bar ─────────────────────────────────────────────────── */}
-            <div className="px-6 py-4 flex items-center gap-4 border-b border-[#2e3440] shrink-0">
+            <div className="px-6 py-4 flex items-center gap-4 border-b border-[var(--border-default)] shrink-0">
                 <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-[#E31D1A]" />
-                    <h1 className="text-sm font-black uppercase tracking-widest text-white">
+                    <AlertTriangle className="w-4 h-4 text-[var(--color-brand)]" />
+                    <h1 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)]">
                         Conversas Perdidas
                     </h1>
                 </div>
 
                 {/* Counter pills */}
                 <div className="flex items-center gap-2">
-                    <div className="px-3 py-1.5 rounded-xl border border-[#E31D1A]/25 bg-[#E31D1A]/10 flex items-center gap-1.5">
-                        <span className="text-[9px] uppercase font-black tracking-widest text-[#E31D1A]/80">Total</span>
-                        <span className="text-base font-black text-white">{totalLost}</span>
+                    <div className="px-3 py-1.5 rounded-xl border border-[var(--color-brand)]/25 bg-[var(--color-brand)]/10 flex items-center gap-1.5">
+                        <span className="text-[9px] uppercase font-black tracking-widest text-[var(--color-brand)]/80">Total</span>
+                        <span className="text-base font-black text-[var(--text-primary)]">{totalLost}</span>
                     </div>
-                    <div className="px-3 py-1.5 rounded-xl border border-amber-500/25 bg-amber-500/10 flex items-center gap-1.5">
-                        <ShoppingBag className="w-3 h-3 text-amber-400" />
-                        <span className="text-base font-black text-white">{vendasLost.length}</span>
+                    <div className="px-3 py-1.5 rounded-xl border border-[var(--color-warning)]/25 bg-[var(--color-warning)]/10 flex items-center gap-1.5">
+                        <ShoppingBag className="w-3 h-3 text-[var(--color-warning)]" />
+                        <span className="text-base font-black text-[var(--text-primary)]">{vendasLost.length}</span>
                     </div>
-                    <div className="px-3 py-1.5 rounded-xl border border-[#E31D1A]/25 bg-[#E31D1A]/10 flex items-center gap-1.5">
-                        <Headphones className="w-3 h-3 text-[#E31D1A]" />
-                        <span className="text-base font-black text-white">{sacLost.length}</span>
+                    <div className="px-3 py-1.5 rounded-xl border border-[var(--color-brand)]/25 bg-[var(--color-brand)]/10 flex items-center gap-1.5">
+                        <Headphones className="w-3 h-3 text-[var(--color-brand)]" />
+                        <span className="text-base font-black text-[var(--text-primary)]">{sacLost.length}</span>
                     </div>
                 </div>
 
                 <div className="ml-auto flex items-center gap-2">
-                    <p className="text-[10px] text-[#8892a0] uppercase tracking-wide hidden lg:block">
+                    <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide hidden lg:block">
                         SLA &gt; 30 min sem resposta
                     </p>
                     <button
                         onClick={load}
                         disabled={loading}
-                        className="p-1.5 rounded-lg bg-[#1a1d23] border border-[#2e3440] hover:bg-[#242830] opacity-70 hover:opacity-100 transition-all"
+                        className="p-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-default)] hover:bg-[var(--bg-elevated)] opacity-70 hover:opacity-100 transition-all"
                     >
-                        <RefreshCw className={`w-3.5 h-3.5 text-[#8892a0] ${loading ? "animate-spin" : ""}`} />
+                        <RefreshCw className={`w-3.5 h-3.5 text-[var(--text-muted)] ${loading ? "animate-spin" : ""}`} />
                     </button>
                 </div>
             </div>

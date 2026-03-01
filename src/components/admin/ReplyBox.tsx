@@ -1,22 +1,25 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Paperclip, Smile, Send, ShieldAlert, AlertCircle } from "lucide-react";
+import { Paperclip, Smile, Send, ShieldAlert, AlertCircle, RefreshCw } from "lucide-react";
 
 interface ReplyBoxProps {
     conversationId: string;
     status: string;
     intent?: string;
+    quickInsert?: { id: number; text: string } | null;
+    onQuickReply?: (text: string) => void;
     onReplySent: () => void;
 }
 
 const MAX_CHARS = 1000;
 
-export default function ReplyBox({ conversationId, status, onReplySent }: ReplyBoxProps) {
+export default function ReplyBox({ conversationId, status, quickInsert, onQuickReply, onReplySent }: ReplyBoxProps) {
     const [text, setText] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const appliedQuickInsertRef = useRef<number | null>(null);
 
     const isPendingHuman = status === "PENDING_HUMAN" || status === "escalated";
 
@@ -27,6 +30,20 @@ export default function ReplyBox({ conversationId, status, onReplySent }: ReplyB
         ta.style.height = "auto";
         ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
     }, [text]);
+
+    useEffect(() => {
+        if (!quickInsert) return;
+        if (appliedQuickInsertRef.current === quickInsert.id) return;
+        appliedQuickInsertRef.current = quickInsert.id;
+
+        setText((prev) => {
+            if (!prev) return quickInsert.text;
+            const spacer = prev.endsWith(" ") ? "" : " ";
+            return `${prev}${spacer}${quickInsert.text}`;
+        });
+
+        textareaRef.current?.focus();
+    }, [quickInsert]);
 
     const handleSend = useCallback(async () => {
         const trimmed = text.trim();
@@ -61,46 +78,53 @@ export default function ReplyBox({ conversationId, status, onReplySent }: ReplyB
 
     const remaining = MAX_CHARS - text.length;
     const isOverLimit = remaining < 0;
+    const handleQuickReply = (value: string) => {
+        if (onQuickReply) {
+            onQuickReply(value);
+            return;
+        }
+        setText((prev) => `${prev}${prev ? " " : ""}${value}`);
+    };
 
     return (
-        <div className="z-20">
+        <div className="z-20 flex flex-col gap-2.5">
             {/* Pending-human badge */}
             {isPendingHuman && (
-                <div className="flex items-center gap-2 mb-3 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl shadow-sm animate-pulse border"
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-lg animate-pulse border"
                     style={{ background: "var(--color-brand-subtle)", color: "var(--color-brand)", borderColor: "var(--color-brand-border)" }}>
-                    <ShieldAlert size={14} />
-                    Modo Humano Ativo — Você está no comando
+                    <ShieldAlert size={13} />
+                    Modo Humano — Você Comanda
                 </div>
             )}
 
             {/* Error */}
             {error && (
-                <div className="mb-3 text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl flex items-center gap-2 border"
-                    style={{ background: "rgba(227, 0, 15, 0.1)", color: "var(--color-brand)", borderColor: "rgba(227, 0, 15, 0.2)" }}>
-                    <AlertCircle size={14} />
+                <div className="text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-lg flex items-center gap-2 border"
+                    style={{ background: "var(--color-brand-subtle)", color: "var(--color-brand)", borderColor: "var(--color-brand-border)" }}>
+                    <AlertCircle size={13} />
                     {error}
                 </div>
             )}
 
             {/* Input Box Container */}
             <div
-                className={`flex flex-col p-1.5 border rounded-[32px] transition-all shadow-inner group focus-within:ring-2 focus-within:ring-[var(--color-brand-subtle)] ${isOverLimit ? "border-[var(--color-brand)]" : "border-[var(--border-default)]"
+                className={`flex flex-col p-1 border rounded-lg transition-all focus-within:ring-2 focus-within:ring-[var(--color-brand)]/30 ${isOverLimit ? "border-[var(--color-brand)]" : "border-[var(--border-default)]"
                     }`}
                 style={{ background: "var(--bg-elevated)" }}
             >
-                <div className="flex items-center gap-2 px-2">
+                <div className="flex items-center gap-1.5 px-3">
                     <button
-                        className="p-2.5 rounded-full transition-all text-[var(--text-muted)] hover:bg-white/5 hover:text-white"
+                        className="p-2 rounded-lg transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)]"
                         title="Anexo"
                     >
-                        <Paperclip className="w-5 h-5" />
+                        <Paperclip className="w-4.5 h-4.5" />
                     </button>
 
                     <button
-                        className="p-2.5 rounded-full transition-all text-[var(--text-muted)] hover:bg-white/5 hover:text-white hidden sm:block"
+                        className="p-2 rounded-lg transition-colors text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-overlay)] hidden sm:flex"
                         title="Emojis"
                     >
-                        <Smile className="w-5 h-5" />
+                        <Smile className="w-4.5 h-4.5" />
                     </button>
 
                     <textarea
@@ -108,47 +132,49 @@ export default function ReplyBox({ conversationId, status, onReplySent }: ReplyB
                         value={text}
                         onChange={e => setText(e.target.value)}
                         onKeyDown={handleKeyDown}
-                        placeholder={isPendingHuman ? "Mensagem manual..." : "Digite sua mensagem..."}
-                        className="flex-1 bg-transparent border-none resize-none focus:ring-0 text-[14px] py-3 max-h-32 min-h-[44px] outline-none font-medium placeholder:opacity-40 custom-scrollbar"
+                        placeholder={isPendingHuman ? "Mensagem manual..." : "Digite sua resposta..."}
+                        className="flex-1 bg-transparent border-none resize-none focus:ring-0 text-sm py-3 px-1 max-h-24 min-h-[40px] outline-none font-medium placeholder:text-[var(--text-muted)] placeholder:opacity-50 custom-scrollbar"
                         style={{ color: "var(--text-primary)" }}
                         rows={1}
                     />
 
                     <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-black tabular-nums mr-1 ${isOverLimit ? "text-[var(--color-brand)]" : "opacity-40"}`}
-                            style={{ color: isOverLimit ? "var(--color-brand)" : "var(--text-muted)" }}>
+                        <span className={`text-[9px] font-black tabular-nums ${isOverLimit ? "text-[var(--color-brand)]" : "text-[var(--text-muted)]"}`}
+                            style={{ opacity: isOverLimit ? 1 : 0.5 }}>
                             {remaining}
                         </span>
                         <button
                             onClick={handleSend}
                             disabled={!text.trim() || loading || isOverLimit}
-                            className="w-11 h-11 flex items-center justify-center rounded-full transition-all shadow-lg active:scale-95 text-white disabled:opacity-30 disabled:shadow-none shrink-0"
-                            style={{ background: "var(--color-brand)" }}
+                            className="w-10 h-10 flex items-center justify-center rounded-lg transition-all text-white disabled:opacity-40 shrink-0 hover:brightness-110 active:scale-95"
+                            style={{
+                                background: "var(--color-brand)",
+                                boxShadow: "0 10px 20px rgba(227, 0, 15, 0.32)",
+                            }}
                         >
                             {loading ? (
-                                <RefreshCw className="w-5 h-5 animate-spin" />
+                                <RefreshCw className="w-4 h-4 animate-spin" />
                             ) : (
-                                <Send className="w-4 h-4 ml-0.5" />
+                                <Send className="w-3.5 h-3.5 ml-0.5" />
                             )}
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Quick Replies */}
             {!isPendingHuman && (
-                <div className="flex items-center gap-2 mt-4 ml-2 overflow-x-auto no-scrollbar">
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                     <button
-                        onClick={() => setText(t => t + (t ? " " : "") + "Reserva Confirmada!")}
-                        className="text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-full border transition-all shrink-0 hover:bg-white/5 active:scale-95"
-                        style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
+                        onClick={() => handleQuickReply("Reserva Confirmada!")}
+                        className="text-[10px] font-black tracking-widest uppercase px-3.5 py-1.5 rounded-lg border transition-all shrink-0 hover:bg-[var(--bg-overlay)] active:scale-95"
+                        style={{ borderColor: "var(--border-default)", color: "var(--text-secondary)" }}
                     >
                         Reserva Confirmada
                     </button>
                     <button
-                        onClick={() => setText(t => t + (t ? " " : "") + "Aqui está o link de pagamento: ")}
-                        className="text-[10px] font-black tracking-widest uppercase px-4 py-2 rounded-full border transition-all shrink-0 hover:bg-white/5 active:scale-95"
-                        style={{ borderColor: "var(--border-subtle)", color: "var(--text-secondary)" }}
+                        onClick={() => handleQuickReply("Link Pagamento: ")}
+                        className="text-[10px] font-black tracking-widest uppercase px-3.5 py-1.5 rounded-lg border transition-all shrink-0 hover:bg-[var(--bg-overlay)] active:scale-95"
+                        style={{ borderColor: "var(--border-default)", color: "var(--text-secondary)" }}
                     >
                         Link Pagamento
                     </button>
@@ -157,5 +183,3 @@ export default function ReplyBox({ conversationId, status, onReplySent }: ReplyB
         </div>
     );
 }
-
-import { RefreshCw } from "lucide-react";

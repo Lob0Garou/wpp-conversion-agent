@@ -12,7 +12,7 @@ export const createSacToolNode = (storeId: string) => new ToolNode(getSacTools(s
 
 const getBaseModel = () => {
     return new ChatOpenAI({
-        modelName: process.env.OPENROUTER_MODEL || "moonshotai/kimi-k2.5",
+        modelName: process.env.OPENROUTER_MODEL || process.env.AI_MODEL || process.env.FINAL_MODEL || "google/gemini-2.5-flash",
         temperature: 0.3,
         apiKey: process.env.OPENROUTER_API_KEY,
         openAIApiKey: process.env.OPENROUTER_API_KEY,

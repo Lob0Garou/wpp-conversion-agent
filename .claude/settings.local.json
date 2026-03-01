@@ -55,7 +55,20 @@
       "Bash(cd ~/.claude/plugins/claude-mem && npm run build)",
       "Bash(cd ~/.claude/plugins/claude-mem && bun plugin/scripts/worker-service.cjs start)",
       "Bash(cd ~/.claude/plugins/claude-mem && bun plugin/scripts/worker-service.cjs start 2>&1 | head -50)",
-      "Bash(cd ~/.claude/plugins/claude-mem && bun plugin/scripts/worker-service.cjs status)"
+      "Bash(cd ~/.claude/plugins/claude-mem && bun plugin/scripts/worker-service.cjs status)",
+      "Bash(taskkill //F //PID 19340)",
+      "Bash(lsof -ti:8081)",
+      "Bash(xargs kill -9)",
+      "Bash(xargs -r taskkill -PID -F)",
+      "Bash(do)",
+      "Bash(if curl -s http://localhost:8080/admin)",
+      "Bash(then)",
+      "Bash(exit 0)",
+      "Bash(fi)",
+      "Bash(echo \"⏳ Waiting... \\($i/30\\)\")",
+      "Bash(done)",
+      "Bash(do if curl -s http://localhost:8080/admin)",
+      "Bash(then echo \"✅ Server online\" curl -s http://localhost:8080/admin)"
     ]
   }
 }

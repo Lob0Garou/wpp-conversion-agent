@@ -1,4 +1,5 @@
 ﻿import type { ConversationStateType } from "./state-manager";
+import { hasFootballTeamMention } from "./football-teams";
 
 export type Intent =
     | "SALES"
@@ -25,8 +26,12 @@ const HANDOFF_KEYWORDS = [
     "gerente", "representante", "ligar", "quero falar com",
     // Quer falar com vendedor específico ou quer atendimento humano
     "falar com vendedor", "quero o vendedor", "passa vendedor",
-    "vendedor airton", "vendedor ailton", "atendente humano",
+    "falar com um vendedor", "quero um vendedor",
+    "atendente humano",
     "quero falar com humano", "preciso de um vendedor",
+    // Reclamação/insatisfação explícita deve escalar para humano
+    "reclamacao", "reclamação", "insatisfeito", "insatisfeita",
+    "vou abrir reclamacao", "vou abrir reclamação",
 ];
 
 const SAC_TROCA_KEYWORDS = [
@@ -44,7 +49,7 @@ const SAC_TROCA_KEYWORDS = [
 ];
 const SAC_ATRASO_KEYWORDS = ["atraso", "demora", "nao chegou", "nÃ£o chegou", "cade meu pedido", "cadÃª meu pedido", "onde esta meu", "onde estÃ¡ meu", "quando chega", "esta atrasado", "estÃ¡ atrasado", "pedido atrasou"];
 const SAC_RETIRADA_KEYWORDS = ["retirada", "retirar na loja", "buscar", "ja posso buscar", "jÃ¡ posso buscar"];
-const SAC_REEMBOLSO_KEYWORDS = ["devolucao", "devoluÃ§Ã£o", "reembolso", "cancelar", "estorno", "cancelamento", "dinheiro de volta"];
+const SAC_REEMBOLSO_KEYWORDS = ["devolucao", "devoluÃ§Ã£o", "reembolso", "cancelar", "estorno", "esotnro", "estonro", "estornro", "cancelamento", "dinheiro de volta"];
 const GENERIC_SUPPORT_KEYWORDS = ["problema", "reclamacao", "reclamaÃ§Ã£o", "reclamar", "pedido", "encomenda"];
 const SAC_TRACKING_KEYWORDS = [
     "rastreio",
@@ -190,6 +195,23 @@ const GREETING_ONLY_PATTERNS = [
     /^oi+e+\s*!*$/i,
 ];
 
+const HANDOFF_CONFIRMATION_PATTERNS = [
+    /^(sim[,!\s]*)?(pode\s+)?(encaminhar|transferir|passar)(\s+sim)?[.!?]*$/i,
+    /^(pode\s+)?(encaminha|transfere|passa)\b[.!?]*$/i,
+    /\b(encaminh|transfer|passa).{0,24}\b(humano|atendente|especialista|vendedor)\b/i,
+];
+
+const GENERIC_CONFIRMATION_PATTERNS = [
+    /^(ok|okay|blz|beleza|sim|pode sim|pode)\s*[.!?]*$/i,
+];
+
+const NON_VENDOR_NAME_WORDS = new Set([
+    "oi", "ola", "ok", "okay", "sim", "nao", "não", "pode", "encaminhar",
+    "transferir", "passar", "obrigado", "obrigada", "valeu", "blz", "beleza",
+    "pedido", "cpf", "troca", "reembolso", "atendente", "humano", "vendedor",
+    "por", "favor", "corrida", "academia", "casual", "dia", "uso", "m", "g", "gg",
+]);
+
 function normalizeForMatch(text: string): string {
     return text
         .toLowerCase()
@@ -320,6 +342,23 @@ export function classifyIntent(
         return "CLARIFICATION";
     }
 
+    const hasHandoffPrompt = hasRecentHandoffPrompt(conversationHistory);
+    const escalationContext =
+        currentState === "support" ||
+        currentState === "support_sac" ||
+        hasHandoffPrompt;
+    const sellerContext = hasRecentSellerContext(conversationHistory);
+    if (
+        escalationContext &&
+        (
+            isHandoffConfirmationMessage(normalizedMsg) ||
+            (hasHandoffPrompt && isGenericHandoffConfirmationMessage(normalizedMsg)) ||
+            ((sellerContext || currentState === "support") && isLikelyVendorNameMessage(normalizedMsg))
+        )
+    ) {
+        return "HANDOFF";
+    }
+
     if (matchesAnyWithNegation(msg, HANDOFF_KEYWORDS)) return "HANDOFF";
 
     if (hasFrustrationSignal(msg, userMessage)) return "HANDOFF";
@@ -413,6 +452,7 @@ export function classifyIntent(
     }
 
     if (matchesAnyWithNegation(msg, RESERVATION_KEYWORDS)) return "RESERVATION";
+    if (hasFootballTeamMention(userMessage)) return "SALES";
     if (matchesAnyWithNegation(msg, SALES_KEYWORDS)) return "SALES";
 
     switch (currentState) {
@@ -464,6 +504,61 @@ function isRepeatedMessage(
         .map((h) => h.content.toLowerCase().trim());
     const recentUserMessages = userMessages.slice(-3);
     return recentUserMessages.filter((m) => m === msg).length >= 1;
+}
+
+function hasRecentHandoffPrompt(
+    history: { role: "user" | "assistant"; content: string }[]
+): boolean {
+    const recentAssistant = history
+        .filter((h) => h.role === "assistant")
+        .slice(-3)
+        .map((h) => normalizeForMatch(h.content || ""));
+
+    return recentAssistant.some((text) =>
+        /\b(encaminh|transfer)/.test(text) &&
+        /\b(humano|atendente|especialista|vendedor)\b/.test(text)
+    );
+}
+
+function isHandoffConfirmationMessage(normalizedMsg: string): boolean {
+    const compact = normalizedMsg.replace(/\s+/g, " ").trim();
+    if (!compact) return false;
+    return HANDOFF_CONFIRMATION_PATTERNS.some((pattern) => pattern.test(compact));
+}
+
+function isGenericHandoffConfirmationMessage(normalizedMsg: string): boolean {
+    const compact = normalizedMsg.replace(/\s+/g, " ").trim();
+    if (!compact) return false;
+    return GENERIC_CONFIRMATION_PATTERNS.some((pattern) => pattern.test(compact));
+}
+
+function hasRecentSellerContext(
+    history: { role: "user" | "assistant"; content: string }[]
+): boolean {
+    const recent = history.slice(-6).map((h) => ({
+        role: h.role,
+        content: normalizeForMatch(h.content || ""),
+    }));
+    return recent.some((h) => {
+        if (h.role === "user") {
+            return /\b(vendedor|vendedora|venda)\b/.test(h.content);
+        }
+        return /\b(vendedor|vendedora)\b/.test(h.content);
+    });
+}
+
+function isLikelyVendorNameMessage(normalizedMsg: string): boolean {
+    const compact = normalizedMsg.replace(/\s+/g, " ").trim();
+    if (!compact || compact.length < 3 || compact.length > 30) return false;
+    if (/\d/.test(compact)) return false;
+    if (!/^[a-z\s.-]+$/i.test(compact)) return false;
+
+    const tokens = compact.split(" ").filter(Boolean);
+    if (tokens.length === 0 || tokens.length > 2) return false;
+    if (tokens.some((t) => t.length < 3)) return false;
+    if (tokens.some((t) => NON_VENDOR_NAME_WORDS.has(t))) return false;
+
+    return true;
 }
 
 function shouldPrioritizeHoursOnly(msg: string): boolean {

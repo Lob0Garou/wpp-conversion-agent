@@ -22,30 +22,28 @@ export default function CustomerBubble({ message, customerName }: CustomerBubble
         : "WA";
 
     return (
-        <div className="flex flex-col items-start mb-6 group animate-in fade-in slide-in-from-left-4 duration-300">
-            <div className="flex gap-2 max-w-[85%] items-start">
+        <div className="flex flex-col items-start mb-4 group animate-in fade-in slide-in-from-left-4 duration-300">
+            <div className="flex gap-3 max-w-[88%] md:max-w-[76%] items-end">
 
                 {/* Customer Avatar Icon */}
-                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm font-black text-[11px] text-white mt-1"
-                    style={{ background: "#475569" }}>
+                <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 font-bold text-[10px]"
+                    style={{ background: "var(--bg-overlay)", color: "var(--text-primary)" }}>
                     {initials}
                 </div>
 
                 <div className="flex flex-col items-start">
                     {/* Bubble */}
                     <div
-                        className="relative p-3.5 text-[14px] leading-relaxed shadow-sm border rounded-[20px] rounded-tl-md shadow-black/5"
-                        style={{ background: "var(--bg-surface)", borderColor: "var(--border-subtle)", color: "var(--text-primary)" }}
+                        className="px-4 py-2.5 text-sm leading-relaxed border rounded-2xl rounded-bl-sm max-w-full"
+                        style={{ background: "var(--bg-elevated)", borderColor: "var(--border-default)", color: "var(--text-primary)" }}
                     >
-                        <p className="whitespace-pre-wrap">{message.content}</p>
+                        <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{message.content}</p>
                     </div>
 
                     {/* Time */}
-                    <div className="mt-1 flex items-center gap-1 opacity-50">
-                        <span className="text-[10px] font-bold tracking-widest text-[var(--text-muted)]">
-                            {time}
-                        </span>
-                    </div>
+                    <span className="text-[9px] font-bold tracking-widest text-[var(--text-muted)] mt-1.5 ml-2 opacity-60">
+                        {time}
+                    </span>
                 </div>
             </div>
         </div>

@@ -11,14 +11,19 @@ interface GridContainerProps {
   onSelect: (id: string) => void;
   onCardBecomeUrgent?: (id: string) => void;
   onCardResolve?: (id: string) => void;
+  isCompact?: boolean;
 }
 
-export default function GridContainer({ slots, selectedId, onSelect, onCardResolve }: GridContainerProps) {
+export default function GridContainer({ slots, selectedId, onSelect, onCardResolve, isCompact = false }: GridContainerProps) {
+  const gridCols = isCompact
+    ? "grid-cols-1 md:grid-cols-2 2xl:grid-cols-3"
+    : "grid-cols-1 md:grid-cols-2 xl:grid-cols-3";
+
   return (
     <LayoutGroup id="grid">
       {/* Scrollable container so cards never overflow/overlap */}
       <div className="h-full overflow-y-auto" style={{ scrollbarWidth: "thin", scrollbarColor: "var(--border-subtle) transparent" }}>
-        <div className="grid grid-cols-3 grid-rows-3 gap-6 p-6 h-full min-h-[640px]">
+        <div className={`grid ${gridCols} gap-6 p-6 auto-rows-[260px]`}>
           <AnimatePresence mode="popLayout">
             {slots.map((card, idx) =>
               card ? (

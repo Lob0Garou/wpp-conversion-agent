@@ -283,6 +283,20 @@ function logTurn(role, text) {
     fs.appendFileSync(logPath, JSON.stringify(entry) + '\n', 'utf8');
 }
 
+function isCalibrationNote(text) {
+    const trimmed = (text || '').trim();
+    if (trimmed.length < 3) return false;
+    const startsWithNoteOpen =
+        trimmed.startsWith('(') ||
+        trimmed.startsWith('（') ||
+        trimmed.startsWith('[');
+    const endsWithNoteClose =
+        trimmed.endsWith(')') ||
+        trimmed.endsWith('）') ||
+        trimmed.endsWith(']');
+    return startsWithNoteOpen && endsWithNoteClose;
+}
+
 rl.on('line', async (line) => {
     const text = line.trim();
     if (!text) {
@@ -302,6 +316,13 @@ rl.on('line', async (line) => {
     }
     if (text.toLowerCase() === '/phone') {
         console.log(`\x1b[36m[SIM]\x1b[0m Telefone atual: ${CUSTOMER_PHONE}`);
+        rl.prompt();
+        return;
+    }
+
+    if (isCalibrationNote(text)) {
+        console.log('\x1b[90m[NOTE] Mensagem de calibração local. Nada foi enviado ao webhook.\x1b[0m');
+        logTurn('note', text);
         rl.prompt();
         return;
     }

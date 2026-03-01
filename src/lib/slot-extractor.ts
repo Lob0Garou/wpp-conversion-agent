@@ -1,4 +1,5 @@
 import type { Slots } from "./state-manager";
+import { findFootballTeamMention } from "./football-teams";
 
 export interface SlotExtractionResult {
     extracted: Partial<Slots>;
@@ -190,6 +191,19 @@ export function extractSlots(
                 if (!extracted.product) extracted.product = undefined;
                 console.log(`[SLOTS] ðŸ”„ Conflito de uso detectado (${currentSlots.usage} â†’ ${newUsage}). Resetando contexto de busca.`);
             }
+        }
+    }
+
+    // 3. Detect football team mention (Series A/B/C + apelidos)
+    const footballTeamMention = findFootballTeamMention(userMessage);
+    if (footballTeamMention) {
+        if (!currentSlots.timeFutebol) {
+            extracted.timeFutebol = footballTeamMention.team;
+            hasNewData = true;
+        }
+        if (!currentSlots.usage && !extracted.usage) {
+            extracted.usage = "football";
+            hasNewData = true;
         }
     }
 
@@ -570,11 +584,11 @@ function extractInfoTopic(msg: string): string | undefined {
     ) {
         return "address";
     }
+    if (normalized.includes("estorno") || normalized.includes("esotnro") || normalized.includes("estonro") || normalized.includes("estornro") || normalized.includes("reembolso") || normalized.includes("devolucao") || normalized.includes("devolver")) {
+        return "refund";
+    }
     if (normalized.includes("troca") || normalized.includes("trocar")) {
         return "exchange";
-    }
-    if (normalized.includes("estorno") || normalized.includes("reembolso") || normalized.includes("devolucao") || normalized.includes("devolver")) {
-        return "refund";
     }
     return undefined;
 }
@@ -623,7 +637,7 @@ function extractGenero(msg: string): string | undefined {
 // F002 SLOT AWARE - Extrai entidades do histórico de conversa
 // ============================================================
 
-export type Slot = "orderId" | "cpf" | "size" | "ticketId";
+export type Slot = "product" | "size" | "usage" | "categoria" | "marca" | "orderId" | "email" | "cpf" | "customerName" | "ticketId" | "canalVenda";
 
 export interface KnownEntities {
     orderId?: string;
@@ -631,6 +645,7 @@ export interface KnownEntities {
     cpf?: string;
     size?: string;
     customerPhone?: string;
+    canalVenda?: "loja_fisica" | "online" | string;
 }
 
 export interface KnownEntitiesExtraction {
@@ -651,14 +666,22 @@ const SLOT_REQUIREMENTS: Record<string, Slot[]> = {
     RESERVATION: ["size"],
     // Mapeamento para intents internas do Cadu
     SAC_ATRASO: ["orderId", "cpf"],
-    SAC_TROCA: [], // Let LLM handle context gathering
-    SAC_REEMBOLSO: [], // Let LLM provide policy before escalating
-    SAC_RETIRADA: [], // Order number + Name is better than CPF, LLM handles it
+    SAC_TROCA: ["orderId", "cpf"],
+    SAC_REEMBOLSO: ["orderId", "cpf"],
+    SAC_RETIRADA: ["orderId", "cpf"],
     SUPPORT: [],
     INFO: [],
     INFO_ADDRESS: [],
     INFO_HOURS: [],
     INFO_SAC_POLICY: [],
+};
+
+const SLOT_METADATA = {
+    orderId: { label: "Número do Pedido", description: "Identificador único de um pedido" },
+    cpf: { label: "CPF", description: "Cadastro de Pessoa Física do cliente" },
+    size: { label: "Tamanho", description: "Tamanho ou numeração de um produto" },
+    ticketId: { label: "Ticket ID", description: "Identificador de chamado de suporte" },
+    canalVenda: { label: "Canal de Venda", description: "Onde a compra foi realizada (Loja ou Online)" },
 };
 
 function normalizeIntent(intent: string): string {
@@ -753,6 +776,17 @@ export function extractKnownEntities(
         slotSource.size = "regex_size_context";
     }
 
+    // Extração de canal de venda
+    const lojaRegex = /\b(loja|loja fisica|fisica|no shopping|no river)\b/i;
+    const onlineRegex = /\b(site|app|online|internet|pelo site|pelo app)\b/i;
+    if (lojaRegex.test(text)) {
+        known.canalVenda = "loja_fisica";
+        slotSource.canalVenda = "regex_canal_fisico";
+    } else if (onlineRegex.test(text)) {
+        known.canalVenda = "online";
+        slotSource.canalVenda = "regex_canal_online";
+    }
+
     return { known, slotSource };
 }
 
@@ -779,11 +813,32 @@ function getRequiredFieldsForIntent(intent: string): string[] {
  */
 export function getMissingSlots(intent: string, known: KnownEntities): Slot[] {
     const required = getRequiredFieldsForIntent(intent) as Slot[];
+
+    // Inferência de canal baseada nos dados disponíveis
+    const hasOrderId = Boolean(known.orderId || known.ticketId);
+    const hasCPF = Boolean(known.cpf);
+
+    const isExplicitlyLojaFisica = known.canalVenda === "loja_fisica";
+    const isExplicitlyOnline = known.canalVenda === "online" || known.canalVenda === "site_app";
+
+    // Se só tem orderId (sem CPF), assume online
+    const inferredOnline = !isExplicitlyLojaFisica && hasOrderId && !hasCPF;
+    // Se só tem CPF (sem orderId), assume loja física
+    const inferredLojaFisica = !isExplicitlyOnline && hasCPF && !hasOrderId;
+
+    const isLojaFisica = isExplicitlyLojaFisica || inferredLojaFisica;
+    const isOnline = isExplicitlyOnline || inferredOnline;
+
     return required.filter((field) => {
+        // Loja física: não precisa de orderId
+        if (field === "orderId" && isLojaFisica) return false;
+        // Online: não precisa de CPF (orderId é suficiente)
+        if (field === "cpf" && isOnline) return false;
+
         if (field === "orderId") {
             return !(known.orderId || known.ticketId);
         }
-        return !known[field];
+        return !known[field as keyof KnownEntities];
     });
 }
 
@@ -813,7 +868,13 @@ export function buildSlotQuestion(
         const tail = isChatOnly && isSacIntent
             ? " Com isso, eu já encaminho para checagem humana sem te fazer repetir tudo."
             : "";
-        return `Vou seguir com a verificação assim que você me informar o número do pedido.${tail}`;
+
+        // Se canal é desconhecido, pede ambos (triagem)
+        if (!known.canalVenda) {
+            return `Vou verificar! Se foi compra no site/app, me diga o número do pedido. Se foi na loja física, me diga o CPF.${tail}`;
+        }
+
+        return `Vou verificar assim que você me informar o número do pedido.${tail}`;
     }
 
     if (slot === "cpf") {
@@ -827,10 +888,10 @@ export function buildSlotQuestion(
     }
 
     if (slot === "size") {
-        return "Me diga o tamanho ou numeração (ex.: P, M, 40) e eu vou continuar.";
+        return "Me diga o tamanho ou numeração, vou verificar no estoque!";
     }
 
-    return "Me informe o número do ticket para eu continuar.";
+    return "Me informe o número do ticket, vou continuar assim que receber.";
 }
 
 /**
@@ -848,9 +909,9 @@ export function getMissingData(
  * Gera a pergunta para o primeiro campo faltante.
  * Retorna a pergunta apropriada para o campo.
  */
-export function getFirstMissingQuestion(field: string): string {
+export function getFirstMissingQuestion(field: string, known: KnownEntities = {}): string {
     if (field === "orderId" || field === "cpf" || field === "size" || field === "ticketId") {
-        return buildSlotQuestion(field, "UNKNOWN", {});
+        return buildSlotQuestion(field as Slot, "UNKNOWN", known);
     }
     return `Qual é o ${field}?`;
 }

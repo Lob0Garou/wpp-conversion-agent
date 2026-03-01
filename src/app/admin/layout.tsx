@@ -14,7 +14,7 @@ export default function AdminLayout({
 }) {
     return (
         <AdminTabProvider>
-            <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#0f1117] text-white">
+            <div className="flex flex-col h-screen w-screen overflow-hidden bg-[var(--bg-deep)] text-[var(--text-primary)]">
                 <AdminHeader />
                 <main className="flex-1 overflow-hidden relative">
                     {children}

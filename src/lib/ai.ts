@@ -9,11 +9,11 @@ export interface AgentDecision {
 const MODEL_CONFIG = {
     // Final model (for generating responses to customers)
     get final(): string {
-        return process.env.FINAL_MODEL || process.env.OPENROUTER_MODEL || process.env.AI_MODEL || "moonshotai/kimi-k2.5";
+        return process.env.FINAL_MODEL || process.env.OPENROUTER_MODEL || process.env.AI_MODEL || "google/gemini-2.5-flash";
     },
     // Router model (for intent classification/tools)
     get router(): string {
-        return process.env.ROUTER_MODEL || process.env.OPENROUTER_MODEL || process.env.AI_MODEL || "moonshotai/kimi-k2.5";
+        return process.env.ROUTER_MODEL || process.env.OPENROUTER_MODEL || process.env.AI_MODEL || "google/gemini-2.5-flash";
     },
     // Timeout in ms
     get timeout(): number {

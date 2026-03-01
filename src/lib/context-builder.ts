@@ -5,6 +5,7 @@ import { extractSlots } from "./slot-extractor";
 import { findRelevantProducts } from "./products";
 import { validateStockRequest, findAlternatives, createStockUnknownResult, type StockResult } from "./stock-agent";
 import { hasActiveSnapshot, getActiveImportId } from "./inventory-snapshot";
+import { getLastReply } from "./chat-outbox";
 
 /**
  * Check if running in CHAT_ONLY mode (for Ralph Loop testing without DB)
@@ -50,6 +51,7 @@ export async function buildContext(params: {
     storeName: string;
     customerName?: string; // Fix 1: Accept customer name
     currentWaMessageId?: string; // Fix 3: Exclude current message
+    customerPhone?: string;
 }): Promise<ConversationContext> {
     const { conversationId, userMessage, storeId, storeName, customerName } = params;
     const chatOnly = isChatOnlyMode();
@@ -86,6 +88,17 @@ export async function buildContext(params: {
         role: (m.direction === "inbound" ? "user" : "assistant") as "user" | "assistant",
         content: m.content,
     }));
+
+    // CHAT_ONLY: sem DB, reaproveita ultima resposta da outbox como contexto minimo.
+    if (chatOnly && conversationHistory.length === 0 && params.customerPhone) {
+        const lastReply = getLastReply(params.customerPhone);
+        if (lastReply?.content) {
+            conversationHistory.push({
+                role: "assistant",
+                content: String(lastReply.content),
+            });
+        }
+    }
 
     // 3. Extract slots from user history + current message
     const userHistoryText = conversationHistory

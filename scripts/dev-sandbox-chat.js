@@ -18,7 +18,7 @@ const { spawn, execSync } = require("child_process");
 const cliArgs = process.argv.slice(2);
 const skipPrismaGenerate = cliArgs.includes("--skip-prisma");
 const skipDbPush = cliArgs.includes("--skip-db-push");
-const forceWebpack = !cliArgs.includes("--turbopack");
+const useWebpack = cliArgs.includes("--webpack");
 
 function loadEnvFile(envPath) {
     if (!fs.existsSync(envPath)) {
@@ -50,8 +50,8 @@ process.env.TEST_MODE = "true";
 process.env.CADU_MODE = "CHAT_ONLY";
 process.env.CHAT_ONLY = "true";
 
-// 🔒 Forçar desligar Turbopack
-process.env.NEXT_TURBOPACK = "0";
+// Prefer Turbopack by default for faster local startup.
+process.env.NEXT_TURBOPACK = useWebpack ? "0" : "1";
 
 const port = process.env.PORT || "8081";
 
@@ -67,6 +67,7 @@ console.log("📁  DATABASE_URL:", process.env.DATABASE_URL);
 console.log("🌍 ENV:", process.env.ENV);
 console.log("🔌 PORT:", port);
 console.log("💬 MODE: CHAT_ONLY (ativado)");
+console.log(`⚙️ BUNDLER: ${useWebpack ? "Webpack" : "Turbopack"}`);
 console.log(`\n🚀 Iniciando Sandbox CHAT_ONLY em http://localhost:${port}\n`);
 
 // ✅ Chama o bin real do Next via node (Windows-safe)
@@ -75,7 +76,7 @@ const nextBinJs = path.join(projectRoot, "node_modules", "next", "dist", "bin", 
 const args = [
     nextBinJs,
     "dev",
-    ...(forceWebpack ? ["--webpack"] : []),
+    ...(useWebpack ? ["--webpack"] : []),
     "-H",
     "0.0.0.0",
     "-p",
